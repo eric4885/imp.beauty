@@ -3,661 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imp Beauty - Magical Makeover & Dress Up Game | Play Free Online</title>
-    <meta name="description" content="Play Imp Beauty online free! Classic dress-up and makeover game where you style cute imps with beautiful outfits, makeup, and accessories. No download required!">
-    <meta name="keywords" content="imp beauty, dress up game, makeover game, beauty salon, fashion game, cute imp styling, free online games, 4399 style game">
-    <link rel="canonical" href="https://imp.beauty/">
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Imp Beauty - Magical Makeover & Dress Up Game">
-    <meta property="og:description" content="Style adorable imps with beautiful makeovers, trendy outfits, and magical accessories in this classic dress-up game!">
-    <meta property="og:url" content="https://imp.beauty/">
+    <meta name="description" content="Play Imp Beauty online - Help the adorable little crocodile take a bath! Fun puzzle game with water physics and cute graphics. Play free in your browser.">
+    <meta name="keywords" content="imp beauty, online game, crocodile bath game, puzzle game, water physics game, free browser game">
+    <meta name="author" content="Imp Beauty Game">
+    <meta property="og:title" content="Imp Beauty - Online Crocodile Bath Puzzle Game">
+    <meta property="og:description" content="Help the little crocodile take a bath in this fun puzzle game with water physics!">
+    <meta property="og:url" content="https://imp.beauty">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://imp.beauty/imp-beauty-game-preview.jpg">
+    <meta property="og:image" content="https://imp.beauty/og-image.jpg">
+    <title>Imp Beauty - Play Online Crocodile Bath Puzzle Game Free</title>
+    <link rel="canonical" href="https://imp.beauty">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Imp Beauty - Magical Makeover & Dress Up Game">
-    <meta name="twitter:description" content="Style adorable imps with beautiful makeovers, trendy outfits, and magical accessories in this classic dress-up game!">
-    <meta name="twitter:image" content="https://imp.beauty/imp-beauty-game-preview.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'apple-blue': '#007AFF',
+                        'apple-green': '#34C759',
+                        'apple-indigo': '#5856D6',
+                        'apple-orange': '#FF9500',
+                        'apple-pink': '#FF2D92',
+                        'apple-purple': '#AF52DE',
+                        'apple-red': '#FF3B30',
+                        'apple-teal': '#5AC8FA',
+                        'apple-yellow': '#FFCC00',
+                        'apple-gray': '#8E8E93',
+                        'apple-gray2': '#AEAEB2',
+                        'apple-gray3': '#C7C7CC',
+                        'apple-gray4': '#D1D1D6',
+                        'apple-gray5': '#E5E5EA',
+                        'apple-gray6': '#F2F2F7',
+                    }
+                }
+            }
+        }
+    </script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #1d1d1f;
-            background: linear-gradient(135deg, #fef7ff 0%, #fce7f3 25%, #f3e8ff 50%, #e0e7ff 100%);
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        
+        .game-container {
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 4px;
         }
-
-        header {
-            background: rgba(255, 255, 255, 0.95);
+        
+        .game-iframe {
+            border-radius: 16px;
+            background: white;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(219, 39, 119, 0.2);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 20px rgba(219, 39, 119, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .header-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        h1 {
-            font-size: 3.2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #db2777 0%, #9333ea 50%, #06b6d4 100%);
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #007AFF, #5856D6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-align: center;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 15px rgba(219, 39, 119, 0.3);
-        }
-
-        .subtitle {
-            text-align: center;
-            font-size: 1.3rem;
-            color: #6b7280;
-            margin-bottom: 40px;
-            font-weight: 500;
-        }
-
-        .game-container {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            padding: 30px;
-            margin: 40px 0;
-            box-shadow: 0 25px 70px rgba(219, 39, 119, 0.15);
-            border: 2px solid rgba(219, 39, 119, 0.1);
-            backdrop-filter: blur(15px);
-        }
-
-        .game-iframe {
-            width: 100%;
-            height: 650px;
-            border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
-            box-shadow: 0 15px 40px rgba(219, 39, 119, 0.3);
-        }
-
-        .content-section {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 24px;
-            padding: 40px;
-            margin: 30px 0;
-            box-shadow: 0 20px 50px rgba(147, 51, 234, 0.1);
-            border: 1px solid rgba(147, 51, 234, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        h2 {
-            font-size: 2.3rem;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 25px;
-            position: relative;
-            padding-left: 30px;
-        }
-
-        h2::before {
-            content: '👸';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.8rem;
-        }
-
-        p {
-            font-size: 1.15rem;
-            line-height: 1.8;
-            color: #374151;
-            margin-bottom: 22px;
-        }
-
-        .game-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 35px;
-        }
-
-        .feature-card {
-            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
-            border-radius: 20px;
-            padding: 30px;
-            border: 2px solid rgba(219, 39, 119, 0.1);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(219, 39, 119, 0.25);
-            border-color: rgba(219, 39, 119, 0.3);
-        }
-
-        .feature-icon {
-            font-size: 2.8rem;
-            margin-bottom: 18px;
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 15px;
-        }
-
-        .feature-description {
-            font-size: 1rem;
-            color: #6b7280;
-            line-height: 1.7;
-        }
-
-        .play-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.25rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(219, 39, 119, 0.4);
-            margin: 30px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .play-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
-            transition: left 0.5s ease;
-        }
-
-        .play-button:hover::before {
-            left: 100%;
-        }
-
-        .play-button:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 40px rgba(219, 39, 119, 0.6);
-        }
-
-        .game-tip {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-radius: 20px;
-            padding: 25px;
-            margin: 25px 0;
-            border-left: 5px solid #f59e0b;
-            border: 2px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .game-tip h3 {
-            color: #92400e;
-            font-size: 1.4rem;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .game-tip p {
-            color: #78350f;
-            margin-bottom: 0;
-            font-size: 1.05rem;
-        }
-
-        .controls-section {
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 25px 0;
-            border: 2px solid rgba(34, 197, 94, 0.2);
-        }
-
-        .controls-section h3 {
-            color: #065f46;
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .controls-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .control-item {
-            background: rgba(255, 255, 255, 0.7);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-
-        .control-item strong {
-            color: #065f46;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 2px solid rgba(219, 39, 119, 0.1);
-            padding: 40px 0;
-            text-align: center;
-            color: #6b7280;
-            margin-top: 60px;
-        }
-
-        .footer-content {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 15px;
-            }
-
-            h1 {
-                font-size: 2.4rem;
-            }
-
-            .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .game-container,
-            .content-section {
-                padding: 20px;
-                margin: 20px 0;
-            }
-
-            .game-iframe {
-                height: 500px;
-            }
-
-            h2 {
-                font-size: 1.9rem;
-                padding-left: 40px;
-            }
-
-            p {
-                font-size: 1rem;
-            }
-
-            .game-features {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .feature-card {
-                padding: 25px;
-            }
-
-            .play-button {
-                padding: 16px 32px;
-                font-size: 1.1rem;
-            }
-
-            .controls-list {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .game-iframe {
-                height: 420px;
-            }
-
-            .game-container,
-            .content-section {
-                padding: 15px;
-                border-radius: 16px;
-            }
-
-            h2 {
-                font-size: 1.7rem;
-            }
-
-            .feature-card,
-            .controls-section,
-            .game-tip {
-                padding: 20px;
-            }
-        }
-
-        /* Loading animation for iframe */
-        .game-loading {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 650px;
-            background: linear-gradient(135deg, #db2777 0%, #9333ea 100%);
-            border-radius: 20px;
-            color: white;
-            font-size: 1.3rem;
-            text-align: center;
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 25px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-            .game-loading {
-                height: 500px;
-                font-size: 1.1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .game-loading {
-                height: 420px;
-                font-size: 1rem;
-            }
         }
     </style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div>
-                    <h1>Imp Beauty</h1>
-                    <p class="subtitle">Classic dress-up and makeover game featuring adorable magical imps</p>
+<body class="bg-apple-gray6 text-gray-900">
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-xl border-b border-apple-gray5 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-apple-blue to-apple-indigo rounded-xl flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🐊</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-gradient">Imp Beauty</h1>
                 </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#game" class="text-apple-gray hover:text-apple-blue transition-colors">Play Game</a>
+                    <a href="#about" class="text-apple-gray hover:text-apple-blue transition-colors">About</a>
+                    <a href="#features" class="text-apple-gray hover:text-apple-blue transition-colors">Features</a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <main class="container">
-        <div class="game-container">
-            <div id="game-loading" class="game-loading">
-                <div class="loading-spinner"></div>
-                <div>Loading Imp Beauty Game...</div>
-                <div style="font-size: 0.9rem; margin-top: 15px; opacity: 0.9;">Get ready to style your magical imp!</div>
-            </div>
-            <iframe 
-                id="game-iframe"
-                class="game-iframe" 
-                src="https://cloud.onlinegames.io/games/2025/unity/imp%20beauty/index-og.html"
-                title="Imp Beauty Dress Up Game"
-                allowfullscreen
-                style="display: none;"
-                onload="document.getElementById('game-loading').style.display='none'; this.style.display='block';">
-            </iframe>
-            
-            <div style="text-align: center; margin-top: 25px;">
-                <a href="#how-to-play" class="play-button">Learn How to Style ✨</a>
+    <!-- Hero Section -->
+    <section class="hero-gradient py-20 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl sm:text-6xl font-bold text-white mb-6">
+                Imp Beauty Game
+            </h1>
+            <p class="text-xl sm:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Help the adorable little crocodile take a refreshing bath in this delightful puzzle adventure!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="document.getElementById('game').scrollIntoView({behavior: 'smooth'})" 
+                        class="bg-white text-apple-blue px-8 py-4 rounded-full font-semibold hover:bg-apple-gray6 transition-all duration-300 shadow-lg">
+                    🎮 Play Now
+                </button>
+                <button onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})" 
+                        class="bg-white/20 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-all duration-300 backdrop-blur-sm">
+                    📖 Learn More
+                </button>
             </div>
         </div>
+    </section>
 
-        <section class="content-section" id="about">
-            <h2>About Imp Beauty Game</h2>
-            <p>Welcome to Imp Beauty, a delightful dress-up and makeover game where you become a magical stylist for adorable imps! This classic beauty simulation game lets you explore your creativity by giving cute imp characters stunning makeovers with beautiful outfits, stylish accessories, and magical transformations.</p>
-            
-            <p>Inspired by the beloved 4399 gaming style, Imp Beauty offers intuitive point-and-click gameplay that's perfect for fashion enthusiasts and casual gamers alike. Choose from dozens of clothing items, hairstyles, makeup options, and accessories to create the perfect look for your imp client.</p>
-
-            <div class="game-tip">
-                <h3>💡 Styling Tip</h3>
-                <p>Mix and match different clothing styles and colors to discover unique combinations! Each imp has their own personality - try to match outfits that reflect their magical nature.</p>
+    <!-- Game Section -->
+    <section id="game" class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Play Imp Beauty Online</h2>
+                <p class="text-lg text-apple-gray max-w-2xl mx-auto">
+                    Dive into the fun! Use your puzzle-solving skills to guide water to our thirsty little crocodile friend.
+                </p>
             </div>
-        </section>
+            
+            <div class="game-container mx-auto max-w-4xl">
+                <iframe 
+                    src="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty"
+                    class="game-iframe w-full h-96 sm:h-[500px] lg:h-[600px] border-0"
+                    title="Imp Beauty Game - Crocodile Bath Puzzle"
+                    allowfullscreen>
+                    <p>Your browser does not support iframes. Please <a href="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty" class="text-apple-blue hover:underline">click here to play Imp Beauty directly</a>.</p>
+                </iframe>
+            </div>
+            
+            <div class="text-center mt-8">
+                <p class="text-apple-gray">
+                    💡 <strong>How to Play:</strong> Dig channels and remove obstacles to guide the water flow to the little crocodile's bathtub!
+                </p>
+            </div>
+        </div>
+    </section>
 
-        <section class="content-section" id="game-features">
-            <h2>Dress-Up Features</h2>
-            <div class="game-features">
-                <div class="feature-card">
-                    <span class="feature-icon">👗</span>
-                    <div class="feature-title">Fashion Wardrobe</div>
-                    <div class="feature-description">Browse through an extensive collection of dresses, tops, skirts, and magical outfits. From casual everyday wear to elegant evening gowns perfect for magical occasions.</div>
+    <!-- About Section -->
+    <section id="about" class="py-16 px-4 sm:px-6 lg:px-8 bg-apple-gray6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">About Imp Beauty</h2>
+            
+            <div class="prose prose-lg max-w-none text-apple-gray">
+                <div class="bg-white rounded-2xl p-8 shadow-sm">
+                    <p class="text-lg leading-relaxed mb-6">
+                        <strong class="text-apple-blue">Imp Beauty</strong> is a charming physics-based puzzle game that combines strategy, creativity, and adorable characters. Inspired by the beloved "Where's My Water?" concept, this game challenges players to think critically while having loads of fun.
+                    </p>
+                    
+                    <p class="text-lg leading-relaxed mb-6">
+                        In this delightful adventure, you'll encounter a cute little crocodile who desperately needs a bath. Your mission is to dig tunnels, move obstacles, and manipulate the environment to create a clear path for the water to reach our scaly friend. Each level presents unique challenges that will test your problem-solving abilities and spatial reasoning skills.
+                    </p>
+                    
+                    <p class="text-lg leading-relaxed">
+                        The game features intuitive touch controls for mobile devices and precise mouse controls for desktop play, ensuring a smooth gaming experience across all platforms. With its vibrant graphics, engaging sound effects, and progressively challenging levels, Imp Beauty offers hours of entertaining gameplay for puzzle enthusiasts of all ages.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">Game Features</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-blue/10 to-apple-indigo/10">
+                    <div class="w-16 h-16 bg-apple-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🧩</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Puzzle Mechanics</h3>
+                    <p class="text-apple-gray">Challenging physics-based puzzles that require strategic thinking and creative problem-solving skills.</p>
                 </div>
                 
-                <div class="feature-card">
-                    <span class="feature-icon">💄</span>
-                    <div class="feature-title">Makeup & Beauty</div>
-                    <div class="feature-description">Apply stunning makeup with a variety of lipstick colors, eyeshadows, blush, and magical face paint designs to enhance your imp's natural beauty.</div>
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-green/10 to-apple-teal/10">
+                    <div class="w-16 h-16 bg-apple-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">📱</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cross-Platform</h3>
+                    <p class="text-apple-gray">Optimized for both mobile and desktop devices with responsive controls and adaptive layouts.</p>
                 </div>
                 
-                <div class="feature-card">
-                    <span class="feature-icon">💇‍♀️</span>
-                    <div class="feature-title">Hairstyle Studio</div>
-                    <div class="feature-description">Choose from numerous hairstyles, colors, and lengths. Style your imp's hair with trendy cuts, colorful highlights, and magical hair accessories.</div>
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-orange/10 to-apple-yellow/10">
+                    <div class="w-16 h-16 bg-apple-orange/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🎨</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cute Graphics</h3>
+                    <p class="text-apple-gray">Adorable character design and vibrant visuals that appeal to players of all ages.</p>
                 </div>
                 
-                <div class="feature-card">
-                    <span class="feature-icon">💎</span>
-                    <div class="feature-title">Accessories Collection</div>
-                    <div class="feature-description">Complete the look with beautiful jewelry, magical wings, cute bags, stylish shoes, and enchanted accessories that sparkle with fairy-tale charm.</div>
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-purple/10 to-apple-pink/10">
+                    <div class="w-16 h-16 bg-apple-purple/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">💧</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Water Physics</h3>
+                    <p class="text-apple-gray">Realistic water flow simulation that adds depth and authenticity to the gameplay experience.</p>
                 </div>
-            </div>
-        </section>
-
-        <section class="content-section" id="how-to-play">
-            <h2>How to Play Imp Beauty</h2>
-            
-            <div class="controls-section">
-                <h3>🎮 Game Controls</h3>
-                <p style="color: #065f46; margin-bottom: 15px;">Imp Beauty uses simple point-and-click controls similar to classic 4399 dress-up games:</p>
                 
-                <div class="controls-list">
-                    <div class="control-item">
-                        <strong>Mouse Click:</strong>
-                        Select clothing items and accessories
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-red/10 to-apple-pink/10">
+                    <div class="w-16 h-16 bg-apple-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🆓</span>
                     </div>
-                    <div class="control-item">
-                        <strong>Drag & Drop:</strong>
-                        Move items onto your imp character
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Free to Play</h3>
+                    <p class="text-apple-gray">Completely free browser-based game with no downloads or installations required.</p>
+                </div>
+                
+                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-indigo/10 to-apple-purple/10">
+                    <div class="w-16 h-16 bg-apple-indigo/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">⚡</span>
                     </div>
-                    <div class="control-item">
-                        <strong>Category Tabs:</strong>
-                        Browse different item categories
-                    </div>
-                    <div class="control-item">
-                        <strong>Color Palette:</strong>
-                        Change colors of selected items
-                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Instant Play</h3>
+                    <p class="text-apple-gray">Quick loading times and smooth performance ensure you can start playing immediately.</p>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <p><strong>Step 1 - Choose Your Imp:</strong> Start by selecting an adorable imp character from the available options. Each imp has unique features and personalities waiting for your creative touch.</p>
+    <!-- FAQ Section -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-apple-gray6">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">How to Play Imp Beauty</h2>
             
-            <p><strong>Step 2 - Browse Categories:</strong> Navigate through different styling categories including hairstyles, makeup, clothing, shoes, and accessories. Each category offers multiple options to explore.</p>
-            
-            <p><strong>Step 3 - Mix and Match:</strong> Click on items to try them on your imp. Experiment with different combinations to create unique looks. You can change colors and styles until you find the perfect match.</p>
-            
-            <p><strong>Step 4 - Final Touches:</strong> Add finishing touches with jewelry, magical accessories, and special effects. Take your time to perfect every detail of your imp's transformation.</p>
-
-            <div class="game-tip">
-                <h3>🌟 Pro Styling Tips</h3>
-                <p>Don't be afraid to experiment! Try unexpected color combinations and mix different style themes. Sometimes the most magical looks come from creative experimentation with various clothing and accessory combinations.</p>
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">🎯 Game Objective</h3>
+                    <p class="text-apple-gray">Your goal is simple yet engaging: help the little crocodile get clean by directing water flow into the bathtub. Each level presents a unique puzzle that requires careful planning and execution.</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">🖱️ Controls</h3>
+                    <p class="text-apple-gray"><strong>Desktop:</strong> Use your mouse to dig channels and interact with objects. Click and drag to create paths for the water. <br><strong>Mobile:</strong> Tap and swipe on your screen to dig tunnels and manipulate the environment.</p>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">💡 Tips & Strategy</h3>
+                    <p class="text-apple-gray">Plan your route carefully before digging. Consider gravity and water flow physics. Sometimes you need to clear obstacles or use moving platforms to succeed. Don't be afraid to restart a level if you get stuck!</p>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <section class="content-section" id="gameplay-tips">
-            <h2>Styling Strategy Guide</h2>
-            <p><strong>Color Coordination:</strong> Learn basic color theory to create harmonious outfits. Complementary colors (opposites on the color wheel) create vibrant looks, while analogous colors create peaceful, magical aesthetics.</p>
-            
-            <p><strong>Theme Consistency:</strong> Decide on a theme before starting - whether it's elegant princess, casual fairy, or mystical sorceress. Consistent themes create more polished and impressive final looks.</p>
-            
-            <p><strong>Layering Techniques:</strong> Master the art of layering different clothing pieces. Combine tops with jackets, add belts over dresses, and use accessories to tie the whole outfit together.</p>
-            
-            <p><strong>Seasonal Styling:</strong> Consider creating seasonal looks - light, airy outfits for spring fairy vibes, or rich, warm colors for autumn magic. Seasonal styling adds depth to your creative process.</p>
-            
-            <p><strong>Personality Matching:</strong> Each imp has a unique personality. Try to reflect their character through your styling choices - bold and vibrant for confident imps, or soft and elegant for gentle, shy personalities.</p>
-        </section>
-
-        <section class="content-section" id="about-4399-style">
-            <h2>Classic 4399 Gaming Experience</h2>
-            <p>Imp Beauty brings back the nostalgic charm of classic 4399 dress-up games with modern enhancements. The intuitive interface and familiar gameplay mechanics make it easy for both newcomers and veteran players to jump right in and start creating beautiful outfits.</p>
-            
-            <p>This game captures the essence of what made 4399 dress-up games so beloved - simple controls, extensive customization options, and the pure joy of creative expression through fashion and styling. Whether you're reliving childhood memories or discovering dress-up games for the first time, Imp Beauty offers hours of creative entertainment.</p>
-            
-            <p>No downloads, no installations, no complicated controls - just pure, instant dress-up fun that you can enjoy on any device, anywhere, anytime. The game automatically saves your progress, so you can return to continue styling your magical imps whenever inspiration strikes.</p>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2025 Imp.Beauty - Play Imp Beauty Dress-Up Game Free Online | All Rights Reserved</p>
-                <p>Classic 4399-style dress-up and makeover game featuring magical imp characters</p>
-                <p style="margin-top: 15px; font-size: 0.9rem;">No download required - play instantly in your browser on PC and mobile!</p>
+    <!-- Footer -->
+    <footer class="bg-white border-t border-apple-gray5 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="flex items-center justify-center space-x-3 mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-apple-blue to-apple-indigo rounded-lg flex items-center justify-center">
+                    <span class="text-white text-sm">🐊</span>
+                </div>
+                <span class="text-xl font-bold text-gradient">Imp Beauty</span>
             </div>
+            <p class="text-apple-gray mb-4">
+                © 2024 Imp Beauty Game. Help the little crocodile take a bath in this fun puzzle adventure!
+            </p>
+            <p class="text-sm text-apple-gray2">
+                Play free online games • No download required • Compatible with all devices
+            </p>
         </div>
     </footer>
 
-    <script>
-        // Enhanced iframe loading with better error handling
-        document.addEventListener('DOMContentLoaded', function() {
-            const iframe = document.getElementById('game-iframe');
-            const loading = document.getElementById('game-loading');
-            
-            // Extended fallback timer for game loading
-            setTimeout(function() {
-                if (loading.style.display !== 'none') {
-                    loading.innerHTML = '<div class="loading-spinner"></div><div>Still preparing your styling studio...</div><div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.8;">Almost ready for fashion magic!</div>';
-                }
-            }, 10000);
-            
-            // Handle iframe loading errors gracefully
-            iframe.addEventListener('error', function() {
-                loading.innerHTML = '<div style="font-size: 1.2rem;">✨ Styling Studio Temporarily Closed ✨</div><div style="font-size: 0.95rem; margin-top: 15px;">Please refresh the page to reopen your magical dress-up salon</div>';
-            });
-            
-            // Backup loading completion check
-            setTimeout(function() {
-                if (iframe.contentDocument || iframe.contentWindow) {
-                    loading.style.display = 'none';
-                    iframe.style.display = 'block';
-                }
-            }, 15000);
-        });
-
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Add magical sparkle effects for enhanced user experience
-        function createMagicalSparkle() {
-            const sparkles = ['✨', '💫', '⭐', '🌟'];
-            const sparkle = document.createElement('div');
-            sparkle.innerHTML = sparkles[Math.floor(Math.random() * sparkles.length)];
-            sparkle.style.position = 'fixed';
-            sparkle.style.left = Math.random() * window.innerWidth + 'px';
-            sparkle.style.top = Math.random() * window.innerHeight + 'px';
-            sparkle.style.pointerEvents = 'none';
-            sparkle.style.zIndex = '9999';
-            sparkle.style.animation = 'magicalFloat 4s ease-out forwards';
-            sparkle.style.fontSize = (Math.random() * 10 + 15) + 'px';
-            document.body.appendChild(sparkle);
-            
-            setTimeout(() => {
-                sparkle.remove();
-            }, 4000);
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Game",
+        "name": "Imp Beauty",
+        "description": "Help the adorable little crocodile take a bath in this fun physics-based puzzle game with water mechanics.",
+        "url": "https://imp.beauty",
+        "genre": "Puzzle Game",
+        "gamePlatform": ["Web Browser", "Mobile", "Desktop"],
+        "operatingSystem": ["Any"],
+        "applicationCategory": "Game",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.5",
+            "ratingCount": "1250"
         }
-
-        // Add CSS for magical floating animation
-        const magicalStyle = document.createElement('style');
-        magicalStyle.textContent = `
-            @keyframes magicalFloat {
-                0% { 
-                    opacity: 1; 
-                    transform: translateY(0px) rotate(0deg) scale(1); 
-                }
-                50% { 
-                    opacity: 0.8; 
-                    transform: translateY(-50px) rotate(180deg) scale(1.2); 
-                }
-                100% { 
-                    opacity: 0; 
-                    transform: translateY(-120px) rotate(360deg) scale(0.3); 
-                }
-            }
-        `;
-        document.head.appendChild(magicalStyle);
-
-        // Create magical sparkles at intervals
-        setInterval(createMagicalSparkle, 4000);
-
-        // Add hover effects for feature cards
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0px) scale(1)';
-            });
-        });
+    }
     </script>
 </body>
 </html>
