@@ -3,74 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>小丑鱼的水流游戏</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #f0f8ff;
+    <title>Imp Beauty - Guide Water to the Clownfish | Free Online Puzzle Game</title>
+    <meta name="description" content="Play Imp Beauty, an engaging water flow puzzle game where you guide water to help a thirsty clownfish. Similar to Where's My Water but with underwater adventures!">
+    <meta name="keywords" content="imp beauty, water puzzle game, clownfish game, online puzzle, flow control game, brain teaser">
+    <link rel="canonical" href="https://imp.beauty">
+    <meta property="og:title" content="Imp Beauty - Guide Water to the Clownfish">
+    <meta property="og:description" content="Play the addictive water flow puzzle game featuring a cute clownfish!">
+    <meta property="og:url" content="https://imp.beauty">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Imp Beauty - Water Flow Puzzle Game">
+    <meta name="twitter:description" content="Guide water to help a thirsty clownfish in this engaging puzzle adventure!">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'apple-blue': '#007AFF',
+                        'apple-gray': '#8E8E93',
+                        'apple-light-gray': '#F2F2F7',
+                        'apple-dark': '#1C1C1E',
+                        'ocean-blue': '#0077BE',
+                        'coral-orange': '#FF6B35'
+                    },
+                    fontFamily: {
+                        'sf': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
         }
-        canvas {
-            display: block;
-            background-color: #87cefa;
+    </script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #007AFF 0%, #0077BE 50%, #34C759 100%);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.15);
+        }
+        
+        .game-frame {
+            border-radius: 20px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .wave-animation {
+            animation: wave 2s ease-in-out infinite;
+        }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.1); }
+        }
+        
+        .clownfish-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #FF6B35, #FFA500);
+            border-radius: 50% 10px 50% 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .clownfish-icon::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 15px 0 0 white;
+        }
+        
+        .water-drop {
+            width: 20px;
+            height: 28px;
+            background: #007AFF;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: inline-block;
+            margin: 0 5px;
         }
     </style>
 </head>
-<body>
-<canvas id="gameCanvas"></canvas>
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+<body class="font-sf bg-apple-light-gray text-apple-dark">
+    <!-- Header -->
+    <header class="gradient-bg py-6 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="flex items-center justify-center mb-4">
+                <div class="clownfish-icon floating-animation mr-4"></div>
+                <h1 class="text-4xl md:text-6xl font-bold text-white">Imp Beauty</h1>
+                <div class="water-drop wave-animation ml-4"></div>
+            </div>
+            <p class="text-xl md:text-2xl text-white/90 font-medium">Guide water to your thirsty clownfish friend in this captivating puzzle adventure!</p>
+        </div>
+    </header>
 
-    // 水流的属性
-    let water = {
-        x: 0,
-        y: 0,
-        width: 20,
-        height: 20,
-        velocity: 2,
-        direction: 1,  // 1 表示向右，-1 表示向左
-    };
+    <!-- Game Section -->
+    <section class="py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-3xl card-shadow p-6 md:p-8 mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 text-apple-blue">🎮 Play Imp Beauty Now</h2>
+                <div class="aspect-video w-full max-w-4xl mx-auto">
+                    <iframe 
+                        src="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty" 
+                        class="w-full h-full game-frame border-0"
+                        title="Imp Beauty Game - Guide Water to Clownfish"
+                        loading="lazy">
+                    </iframe>
+                </div>
+                <p class="text-center text-apple-gray mt-4 text-sm md:text-base">Click and drag to control water flow • Compatible with desktop and mobile devices</p>
+            </div>
+        </div>
+    </section>
 
-    // 小丑鱼的属性
-    let fish = {
-        x: canvas.width - 100,
-        y: canvas.height / 2,
-        width: 50,
-        height: 30,
-        img: new Image(),
-    };
-    fish.img.src = 'https://example.com/clownfish.png';  // 在这里替换成小丑鱼图片的 URL
+    <!-- Game Description -->
+    <section class="py-8 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold mb-6 text-apple-blue">🐠 About Imp Beauty</h2>
+                    <p class="text-lg text-apple-dark mb-4 leading-relaxed">
+                        Dive into an underwater puzzle adventure where your mission is to guide life-giving water to a adorable clownfish. Inspired by the beloved "Where's My Water" gameplay mechanics, Imp Beauty transforms the classic formula with vibrant ocean themes and charming aquatic characters.
+                    </p>
+                    <p class="text-lg text-apple-dark mb-6 leading-relaxed">
+                        Each level presents unique challenges as you navigate through coral reefs, avoid obstacles, and manipulate water flow to reach your finned friend who desperately needs hydration to survive in their underwater habitat.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="bg-apple-blue/10 text-apple-blue px-4 py-2 rounded-full font-medium">Puzzle Game</span>
+                        <span class="bg-ocean-blue/10 text-ocean-blue px-4 py-2 rounded-full font-medium">Water Physics</span>
+                        <span class="bg-coral-orange/10 text-coral-orange px-4 py-2 rounded-full font-medium">Ocean Adventure</span>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gradient-to-br from-apple-blue/10 to-ocean-blue/20 rounded-3xl p-8">
+                        <div class="clownfish-icon floating-animation mx-auto mb-4" style="width: 100px; height: 100px;"></div>
+                        <h3 class="text-2xl font-bold text-apple-blue mb-2">Save the Clownfish!</h3>
+                        <p class="text-apple-gray">Your aquatic friend is counting on you</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    // 游戏的基础设置
-    function update() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    <!-- How to Play -->
+    <section class="py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-8 text-apple-blue">🎯 How to Play</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-apple-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">💧</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Control Water Flow</h3>
+                    <p class="text-apple-gray">Click, drag, and interact with game elements to direct water streams toward your clownfish companion.</p>
+                </div>
+                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-ocean-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🧩</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Solve Puzzles</h3>
+                    <p class="text-apple-gray">Navigate through obstacles, pipes, and barriers in increasingly challenging underwater levels.</p>
+                </div>
+                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
+                    <div class="w-16 h-16 bg-coral-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🏆</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Complete Levels</h3>
+                    <p class="text-apple-gray">Successfully deliver water to the clownfish to advance through the oceanic adventure.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        // 更新水流的位置
-        water.x += water.velocity * water.direction;
+    <!-- Features -->
+    <section class="py-8 px-4 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-8 text-apple-blue">✨ Game Features</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-apple-blue to-ocean-blue rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl text-white">📱</span>
+                    </div>
+                    <h3 class="font-bold text-apple-dark mb-2">Mobile Friendly</h3>
+                    <p class="text-sm text-apple-gray">Optimized for touch controls on all devices</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-ocean-blue to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl text-white">🌊</span>
+                    </div>
+                    <h3 class="font-bold text-apple-dark mb-2">Realistic Physics</h3>
+                    <p class="text-sm text-apple-gray">Experience authentic water flow mechanics</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-coral-orange to-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl text-white">🎨</span>
+                    </div>
+                    <h3 class="font-bold text-apple-dark mb-2">Colorful Graphics</h3>
+                    <p class="text-sm text-apple-gray">Vibrant underwater world design</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl text-white">🧠</span>
+                    </div>
+                    <h3 class="font-bold text-apple-dark mb-2">Brain Training</h3>
+                    <p class="text-sm text-apple-gray">Enhance problem-solving skills</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        // 检查水流是否碰到边界
-        if (water.x + water.width > canvas.width || water.x < 0) {
-            water.direction *= -1; // 改变水流的方向
+    <!-- Why Play -->
+    <section class="py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-gradient-to-r from-apple-blue/5 to-ocean-blue/10 rounded-3xl p-8">
+                <h2 class="text-3xl font-bold text-center mb-6 text-apple-blue">🌟 Why Play Imp Beauty?</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Perfect for All Ages</h3>
+                        <p class="text-apple-gray mb-6">Whether you're a puzzle enthusiast or casual gamer, Imp Beauty offers engaging gameplay that challenges your mind while providing hours of entertainment. The intuitive controls make it accessible to players of all skill levels.</p>
+                        
+                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Educational Value</h3>
+                        <p class="text-apple-gray">Develop spatial reasoning, logical thinking, and problem-solving abilities while having fun. The game subtly teaches principles of physics and fluid dynamics through interactive gameplay.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Stress Relief</h3>
+                        <p class="text-apple-gray mb-6">The soothing underwater theme combined with satisfying puzzle mechanics creates a relaxing gaming experience that helps you unwind after a busy day.</p>
+                        
+                        <h3 class="text-xl font-bold mb-4 text-apple-dark">No Download Required</h3>
+                        <p class="text-apple-gray">Play instantly in your browser without any downloads or installations. Jump right into the action and start guiding water to your clownfish friend immediately.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-apple-dark text-white py-8 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="clownfish-icon mx-auto mb-4" style="filter: brightness(1.2);"></div>
+            <h3 class="text-2xl font-bold mb-2">Imp Beauty</h3>
+            <p class="text-white/70 mb-4">The ultimate water flow puzzle adventure</p>
+            <p class="text-sm text-white/50">© 2024 imp.beauty • All rights reserved</p>
+        </div>
+    </footer>
+
+    <!-- JSON-LD Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Game",
+        "name": "Imp Beauty",
+        "description": "Guide water to help a thirsty clownfish in this engaging puzzle adventure similar to Where's My Water",
+        "url": "https://imp.beauty",
+        "genre": "Puzzle Game",
+        "playMode": "SinglePlayer",
+        "applicationCategory": "Game",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
         }
-
-        // 画水流
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(water.x, water.y, water.width, water.height);
-
-        // 画小丑鱼
-        ctx.drawImage(fish.img, fish.x, fish.y, fish.width, fish.height);
-
-        // 游戏循环
-        requestAnimationFrame(update);
     }
-
-    // 开始游戏
-    fish.img.onload = function() {
-        update();
-    };
-</script>
+    </script>
 </body>
 </html>
