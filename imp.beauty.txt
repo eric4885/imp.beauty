@@ -3,297 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Play Imp Beauty online - Help the adorable little crocodile take a bath! Fun puzzle game with water physics and cute graphics. Play free in your browser.">
-    <meta name="keywords" content="imp beauty, online game, crocodile bath game, puzzle game, water physics game, free browser game">
-    <meta name="author" content="Imp Beauty Game">
-    <meta property="og:title" content="Imp Beauty - Online Crocodile Bath Puzzle Game">
-    <meta property="og:description" content="Help the little crocodile take a bath in this fun puzzle game with water physics!">
-    <meta property="og:url" content="https://imp.beauty">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://imp.beauty/og-image.jpg">
-    <title>Imp Beauty - Play Online Crocodile Bath Puzzle Game Free</title>
-    <link rel="canonical" href="https://imp.beauty">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'apple-blue': '#007AFF',
-                        'apple-green': '#34C759',
-                        'apple-indigo': '#5856D6',
-                        'apple-orange': '#FF9500',
-                        'apple-pink': '#FF2D92',
-                        'apple-purple': '#AF52DE',
-                        'apple-red': '#FF3B30',
-                        'apple-teal': '#5AC8FA',
-                        'apple-yellow': '#FFCC00',
-                        'apple-gray': '#8E8E93',
-                        'apple-gray2': '#AEAEB2',
-                        'apple-gray3': '#C7C7CC',
-                        'apple-gray4': '#D1D1D6',
-                        'apple-gray5': '#E5E5EA',
-                        'apple-gray6': '#F2F2F7',
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <title>小丑鱼的水流游戏</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f8ff;
         }
-        
-        .game-container {
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 4px;
-        }
-        
-        .game-iframe {
-            border-radius: 16px;
-            background: white;
-        }
-        
-        .feature-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .text-gradient {
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        canvas {
+            display: block;
+            background-color: #87cefa;
         }
     </style>
 </head>
-<body class="bg-apple-gray6 text-gray-900">
-    <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-xl border-b border-apple-gray5 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-apple-blue to-apple-indigo rounded-xl flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">🐊</span>
-                    </div>
-                    <h1 class="text-2xl font-bold text-gradient">Imp Beauty</h1>
-                </div>
-                <nav class="hidden md:flex space-x-8">
-                    <a href="#game" class="text-apple-gray hover:text-apple-blue transition-colors">Play Game</a>
-                    <a href="#about" class="text-apple-gray hover:text-apple-blue transition-colors">About</a>
-                    <a href="#features" class="text-apple-gray hover:text-apple-blue transition-colors">Features</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    <!-- Hero Section -->
-    <section class="hero-gradient py-20 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl sm:text-6xl font-bold text-white mb-6">
-                Imp Beauty Game
-            </h1>
-            <p class="text-xl sm:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Help the adorable little crocodile take a refreshing bath in this delightful puzzle adventure!
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="document.getElementById('game').scrollIntoView({behavior: 'smooth'})" 
-                        class="bg-white text-apple-blue px-8 py-4 rounded-full font-semibold hover:bg-apple-gray6 transition-all duration-300 shadow-lg">
-                    🎮 Play Now
-                </button>
-                <button onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})" 
-                        class="bg-white/20 text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-all duration-300 backdrop-blur-sm">
-                    📖 Learn More
-                </button>
-            </div>
-        </div>
-    </section>
+    // 水流的属性
+    let water = {
+        x: 0,
+        y: 0,
+        width: 20,
+        height: 20,
+        velocity: 2,
+        direction: 1,  // 1 表示向右，-1 表示向左
+    };
 
-    <!-- Game Section -->
-    <section id="game" class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Play Imp Beauty Online</h2>
-                <p class="text-lg text-apple-gray max-w-2xl mx-auto">
-                    Dive into the fun! Use your puzzle-solving skills to guide water to our thirsty little crocodile friend.
-                </p>
-            </div>
-            
-            <div class="game-container mx-auto max-w-4xl">
-                <iframe 
-                    src="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty"
-                    class="game-iframe w-full h-96 sm:h-[500px] lg:h-[600px] border-0"
-                    title="Imp Beauty Game - Crocodile Bath Puzzle"
-                    allowfullscreen>
-                    <p>Your browser does not support iframes. Please <a href="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty" class="text-apple-blue hover:underline">click here to play Imp Beauty directly</a>.</p>
-                </iframe>
-            </div>
-            
-            <div class="text-center mt-8">
-                <p class="text-apple-gray">
-                    💡 <strong>How to Play:</strong> Dig channels and remove obstacles to guide the water flow to the little crocodile's bathtub!
-                </p>
-            </div>
-        </div>
-    </section>
+    // 小丑鱼的属性
+    let fish = {
+        x: canvas.width - 100,
+        y: canvas.height / 2,
+        width: 50,
+        height: 30,
+        img: new Image(),
+    };
+    fish.img.src = 'https://example.com/clownfish.png';  // 在这里替换成小丑鱼图片的 URL
 
-    <!-- About Section -->
-    <section id="about" class="py-16 px-4 sm:px-6 lg:px-8 bg-apple-gray6">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">About Imp Beauty</h2>
-            
-            <div class="prose prose-lg max-w-none text-apple-gray">
-                <div class="bg-white rounded-2xl p-8 shadow-sm">
-                    <p class="text-lg leading-relaxed mb-6">
-                        <strong class="text-apple-blue">Imp Beauty</strong> is a charming physics-based puzzle game that combines strategy, creativity, and adorable characters. Inspired by the beloved "Where's My Water?" concept, this game challenges players to think critically while having loads of fun.
-                    </p>
-                    
-                    <p class="text-lg leading-relaxed mb-6">
-                        In this delightful adventure, you'll encounter a cute little crocodile who desperately needs a bath. Your mission is to dig tunnels, move obstacles, and manipulate the environment to create a clear path for the water to reach our scaly friend. Each level presents unique challenges that will test your problem-solving abilities and spatial reasoning skills.
-                    </p>
-                    
-                    <p class="text-lg leading-relaxed">
-                        The game features intuitive touch controls for mobile devices and precise mouse controls for desktop play, ensuring a smooth gaming experience across all platforms. With its vibrant graphics, engaging sound effects, and progressively challenging levels, Imp Beauty offers hours of entertaining gameplay for puzzle enthusiasts of all ages.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    // 游戏的基础设置
+    function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    <!-- Features Section -->
-    <section id="features" class="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">Game Features</h2>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-blue/10 to-apple-indigo/10">
-                    <div class="w-16 h-16 bg-apple-blue/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">🧩</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Puzzle Mechanics</h3>
-                    <p class="text-apple-gray">Challenging physics-based puzzles that require strategic thinking and creative problem-solving skills.</p>
-                </div>
-                
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-green/10 to-apple-teal/10">
-                    <div class="w-16 h-16 bg-apple-green/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">📱</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cross-Platform</h3>
-                    <p class="text-apple-gray">Optimized for both mobile and desktop devices with responsive controls and adaptive layouts.</p>
-                </div>
-                
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-orange/10 to-apple-yellow/10">
-                    <div class="w-16 h-16 bg-apple-orange/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">🎨</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Cute Graphics</h3>
-                    <p class="text-apple-gray">Adorable character design and vibrant visuals that appeal to players of all ages.</p>
-                </div>
-                
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-purple/10 to-apple-pink/10">
-                    <div class="w-16 h-16 bg-apple-purple/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">💧</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Water Physics</h3>
-                    <p class="text-apple-gray">Realistic water flow simulation that adds depth and authenticity to the gameplay experience.</p>
-                </div>
-                
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-red/10 to-apple-pink/10">
-                    <div class="w-16 h-16 bg-apple-red/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">🆓</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Free to Play</h3>
-                    <p class="text-apple-gray">Completely free browser-based game with no downloads or installations required.</p>
-                </div>
-                
-                <div class="feature-card rounded-2xl p-6 text-center bg-gradient-to-br from-apple-indigo/10 to-apple-purple/10">
-                    <div class="w-16 h-16 bg-apple-indigo/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">⚡</span>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Instant Play</h3>
-                    <p class="text-apple-gray">Quick loading times and smooth performance ensure you can start playing immediately.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // 更新水流的位置
+        water.x += water.velocity * water.direction;
 
-    <!-- FAQ Section -->
-    <section class="py-16 px-4 sm:px-6 lg:px-8 bg-apple-gray6">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl sm:text-4xl font-bold text-center text-gray-900 mb-12">How to Play Imp Beauty</h2>
-            
-            <div class="space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">🎯 Game Objective</h3>
-                    <p class="text-apple-gray">Your goal is simple yet engaging: help the little crocodile get clean by directing water flow into the bathtub. Each level presents a unique puzzle that requires careful planning and execution.</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">🖱️ Controls</h3>
-                    <p class="text-apple-gray"><strong>Desktop:</strong> Use your mouse to dig channels and interact with objects. Click and drag to create paths for the water. <br><strong>Mobile:</strong> Tap and swipe on your screen to dig tunnels and manipulate the environment.</p>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">💡 Tips & Strategy</h3>
-                    <p class="text-apple-gray">Plan your route carefully before digging. Consider gravity and water flow physics. Sometimes you need to clear obstacles or use moving platforms to succeed. Don't be afraid to restart a level if you get stuck!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-apple-gray5 py-8 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="flex items-center justify-center space-x-3 mb-4">
-                <div class="w-8 h-8 bg-gradient-to-br from-apple-blue to-apple-indigo rounded-lg flex items-center justify-center">
-                    <span class="text-white text-sm">🐊</span>
-                </div>
-                <span class="text-xl font-bold text-gradient">Imp Beauty</span>
-            </div>
-            <p class="text-apple-gray mb-4">
-                © 2024 Imp Beauty Game. Help the little crocodile take a bath in this fun puzzle adventure!
-            </p>
-            <p class="text-sm text-apple-gray2">
-                Play free online games • No download required • Compatible with all devices
-            </p>
-        </div>
-    </footer>
-
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Game",
-        "name": "Imp Beauty",
-        "description": "Help the adorable little crocodile take a bath in this fun physics-based puzzle game with water mechanics.",
-        "url": "https://imp.beauty",
-        "genre": "Puzzle Game",
-        "gamePlatform": ["Web Browser", "Mobile", "Desktop"],
-        "operatingSystem": ["Any"],
-        "applicationCategory": "Game",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.5",
-            "ratingCount": "1250"
+        // 检查水流是否碰到边界
+        if (water.x + water.width > canvas.width || water.x < 0) {
+            water.direction *= -1; // 改变水流的方向
         }
+
+        // 画水流
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(water.x, water.y, water.width, water.height);
+
+        // 画小丑鱼
+        ctx.drawImage(fish.img, fish.x, fish.y, fish.width, fish.height);
+
+        // 游戏循环
+        requestAnimationFrame(update);
     }
-    </script>
+
+    // 开始游戏
+    fish.img.onload = function() {
+        update();
+    };
+</script>
 </body>
 </html>
