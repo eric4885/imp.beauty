@@ -3,283 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imp Beauty - Guide Water to the Clownfish | Free Online Puzzle Game</title>
-    <meta name="description" content="Play Imp Beauty, an engaging water flow puzzle game where you guide water to help a thirsty clownfish. Similar to Where's My Water but with underwater adventures!">
-    <meta name="keywords" content="imp beauty, water puzzle game, clownfish game, online puzzle, flow control game, brain teaser">
+    <title>Imp Beauty - Free Online Spider Solitaire Card Game</title>
+    <meta name="description" content="Play Imp Beauty, a captivating online Spider Solitaire card game. Free to play with smooth gameplay and intuitive controls. Perfect for casual gaming sessions.">
+    <meta name="keywords" content="imp beauty, spider solitaire, card game, online game, free game, solitaire">
+    <meta name="author" content="Imp Beauty">
     <link rel="canonical" href="https://imp.beauty">
-    <meta property="og:title" content="Imp Beauty - Guide Water to the Clownfish">
-    <meta property="og:description" content="Play the addictive water flow puzzle game featuring a cute clownfish!">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Imp Beauty - Free Online Spider Solitaire Card Game">
+    <meta property="og:description" content="Play Imp Beauty, a captivating online Spider Solitaire card game. Free to play with smooth gameplay and intuitive controls.">
     <meta property="og:url" content="https://imp.beauty">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Imp Beauty">
+    
+    <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Imp Beauty - Water Flow Puzzle Game">
-    <meta name="twitter:description" content="Guide water to help a thirsty clownfish in this engaging puzzle adventure!">
+    <meta name="twitter:title" content="Imp Beauty - Free Online Spider Solitaire Card Game">
+    <meta name="twitter:description" content="Play Imp Beauty, a captivating online Spider Solitaire card game. Free to play with smooth gameplay and intuitive controls.">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'apple-blue': '#007AFF',
-                        'apple-gray': '#8E8E93',
-                        'apple-light-gray': '#F2F2F7',
-                        'apple-dark': '#1C1C1E',
-                        'ocean-blue': '#0077BE',
-                        'coral-orange': '#FF6B35'
-                    },
-                    fontFamily: {
-                        'sf': ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
     
+    <!-- Custom Styles for Apple-inspired theme -->
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #007AFF 0%, #0077BE 50%, #34C759 100%);
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray: #8E8E93;
+            --apple-light-gray: #F2F2F7;
+            --apple-dark: #1C1C1E;
         }
         
-        .card-shadow {
+        .apple-gradient {
+            background: linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%);
+        }
+        
+        .apple-shadow {
             box-shadow: 0 4px 20px rgba(0, 122, 255, 0.15);
         }
         
-        .game-frame {
-            border-radius: 20px;
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .floating-animation {
-            animation: float 3s ease-in-out infinite;
+        .card-hover {
+            transition: all 0.3s ease;
         }
         
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .wave-animation {
-            animation: wave 2s ease-in-out infinite;
-        }
-        
-        @keyframes wave {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.1); }
-        }
-        
-        .clownfish-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #FF6B35, #FFA500);
-            border-radius: 50% 10px 50% 10px;
-            position: relative;
-            display: inline-block;
-        }
-        
-        .clownfish-icon::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 8px;
-            height: 8px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 15px 0 0 white;
-        }
-        
-        .water-drop {
-            width: 20px;
-            height: 28px;
-            background: #007AFF;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            display: inline-block;
-            margin: 0 5px;
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.2);
         }
     </style>
 </head>
-<body class="font-sf bg-apple-light-gray text-apple-dark">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <!-- Header -->
-    <header class="gradient-bg py-6 px-4">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="flex items-center justify-center mb-4">
-                <div class="clownfish-icon floating-animation mr-4"></div>
-                <h1 class="text-4xl md:text-6xl font-bold text-white">Imp Beauty</h1>
-                <div class="water-drop wave-animation ml-4"></div>
+    <header class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                        Imp Beauty
+                    </h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#game" class="text-gray-700 hover:text-blue-600 transition-colors">Play Game</a>
+                    <a href="#about" class="text-gray-700 hover:text-blue-600 transition-colors">About</a>
+                    <a href="#how-to-play" class="text-gray-700 hover:text-blue-600 transition-colors">How to Play</a>
+                </nav>
             </div>
-            <p class="text-xl md:text-2xl text-white/90 font-medium">Guide water to your thirsty clownfish friend in this captivating puzzle adventure!</p>
         </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-12 sm:py-16 lg:py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                    Welcome to <span class="apple-gradient bg-clip-text text-transparent">Imp Beauty</span>
+                </h1>
+                <p class="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Experience the classic Spider Solitaire with a modern twist in this captivating card game.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#game" class="apple-gradient text-white px-8 py-4 rounded-xl font-semibold text-lg apple-shadow hover:opacity-90 transition-opacity">
+                        Play Now - Free
+                    </a>
+                    <a href="#how-to-play" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg border border-blue-600 hover:bg-blue-50 transition-colors">
+                        Learn How to Play
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Game Section -->
-    <section class="py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-white rounded-3xl card-shadow p-6 md:p-8 mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 text-apple-blue">🎮 Play Imp Beauty Now</h2>
-                <div class="aspect-video w-full max-w-4xl mx-auto">
+    <section id="game" class="py-12 sm:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Play Imp Beauty Online</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Jump right into the action with our smooth, responsive game interface designed for both desktop and mobile devices.
+                </p>
+            </div>
+            
+            <!-- Game Container -->
+            <div class="game-container rounded-2xl p-4 sm:p-6 max-w-6xl mx-auto apple-shadow">
+                <div class="bg-gray-100 rounded-xl overflow-hidden" style="height: 600px;">
+                    <!-- Replace this URL with your actual game URL -->
                     <iframe 
-                        src="https://dash.cloudflare.com/daf55340965a3918a110d1cec3ac783d/imp.beauty" 
-                        class="w-full h-full game-frame border-0"
-                        title="Imp Beauty Game - Guide Water to Clownfish"
-                        loading="lazy">
+                        src="https://imp.beauty" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        allowfullscreen
+                        title="Imp Beauty Spider Solitaire Game"
+                        class="rounded-xl">
+                        <p class="p-8 text-center text-gray-600">
+                            Your browser doesn't support iframes. 
+                            <a href="https://imp.beauty" class="text-blue-600 hover:underline" target="_blank">
+                                Click here to play Imp Beauty in a new window.
+                            </a>
+                        </p>
                     </iframe>
                 </div>
-                <p class="text-center text-apple-gray mt-4 text-sm md:text-base">Click and drag to control water flow • Compatible with desktop and mobile devices</p>
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-500">Game loads in a few seconds. For the best experience, play in fullscreen mode.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Game Description -->
-    <section class="py-8 px-4 bg-white">
-        <div class="max-w-6xl mx-auto">
-            <div class="grid md:grid-cols-2 gap-8 items-center">
-                <div>
-                    <h2 class="text-3xl font-bold mb-6 text-apple-blue">🐠 About Imp Beauty</h2>
-                    <p class="text-lg text-apple-dark mb-4 leading-relaxed">
-                        Dive into an underwater puzzle adventure where your mission is to guide life-giving water to a adorable clownfish. Inspired by the beloved "Where's My Water" gameplay mechanics, Imp Beauty transforms the classic formula with vibrant ocean themes and charming aquatic characters.
+    <!-- About Section -->
+    <section id="about" class="py-12 sm:py-16 bg-white/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">About Imp Beauty</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Imp Beauty brings the timeless appeal of Spider Solitaire to your browser with enhanced graphics, smooth animations, and intuitive gameplay that works perfectly on any device.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center p-6 card-hover bg-white rounded-xl apple-shadow">
+                    <div class="w-16 h-16 apple-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Mobile Optimized</h3>
+                    <p class="text-gray-600">Perfectly designed for both desktop and mobile devices with touch-friendly controls.</p>
+                </div>
+                
+                <div class="text-center p-6 card-hover bg-white rounded-xl apple-shadow">
+                    <div class="w-16 h-16 apple-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Fast & Smooth</h3>
+                    <p class="text-gray-600">Lightning-fast gameplay with smooth animations and responsive controls for the best experience.</p>
+                </div>
+                
+                <div class="text-center p-6 card-hover bg-white rounded-xl apple-shadow">
+                    <div class="w-16 h-16 apple-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">100% Free</h3>
+                    <p class="text-gray-600">Completely free to play with no downloads, no registration, and no hidden costs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Play Section -->
+    <section id="how-to-play" class="py-12 sm:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">How to Play Imp Beauty</h2>
+                <p class="text-lg text-gray-600">
+                    Master the art of Spider Solitaire with these simple rules and strategies.
+                </p>
+            </div>
+            
+            <div class="space-y-8">
+                <div class="bg-white rounded-xl p-6 sm:p-8 apple-shadow">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Game Objective</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        The goal of Imp Beauty is to build eight sequences of cards from King to Ace in the same suit. Once a complete sequence is built, it's automatically removed from the table. Clear all cards to win the game.
                     </p>
-                    <p class="text-lg text-apple-dark mb-6 leading-relaxed">
-                        Each level presents unique challenges as you navigate through coral reefs, avoid obstacles, and manipulate water flow to reach your finned friend who desperately needs hydration to survive in their underwater habitat.
-                    </p>
-                    <div class="flex flex-wrap gap-3">
-                        <span class="bg-apple-blue/10 text-apple-blue px-4 py-2 rounded-full font-medium">Puzzle Game</span>
-                        <span class="bg-ocean-blue/10 text-ocean-blue px-4 py-2 rounded-full font-medium">Water Physics</span>
-                        <span class="bg-coral-orange/10 text-coral-orange px-4 py-2 rounded-full font-medium">Ocean Adventure</span>
-                    </div>
                 </div>
-                <div class="text-center">
-                    <div class="bg-gradient-to-br from-apple-blue/10 to-ocean-blue/20 rounded-3xl p-8">
-                        <div class="clownfish-icon floating-animation mx-auto mb-4" style="width: 100px; height: 100px;"></div>
-                        <h3 class="text-2xl font-bold text-apple-blue mb-2">Save the Clownfish!</h3>
-                        <p class="text-apple-gray">Your aquatic friend is counting on you</p>
-                    </div>
+                
+                <div class="bg-white rounded-xl p-6 sm:p-8 apple-shadow">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Basic Rules</h3>
+                    <ul class="text-gray-600 space-y-3">
+                        <li class="flex items-start">
+                            <span class="apple-gradient text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">1</span>
+                            Cards can be moved between columns if they are in descending order (King, Queen, Jack, 10, etc.)
+                        </li>
+                        <li class="flex items-start">
+                            <span class="apple-gradient text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">2</span>
+                            You can move multiple cards together if they're in sequence and of the same suit
+                        </li>
+                        <li class="flex items-start">
+                            <span class="apple-gradient text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">3</span>
+                            Empty columns can be filled with any card or sequence
+                        </li>
+                        <li class="flex items-start">
+                            <span class="apple-gradient text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-semibold mr-3 mt-0.5">4</span>
+                            Click the deck to deal new cards when you run out of moves
+                        </li>
+                    </ul>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How to Play -->
-    <section class="py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-8 text-apple-blue">🎯 How to Play</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
-                    <div class="w-16 h-16 bg-apple-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">💧</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Control Water Flow</h3>
-                    <p class="text-apple-gray">Click, drag, and interact with game elements to direct water streams toward your clownfish companion.</p>
-                </div>
-                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
-                    <div class="w-16 h-16 bg-ocean-blue/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">🧩</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Solve Puzzles</h3>
-                    <p class="text-apple-gray">Navigate through obstacles, pipes, and barriers in increasingly challenging underwater levels.</p>
-                </div>
-                <div class="bg-white rounded-2xl card-shadow p-6 text-center">
-                    <div class="w-16 h-16 bg-coral-orange/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-2xl">🏆</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3 text-apple-dark">Complete Levels</h3>
-                    <p class="text-apple-gray">Successfully deliver water to the clownfish to advance through the oceanic adventure.</p>
+                
+                <div class="bg-white rounded-xl p-6 sm:p-8 apple-shadow">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-4">Pro Tips</h3>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Try to create empty columns early in the game</li>
+                        <li>• Focus on building sequences in the same suit when possible</li>
+                        <li>• Don't deal new cards unless absolutely necessary</li>
+                        <li>• Plan several moves ahead before making your move</li>
+                        <li>• Use empty spaces strategically to reorganize your cards</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features -->
-    <section class="py-8 px-4 bg-white">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-8 text-apple-blue">✨ Game Features</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-apple-blue to-ocean-blue rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="text-3xl text-white">📱</span>
-                    </div>
-                    <h3 class="font-bold text-apple-dark mb-2">Mobile Friendly</h3>
-                    <p class="text-sm text-apple-gray">Optimized for touch controls on all devices</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-ocean-blue to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="text-3xl text-white">🌊</span>
-                    </div>
-                    <h3 class="font-bold text-apple-dark mb-2">Realistic Physics</h3>
-                    <p class="text-sm text-apple-gray">Experience authentic water flow mechanics</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-coral-orange to-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="text-3xl text-white">🎨</span>
-                    </div>
-                    <h3 class="font-bold text-apple-dark mb-2">Colorful Graphics</h3>
-                    <p class="text-sm text-apple-gray">Vibrant underwater world design</p>
-                </div>
-                <div class="text-center">
-                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <span class="text-3xl text-white">🧠</span>
-                    </div>
-                    <h3 class="font-bold text-apple-dark mb-2">Brain Training</h3>
-                    <p class="text-sm text-apple-gray">Enhance problem-solving skills</p>
-                </div>
+    <!-- Game Features -->
+    <section class="py-12 sm:py-16 bg-white/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Why Choose Imp Beauty?</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Experience Spider Solitaire like never before with our carefully crafted game features.
+                </p>
             </div>
-        </div>
-    </section>
-
-    <!-- Why Play -->
-    <section class="py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-gradient-to-r from-apple-blue/5 to-ocean-blue/10 rounded-3xl p-8">
-                <h2 class="text-3xl font-bold text-center mb-6 text-apple-blue">🌟 Why Play Imp Beauty?</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Perfect for All Ages</h3>
-                        <p class="text-apple-gray mb-6">Whether you're a puzzle enthusiast or casual gamer, Imp Beauty offers engaging gameplay that challenges your mind while providing hours of entertainment. The intuitive controls make it accessible to players of all skill levels.</p>
-                        
-                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Educational Value</h3>
-                        <p class="text-apple-gray">Develop spatial reasoning, logical thinking, and problem-solving abilities while having fun. The game subtly teaches principles of physics and fluid dynamics through interactive gameplay.</p>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-4 text-apple-dark">Stress Relief</h3>
-                        <p class="text-apple-gray mb-6">The soothing underwater theme combined with satisfying puzzle mechanics creates a relaxing gaming experience that helps you unwind after a busy day.</p>
-                        
-                        <h3 class="text-xl font-bold mb-4 text-apple-dark">No Download Required</h3>
-                        <p class="text-apple-gray">Play instantly in your browser without any downloads or installations. Jump right into the action and start guiding water to your clownfish friend immediately.</p>
-                    </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="text-center p-4">
+                    <div class="text-3xl mb-3">🎮</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Intuitive Controls</h3>
+                    <p class="text-gray-600 text-sm">Simple drag-and-drop interface that works on all devices</p>
+                </div>
+                
+                <div class="text-center p-4">
+                    <div class="text-3xl mb-3">⚡</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Instant Loading</h3>
+                    <p class="text-gray-600 text-sm">No downloads required, start playing immediately</p>
+                </div>
+                
+                <div class="text-center p-4">
+                    <div class="text-3xl mb-3">🏆</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Achievement System</h3>
+                    <p class="text-gray-600 text-sm">Track your progress and unlock new achievements</p>
+                </div>
+                
+                <div class="text-center p-4">
+                    <div class="text-3xl mb-3">💯</div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Score Tracking</h3>
+                    <p class="text-gray-600 text-sm">Monitor your best scores and improvement over time</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-apple-dark text-white py-8 px-4">
-        <div class="max-w-6xl mx-auto text-center">
-            <div class="clownfish-icon mx-auto mb-4" style="filter: brightness(1.2);"></div>
-            <h3 class="text-2xl font-bold mb-2">Imp Beauty</h3>
-            <p class="text-white/70 mb-4">The ultimate water flow puzzle adventure</p>
-            <p class="text-sm text-white/50">© 2024 imp.beauty • All rights reserved</p>
+    <footer class="bg-gray-900 text-white py-8 sm:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-4 apple-gradient bg-clip-text text-transparent">Imp Beauty</h3>
+                <p class="text-gray-400 mb-6 max-w-2xl mx-auto">
+                    The ultimate online Spider Solitaire experience. Play anytime, anywhere, on any device.
+                </p>
+                <div class="flex justify-center space-x-6 mb-6">
+                    <a href="#game" class="text-gray-400 hover:text-white transition-colors">Play Game</a>
+                    <a href="#about" class="text-gray-400 hover:text-white transition-colors">About</a>
+                    <a href="#how-to-play" class="text-gray-400 hover:text-white transition-colors">How to Play</a>
+                </div>
+                <div class="border-t border-gray-800 pt-6">
+                    <p class="text-gray-500 text-sm">
+                        © 2024 Imp Beauty. All rights reserved. | 
+                        <a href="#" class="hover:text-white transition-colors">Privacy Policy</a> | 
+                        <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- JSON-LD Schema -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Game",
-        "name": "Imp Beauty",
-        "description": "Guide water to help a thirsty clownfish in this engaging puzzle adventure similar to Where's My Water",
-        "url": "https://imp.beauty",
-        "genre": "Puzzle Game",
-        "playMode": "SinglePlayer",
-        "applicationCategory": "Game",
-        "operatingSystem": "Any",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
+    <!-- Smooth Scrolling Script -->
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add loading state for iframe
+        const iframe = document.querySelector('iframe');
+        if (iframe) {
+            iframe.addEventListener('load', function() {
+                console.log('Game loaded successfully');
+            });
         }
-    }
     </script>
 </body>
 </html>
