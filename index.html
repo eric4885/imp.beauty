@@ -1,128 +1,328 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imp Beauty - Classic Spider Solitaire Game Online</title>
+    <meta name="description" content="Play Imp Beauty - the classic Spider Solitaire game online for free. Enjoy the same gameplay as Microsoft Spider Solitaire with beautiful design and smooth gameplay.">
+    <meta name="keywords" content="Imp Beauty, Spider Solitaire, card game, online game, solitaire, Microsoft solitaire">
+    <meta name="author" content="Imp Beauty">
+    <link rel="canonical" href="https://imp.beauty">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Imp Beauty - Classic Spider Solitaire Game Online">
+    <meta property="og:description" content="Play the classic Spider Solitaire game online for free. Same gameplay as Microsoft Spider Solitaire with beautiful design.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://imp.beauty">
+    <meta property="og:image" content="https://imp.beauty/og-image.jpg">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Imp Beauty - Classic Spider Solitaire Game Online">
+    <meta name="twitter:description" content="Play the classic Spider Solitaire game online for free. Same gameplay as Microsoft Spider Solitaire with beautiful design.">
+    <meta name="twitter:image" content="https://imp.beauty/twitter-image.jpg">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<html>
-	<head>
-		<title>Spider Solitaire</title>
+        :root {
+            --apple-blue: #007AFF;
+            --apple-gray-light: #F2F2F7;
+            --apple-gray-dark: #1C1C1E;
+            --apple-white: #FFFFFF;
+            --apple-text-primary: #000000;
+            --apple-text-secondary: #8E8E93;
+            --apple-border: #E5E5EA;
+            --apple-shadow: rgba(0, 0, 0, 0.1);
+        }
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--apple-gray-light);
+            color: var(--apple-text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
-		<!-- CSS Files Link-->
-		<link rel="stylesheet" type="text/css" href="css/reset.css">
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-		<link rel="stylesheet" type="text/css" href="css/cards.css">
-	</head>
-	<body>
-		<div class = "home-screen">
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-			<button id="start-btn">
-				<label>Heyyyy Alooooooooooooooooooooooooooo!!!!!</label>
-				<label>Start Game</label>
-			</button>
+        header {
+            text-align: center;
+            padding: 40px 0 30px;
+            background-color: var(--apple-white);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px var(--apple-shadow);
+        }
 
-			<button id = "high-score-btn">High Score</button>
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--apple-blue);
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
 
-			<div id = "scoreBoard" class = "score-board">	
-				<h2>Score Board</h2>
-				Rank    <span style="float:right;">Number of Moves</span>
-				<ol id = "high-scores">
-				</ol>				
-				<div class="faq-close" title="close" onclick="dealer.closeScoreBoard()"></div>
-			</div>
-		</div>
+        .tagline {
+            font-size: 1.25rem;
+            color: var(--apple-text-secondary);
+            font-weight: 400;
+        }
 
-		<form action = "index.html" name = "startGame" id = "startGame" class = "start-form">
-			<div class="title">Choose a Difficulty Level</div>
-			<label class="game-option">
-				<input type="radio" name="radioBtn" value = "1" checked>
-				<span class="suit one">One suit</span>
-			</label>
-			<label class="game-option">
-				<input type="radio" name="radioBtn" value = "2">
-				<span class="suit two">Two suits</span>
-			</label>
-			<label class="game-option">
-				<input type="radio" name="radioBtn" value = "4">
-				<span class="suit four">Four suits</span>
-			</label>
-			<input type="submit" value="Play">
-		</form>
+        .game-section {
+            background-color: var(--apple-white);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px var(--apple-shadow);
+        }
 
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--apple-shadow);
+        }
 
-		<div class="congratulation">
-			<canvas id="canvas">ttt</canvas>
-		</div>
+        .game-iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            display: block;
+        }
 
-		<div class="wrapper">
-			<div class="timer">
-				<label>Time</label>
-				<label id="minutes">00</label>:<label id="seconds">00</label>
-			</div>
-			<div class="score">
-				<label>Moves: </label>
-				<label id="score">0</label>
-			</div>
+        .game-info {
+            background-color: var(--apple-white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px var(--apple-shadow);
+        }
 
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
-			<ul class="column" data-height=""></ul>
+        .game-info h2 {
+            font-size: 2rem;
+            color: var(--apple-blue);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
 
-			<div class="offside">
-				<ul class="source" id="source"></ul>
-				<ul class="dropout" id="dropout"></ul>
-			</div>
-		</div>
+        .game-info h3 {
+            font-size: 1.5rem;
+            color: var(--apple-text-primary);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
 
-		<div class="control-panel opaque">
-			<button class="btn-hint">Hint</button>
-			<button class="btn-new">Restart Game</button>
-			<button class="btnFaq" onclick="dealer.showFaq()">FAQ</button>			
-		</div>
+        .game-info p {
+            color: var(--apple-text-secondary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
 
-		<div id="faq" class="faq">
-			<h1>Frequently Asked Questions</h1>
+        .features-list {
+            list-style: none;
+            padding-left: 0;
+        }
 
-			<h2>Purpose of the game</h2>
-			<p>Remove all 	cards from the playing field in the fewest moves.</p>
+        .features-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: var(--apple-text-secondary);
+            font-size: 1.1rem;
+        }
 
-			<h2>Rules of the game</h2>
-			<p>
-				For solitaire, 2 decks of 52 cards are required. Initially, 54 cards are evenly decomposed into 10 columns  and the remaining 50 are added to 5 heaps of 10. In each column, all but the upper ones are closed. You can move cards from a column to a column. Maps are moved according to the following rules:
-			</p>
-			<ol>
-				<li>On an empty space, you can move the top card of any column.</li>
-				<li>The top card of the column can be moved to the next highest card, regardless of its suit and color.</li>
-				<li>A stack of cards of the same suit, lying in order, can be moved as one card.</li>
-			</ol>
-			<p>
-				If the top closed card of any column is released, it automatically opens. As soon as a column appears from the cards of the same suit collected in order, this column is removed into the house. Permitted at any time, when there are no empty columns, take one of the piles stacked on 10 cards and scatter these cards one at a time in each column.
-			</p>
-			<p>
-				There are 3 levels of difficulty. On the first, all cards have the same suit - peaks (each card repeats 8 times); on the second, all cards have two different suits - peaks and hearts. At the last level of difficult	y, you will have to deal with two full decks with 4 suits.
-			</p>
-			<div class="faq-close" title="close" onclick="dealer.closeFaq()"></div>
-		</div>
-		<div class="faq-shadow"></div>
+        .features-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--apple-blue);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
 
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--apple-text-secondary);
+            font-size: 0.9rem;
+        }
 
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
 
-		<ul class="drag-el" id="drag-el"></ul>
+            .tagline {
+                font-size: 1rem;
+            }
 
+            .game-iframe {
+                height: 400px;
+            }
 
-		<script src="js/cardDeck.js"></script>
-		<script src="js/cardDealer.js"></script>
-		<script src="js/cardAnimation.js"></script>
-		<script src="js/timeCounter.js"></script>
-		<script src="js/dragEvent.js"></script>
-		<script src="js/sound.js"></script>
+            .container {
+                padding: 10px;
+            }
 
-		<script src="js/victoryAnimation.js"></script>
-		<script src="js/script.js"></script>
-	</body>
+            .game-section, .game-info {
+                padding: 20px;
+            }
+
+            .game-info h2 {
+                font-size: 1.5rem;
+            }
+
+            .game-info h3 {
+                font-size: 1.25rem;
+            }
+
+            .game-info p, .features-list li {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .game-iframe {
+                height: 350px;
+            }
+
+            header {
+                padding: 30px 15px;
+            }
+
+            .game-section, .game-info {
+                padding: 15px;
+            }
+        }
+
+        /* Loading animation for iframe */
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--apple-border);
+            border-top: 3px solid var(--apple-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .game-container.loading::before {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Imp Beauty</h1>
+            <p class="tagline">Experience the classic Spider Solitaire game online - Same gameplay, beautiful design</p>
+        </header>
+
+        <section class="game-section">
+            <div class="game-container loading" id="gameContainer">
+                <iframe 
+                    src="https://imp.beauty" 
+                    class="game-iframe" 
+                    id="gameFrame"
+                    title="Imp Beauty - Spider Solitaire Game"
+                    loading="lazy"
+                    sandbox="allow-scripts allow-same-origin allow-popups allow-forms">
+                </iframe>
+            </div>
+        </section>
+
+        <section class="game-info">
+            <h2>About Imp Beauty</h2>
+            <p>
+                Imp Beauty brings you the timeless classic Spider Solitaire game that you know and love from Microsoft Windows. 
+                Our online version maintains the exact same gameplay mechanics and rules, ensuring a familiar and enjoyable 
+                experience for both newcomers and seasoned players.
+            </p>
+
+            <h3>How to Play</h3>
+            <p>
+                Spider Solitaire is played with two standard 52-card decks (104 cards total). The objective is to remove 
+                all cards from the table by building sequences from King to Ace in the same suit. Once you complete a 
+                sequence, it's automatically removed from play.
+            </p>
+
+            <h3>Game Features</h3>
+            <ul class="features-list">
+                <li>Authentic Spider Solitaire gameplay identical to Microsoft version</li>
+                <li>Three difficulty levels: 1-suit (Easy), 2-suit (Medium), 4-suit (Hard)</li>
+                <li>Smooth animations and responsive controls</li>
+                <li>Auto-save functionality to resume your game anytime</li>
+                <li>Detailed statistics to track your progress</li>
+                <li>Beautiful, clean interface optimized for all devices</li>
+                <li>No downloads required - play instantly in your browser</li>
+                <li>Completely free to play</li>
+            </ul>
+
+            <h3>Why Choose Imp Beauty?</h3>
+            <p>
+                We've carefully crafted Imp Beauty to deliver the most authentic Spider Solitaire experience online. 
+                Whether you're looking to relax with a casual game or challenge yourself with the hardest difficulty, 
+                our platform provides the perfect environment for card game enthusiasts. The familiar gameplay combined 
+                with modern web technology ensures smooth performance across all your devices.
+            </p>
+
+            <h3>Tips for Success</h3>
+            <p>
+                Start with the easier 1-suit version to get familiar with the game mechanics. Focus on uncovering 
+                hidden cards and creating empty columns, as these give you more strategic options. Plan your moves 
+                carefully and don't rush - Spider Solitaire rewards patience and strategic thinking.
+            </p>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Imp Beauty. All rights reserved. | Play Spider Solitaire online for free</p>
+        </footer>
+    </div>
+
+    <script>
+        // Remove loading animation when iframe is loaded
+        const gameFrame = document.getElementById('gameFrame');
+        const gameContainer = document.getElementById('gameContainer');
+
+        gameFrame.addEventListener('load', function() {
+            gameContainer.classList.remove('loading');
+        });
+
+        // Add error handling for iframe
+        gameFrame.addEventListener('error', function() {
+            gameContainer.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--apple-text-secondary);">Game failed to load. Please refresh the page or try again later.</p>';
+        });
+    </script>
+</body>
 </html>
