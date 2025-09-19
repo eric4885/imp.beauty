@@ -33,9 +33,6 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://imp.beauty">
-    
     <!-- Structured Data -->
     <script type="application/ld+json">
     {
@@ -133,6 +130,8 @@
             font-size: 1.1rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
+            border: none;
+            cursor: pointer;
         }
 
         .play-button:hover {
@@ -149,41 +148,296 @@
             margin-bottom: 32px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.18);
+            min-height: 650px;
         }
 
-        .game-frame {
-            width: 100%;
-            height: 650px;
+        /* Game Board Styles */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(88, 86, 214, 0.1));
+            border-radius: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 16px;
             border: none;
-            border-radius: 16px;
-            background: #f5f5f7;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
         }
 
-        .loading-placeholder {
+        .control-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Card Game Board */
+        .game-board {
+            background: linear-gradient(135deg, #1a472a, #2d5a3d);
+            border-radius: 20px;
+            padding: 30px 20px;
+            min-height: 500px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .tableau {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .column {
+            min-height: 400px;
+            width: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .column.drag-over {
+            background: rgba(0, 122, 255, 0.2);
+            border-color: #007AFF;
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.4);
+        }
+
+        .card {
+            width: 70px;
+            height: 95px;
+            background: white;
+            border-radius: 8px;
+            position: absolute;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 650px;
-            background: linear-gradient(135deg, #f5f5f7, #e8e8ed);
-            border-radius: 16px;
-            color: #6e6e73;
+            justify-content: space-between;
+            padding: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            user-select: none;
         }
 
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #e8e8ed;
-            border-top: 4px solid #007AFF;
+        .card.face-down {
+            background: linear-gradient(135deg, #4169E1, #6495ED);
+            color: white;
+        }
+
+        .card.face-down::before {
+            content: '🂠';
+            font-size: 2rem;
+        }
+
+        .card.red {
+            color: #dc3545;
+        }
+
+        .card.black {
+            color: #333;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .card.selected {
+            border-color: #007AFF;
+            box-shadow: 0 0 15px rgba(0, 122, 255, 0.6);
+            transform: translateY(-5px);
+            z-index: 101;
+        }
+
+        .card.dragging {
+            opacity: 0.8;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        /* Stock and Waste */
+        .bottom-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stock-area {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .stock-pile {
+            width: 70px;
+            height: 95px;
+            background: linear-gradient(135deg, #4169E1, #6495ED);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+            position: relative;
+        }
+
+        .stock-pile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .stock-pile.empty {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            cursor: default;
+        }
+
+        .stock-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ff3b30;
+            color: white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .completed-suits {
+            display: flex;
+            gap: 10px;
+        }
+
+        .suit-stack {
+            width: 70px;
+            height: 95px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            position: relative;
+        }
+
+        .suit-stack.filled {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-color: #28a745;
+            color: white;
+        }
+
+        .suit-stack.filled::before {
+            content: '✓';
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        /* Win Animation */
+        .win-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .win-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .win-message {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: bounceIn 0.6s ease;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Content Sections */
@@ -339,35 +593,50 @@
                 margin-bottom: 24px;
             }
             
-            .game-frame,
-            .loading-placeholder {
-                height: 500px;
-            }
-            
             .content-section {
                 padding: 32px 20px;
                 margin-bottom: 24px;
             }
             
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
+            .tableau {
+                gap: 4px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
             }
-            
-            .gameplay-steps {
-                grid-template-columns: 1fr;
-                gap: 16px;
+
+            .column {
+                width: 65px;
+                flex-shrink: 0;
+            }
+
+            .card {
+                width: 60px;
+                height: 80px;
+                font-size: 0.7rem;
+                padding: 4px;
+            }
+
+            .game-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .game-stats,
+            .game-controls {
+                justify-content: center;
+            }
+
+            .bottom-area {
+                justify-content: center;
+                text-align: center;
             }
         }
 
         @media (max-width: 480px) {
             .main-header {
                 padding: 24px 16px;
-            }
-            
-            .game-frame,
-            .loading-placeholder {
-                height: 400px;
             }
             
             .content-section {
@@ -381,22 +650,37 @@
             .how-to-play {
                 padding: 24px 16px;
             }
+
+            .tableau {
+                gap: 2px;
+            }
+
+            .column {
+                width: 55px;
+            }
+
+            .card {
+                width: 50px;
+                height: 70px;
+                font-size: 0.6rem;
+            }
         }
 
         /* Performance optimizations */
-        .game-frame {
+        .game-board {
             contain: layout style paint;
         }
 
         /* Accessibility improvements */
         @media (prefers-reduced-motion: reduce) {
-            .loading-spinner {
-                animation: none;
-            }
-            
             .play-button:hover,
-            .feature-card:hover {
+            .feature-card:hover,
+            .card:hover {
                 transform: none;
+            }
+
+            .win-message {
+                animation: none;
             }
         }
     </style>
@@ -407,25 +691,47 @@
         <header class="main-header">
             <h1 class="main-title">Imp Beauty</h1>
             <p class="main-subtitle">Experience the ultimate Spider Solitaire adventure with stunning visuals and classic gameplay</p>
-            <a href="#game" class="play-button">Play Now - It's Free!</a>
+            <button class="play-button" onclick="scrollToGame()">Play Now - It's Free!</button>
         </header>
 
         <!-- Game Section -->
         <section class="game-section" id="game">
-            <div class="loading-placeholder" id="gameLoading">
-                <div class="loading-spinner"></div>
-                <p>Loading your Imp Beauty Spider Solitaire game...</p>
+            <div class="game-header">
+                <div class="game-stats">
+                    <div class="stat-item">🏆 Score: <span id="score">500</span></div>
+                    <div class="stat-item">⏱️ Time: <span id="time">00:00</span></div>
+                    <div class="stat-item">🔄 Moves: <span id="moves">0</span></div>
+                    <div class="stat-item">🎯 Suits: <span id="completed-suits">0</span>/8</div>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn" onclick="newGame()">🔄 New Game</button>
+                    <button class="control-btn" onclick="undoMove()" id="undo-btn" disabled>↶ Undo</button>
+                    <button class="control-btn" onclick="showHint()">💡 Hint</button>
+                    <button class="control-btn" onclick="pauseGame()" id="pause-btn">⏸️ Pause</button>
+                </div>
             </div>
-            <iframe 
-                class="game-frame" 
-                src="https://imp.beauty"
-                title="Imp Beauty Spider Solitaire Game - Play Free Online"
-                loading="lazy"
-                allow="fullscreen"
-                style="display: none;"
-                onload="document.getElementById('gameLoading').style.display='none'; this.style.display='block';">
-                <p>Your browser doesn't support iframes. Please <a href="https://imp.beauty">click here to play Imp Beauty Spider Solitaire</a>.</p>
-            </iframe>
+
+            <div class="game-board" id="gameBoard">
+                <div class="tableau" id="tableau">
+                    <!-- 10 columns will be created by JavaScript -->
+                </div>
+
+                <div class="bottom-area">
+                    <div class="stock-area">
+                        <div class="stock-pile" id="stockPile" onclick="dealCards()">
+                            <span id="stockCards">📚</span>
+                            <div class="stock-count" id="stockCount">50</div>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.8); font-size: 0.85rem;">
+                            Click to deal<br>new cards
+                        </div>
+                    </div>
+
+                    <div class="completed-suits" id="completedSuits">
+                        <!-- 8 suit stacks will be created by JavaScript -->
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- About Section -->
@@ -468,7 +774,7 @@
                 <div class="feature-card">
                     <span class="feature-icon">🏆</span>
                     <h3 class="feature-title">Challenge Yourself</h3>
-                    <p class="feature-text">Multiple difficulty levels and game modes to keep you engaged and improving your skills</p>
+                    <p class="feature-text">Track your progress with detailed statistics and try to beat your best times</p>
                 </div>
             </div>
 
@@ -514,32 +820,506 @@
         <p>&copy; 2024 Imp Beauty. All rights reserved. | The ultimate Spider Solitaire experience online.</p>
     </footer>
 
-    <!-- Performance and Analytics Scripts -->
+    <!-- Win Overlay -->
+    <div class="win-overlay" id="winOverlay">
+        <div class="win-message">
+            <h2 style="color: #007AFF; font-size: 2.5rem; margin-bottom: 20px;">🎉 Congratulations!</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 30px; color: #333;">You've mastered Spider Solitaire!</p>
+            <div style="margin-bottom: 30px; color: #666;">
+                <p>Final Score: <strong id="finalScore">0</strong></p>
+                <p>Time: <strong id="finalTime">00:00</strong></p>
+                <p>Moves: <strong id="finalMoves">0</strong></p>
+            </div>
+            <button class="play-button" onclick="closeWinDialog(); newGame();">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Game Logic Script -->
     <script>
-        // Preload game iframe for better performance
-        document.addEventListener('DOMContentLoaded', function() {
-            const gameFrame = document.querySelector('.game-frame');
-            if (gameFrame && 'IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            // Game is in viewport, ensure it's loaded
-                            observer.unobserve(entry.target);
-                        }
+        // Game state variables
+        let gameState = {
+            score: 500,
+            moves: 0,
+            startTime: null,
+            currentTime: 0,
+            isPaused: false,
+            completedSuits: 0,
+            selectedCard: null,
+            selectedCards: [],
+            gameHistory: [],
+            stock: [],
+            tableau: [[], [], [], [], [], [], [], [], [], []],
+            completedSuitStacks: []
+        };
+
+        let gameTimer;
+
+        // Card utilities
+        const suits = ['♠', '♣', '♥', '♦'];
+        const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const rankValues = {
+            'A': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13
+        };
+
+        function createDeck() {
+            const deck = [];
+            // Spider Solitaire uses 8 decks (2 full decks of each suit)
+            for (let i = 0; i < 8; i++) {
+                suits.forEach(suit => {
+                    ranks.forEach(rank => {
+                        deck.push({
+                            suit: suit,
+                            rank: rank,
+                            value: rankValues[rank],
+                            faceUp: false,
+                            id: `${suit}-${rank}-${i}`
+                        });
                     });
                 });
-                observer.observe(gameFrame);
             }
-        });
+            return shuffle(deck);
+        }
 
-        // Error handling for iframe
-        window.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IFRAME') {
-                console.error('Game loading error:', e);
-                document.getElementById('gameLoading').innerHTML = 
-                    '<p style="color: #ff3b30;">Unable to load game. Please <a href="https://imp.beauty" target="_blank" style="color: #007AFF;">click here to play directly</a>.</p>';
+        function shuffle(deck) {
+            const shuffled = [...deck];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
             }
-        }, true);
+            return shuffled;
+        }
+
+        function isRed(suit) {
+            return suit === '♥' || suit === '♦';
+        }
+
+        function initializeGame() {
+            const deck = createDeck();
+            let cardIndex = 0;
+
+            // Initialize tableau
+            gameState.tableau = [[], [], [], [], [], [], [], [], [], []];
+            
+            // Deal initial tableau (54 cards)
+            for (let col = 0; col < 10; col++) {
+                const numCards = col < 4 ? 6 : 5;
+                for (let row = 0; row < numCards; row++) {
+                    const card = deck[cardIndex++];
+                    card.faceUp = row === numCards - 1; // Only top card face up
+                    gameState.tableau[col].push(card);
+                }
+            }
+
+            // Remaining cards go to stock
+            gameState.stock = deck.slice(cardIndex);
+            
+            // Reset game state
+            gameState.score = 500;
+            gameState.moves = 0;
+            gameState.startTime = Date.now();
+            gameState.currentTime = 0;
+            gameState.isPaused = false;
+            gameState.completedSuits = 0;
+            gameState.selectedCard = null;
+            gameState.selectedCards = [];
+            gameState.gameHistory = [];
+            gameState.completedSuitStacks = [];
+
+            updateDisplay();
+            renderGame();
+            startTimer();
+        }
+
+        function renderGame() {
+            renderTableau();
+            renderStock();
+            renderCompletedSuits();
+        }
+
+        function renderTableau() {
+            const tableau = document.getElementById('tableau');
+            tableau.innerHTML = '';
+
+            for (let col = 0; col < 10; col++) {
+                const column = document.createElement('div');
+                column.className = 'column';
+                column.dataset.column = col;
+                
+                const cards = gameState.tableau[col];
+                cards.forEach((card, index) => {
+                    const cardElement = createCardElement(card, col, index);
+                    cardElement.style.top = `${index * 20}px`;
+                    column.appendChild(cardElement);
+                });
+
+                // Add drop zone functionality
+                column.addEventListener('dragover', handleDragOver);
+                column.addEventListener('drop', handleDrop);
+                column.addEventListener('click', handleColumnClick);
+
+                tableau.appendChild(column);
+            }
+        }
+
+        function createCardElement(card, col, index) {
+            const cardElement = document.createElement('div');
+            cardElement.className = `card ${card.faceUp ? (isRed(card.suit) ? 'red' : 'black') : 'face-down'}`;
+            cardElement.dataset.cardId = card.id;
+            cardElement.dataset.column = col;
+            cardElement.dataset.index = index;
+
+            if (card.faceUp) {
+                cardElement.innerHTML = `
+                    <div style="font-size: 0.7rem;">${card.rank}</div>
+                    <div style="font-size: 1.2rem;">${card.suit}</div>
+                    <div style="font-size: 0.7rem; transform: rotate(180deg);">${card.rank}</div>
+                `;
+                
+                // Add drag functionality
+                cardElement.draggable = true;
+                cardElement.addEventListener('dragstart', handleDragStart);
+                cardElement.addEventListener('click', handleCardClick);
+            }
+
+            return cardElement;
+        }
+
+        function renderStock() {
+            const stockPile = document.getElementById('stockPile');
+            const stockCount = document.getElementById('stockCount');
+            
+            if (gameState.stock.length > 0) {
+                stockPile.className = 'stock-pile';
+                stockCount.textContent = gameState.stock.length;
+                stockCount.style.display = 'flex';
+            } else {
+                stockPile.className = 'stock-pile empty';
+                stockPile.innerHTML = '🚫';
+                stockCount.style.display = 'none';
+            }
+        }
+
+        function renderCompletedSuits() {
+            const completedSuits = document.getElementById('completedSuits');
+            completedSuits.innerHTML = '';
+
+            for (let i = 0; i < 8; i++) {
+                const suitStack = document.createElement('div');
+                suitStack.className = i < gameState.completedSuits ? 'suit-stack filled' : 'suit-stack';
+                if (i >= gameState.completedSuits) {
+                    suitStack.textContent = 'Empty';
+                }
+                completedSuits.appendChild(suitStack);
+            }
+        }
+
+        // Game interaction handlers
+        function handleCardClick(e) {
+            e.stopPropagation();
+            const cardElement = e.target.closest('.card');
+            const col = parseInt(cardElement.dataset.column);
+            const index = parseInt(cardElement.dataset.index);
+
+            if (gameState.selectedCard) {
+                // Try to move selected cards
+                if (canMoveCards(gameState.selectedCard.col, gameState.selectedCard.index, col)) {
+                    moveCards(gameState.selectedCard.col, gameState.selectedCard.index, col);
+                }
+                clearSelection();
+            } else {
+                // Select card
+                selectCard(col, index);
+            }
+        }
+
+        function handleColumnClick(e) {
+            if (e.target.classList.contains('column') && gameState.selectedCard) {
+                const col = parseInt(e.target.dataset.column);
+                if (canMoveCards(gameState.selectedCard.col, gameState.selectedCard.index, col)) {
+                    moveCards(gameState.selectedCard.col, gameState.selectedCard.index, col);
+                }
+                clearSelection();
+            }
+        }
+
+        function selectCard(col, index) {
+            const cards = gameState.tableau[col];
+            if (index < cards.length && cards[index].faceUp) {
+                // Check if we can move this sequence
+                const sequence = getMovableSequence(col, index);
+                if (sequence.length > 0) {
+                    gameState.selectedCard = { col, index };
+                    gameState.selectedCards = sequence;
+                    
+                    // Highlight selected cards
+                    sequence.forEach((_, i) => {
+                        const cardElement = document.querySelector(`[data-card-id="${cards[index + i].id}"]`);
+                        if (cardElement) {
+                            cardElement.classList.add('selected');
+                        }
+                    });
+                }
+            }
+        }
+
+        function clearSelection() {
+            document.querySelectorAll('.card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+            gameState.selectedCard = null;
+            gameState.selectedCards = [];
+        }
+
+        function getMovableSequence(col, startIndex) {
+            const cards = gameState.tableau[col];
+            const sequence = [];
+            
+            for (let i = startIndex; i < cards.length; i++) {
+                const card = cards[i];
+                if (!card.faceUp) break;
+                
+                sequence.push(card);
+                
+                // Check if sequence is valid (descending same suit)
+                if (i > startIndex) {
+                    const prevCard = cards[i - 1];
+                    if (card.suit !== prevCard.suit || card.value !== prevCard.value - 1) {
+                        // Sequence broken, return only the first card
+                        return [cards[startIndex]];
+                    }
+                }
+            }
+            
+            return sequence;
+        }
+
+        function canMoveCards(fromCol, fromIndex, toCol) {
+            if (fromCol === toCol) return false;
+            
+            const sourceCards = gameState.tableau[fromCol];
+            const targetCards = gameState.tableau[toCol];
+            
+            if (fromIndex >= sourceCards.length) return false;
+            
+            const movingCard = sourceCards[fromIndex];
+            
+            // Can always move to empty column
+            if (targetCards.length === 0) return true;
+            
+            // Check if can place on target card
+            const targetCard = targetCards[targetCards.length - 1];
+            return targetCard.faceUp && movingCard.value === targetCard.value - 1;
+        }
+
+        function moveCards(fromCol, fromIndex, toCol) {
+            const sourceCards = gameState.tableau[fromCol];
+            const movingCards = sourceCards.splice(fromIndex);
+            
+            gameState.tableau[toCol].push(...movingCards);
+            
+            // Flip the card that's now on top
+            if (sourceCards.length > 0) {
+                const topCard = sourceCards[sourceCards.length - 1];
+                if (!topCard.faceUp) {
+                    topCard.faceUp = true;
+                    gameState.score += 5;
+                }
+            }
+            
+            gameState.moves++;
+            checkForCompletedSuits();
+            updateDisplay();
+            renderGame();
+        }
+
+        function checkForCompletedSuits() {
+            for (let col = 0; col < 10; col++) {
+                const cards = gameState.tableau[col];
+                if (cards.length >= 13) {
+                    const lastCards = cards.slice(-13);
+                    
+                    // Check if last 13 cards form K-A sequence of same suit
+                    let isComplete = true;
+                    const suit = lastCards[0].suit;
+                    
+                    for (let i = 0; i < 13; i++) {
+                        const expectedValue = 13 - i; // K=13 down to A=1
+                        if (lastCards[i].suit !== suit || lastCards[i].value !== expectedValue || !lastCards[i].faceUp) {
+                            isComplete = false;
+                            break;
+                        }
+                    }
+                    
+                    if (isComplete) {
+                        // Remove completed suit
+                        cards.splice(-13);
+                        gameState.completedSuits++;
+                        gameState.score += 100;
+                        
+                        // Flip top card if needed
+                        if (cards.length > 0) {
+                            const topCard = cards[cards.length - 1];
+                            if (!topCard.faceUp) {
+                                topCard.faceUp = true;
+                                gameState.score += 5;
+                            }
+                        }
+                        
+                        if (gameState.completedSuits === 8) {
+                            setTimeout(() => showWinDialog(), 500);
+                        }
+                        
+                        break; // Check one suit at a time
+                    }
+                }
+            }
+        }
+
+        function dealCards() {
+            if (gameState.stock.length === 0) return;
+            
+            // Deal one card to each column
+            for (let col = 0; col < 10; col++) {
+                if (gameState.stock.length > 0) {
+                    const card = gameState.stock.pop();
+                    card.faceUp = true;
+                    gameState.tableau[col].push(card);
+                }
+            }
+            
+            gameState.moves++;
+            updateDisplay();
+            renderGame();
+        }
+
+        function newGame() {
+            clearSelection();
+            stopTimer();
+            initializeGame();
+        }
+
+        function undoMove() {
+            // TODO: Implement undo functionality
+            console.log('Undo move - not implemented yet');
+        }
+
+        function showHint() {
+            // TODO: Implement hint system
+            console.log('Show hint - not implemented yet');
+            gameState.score = Math.max(0, gameState.score - 10);
+            updateDisplay();
+        }
+
+        function pauseGame() {
+            gameState.isPaused = !gameState.isPaused;
+            const pauseBtn = document.getElementById('pause-btn');
+            
+            if (gameState.isPaused) {
+                pauseBtn.innerHTML = '▶️ Resume';
+                stopTimer();
+                document.getElementById('gameBoard').style.filter = 'blur(5px)';
+            } else {
+                pauseBtn.innerHTML = '⏸️ Pause';
+                startTimer();
+                document.getElementById('gameBoard').style.filter = 'none';
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('moves').textContent = gameState.moves;
+            document.getElementById('completed-suits').textContent = gameState.completedSuits;
+            
+            const minutes = Math.floor(gameState.currentTime / 60);
+            const seconds = gameState.currentTime % 60;
+            document.getElementById('time').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                if (!gameState.isPaused) {
+                    gameState.currentTime = Math.floor((Date.now() - gameState.startTime) / 1000);
+                    updateDisplay();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+        }
+
+        function showWinDialog() {
+            document.getElementById('finalScore').textContent = gameState.score;
+            document.getElementById('finalMoves').textContent = gameState.moves;
+            
+            const minutes = Math.floor(gameState.currentTime / 60);
+            const seconds = gameState.currentTime % 60;
+            document.getElementById('finalTime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            document.getElementById('winOverlay').classList.add('show');
+            stopTimer();
+        }
+
+        function closeWinDialog() {
+            document.getElementById('winOverlay').classList.remove('show');
+        }
+
+        function scrollToGame() {
+            document.getElementById('game').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Drag and drop handlers (for desktop)
+        function handleDragStart(e) {
+            const cardElement = e.target;
+            const col = parseInt(cardElement.dataset.column);
+            const index = parseInt(cardElement.dataset.index);
+            
+            selectCard(col, index);
+            cardElement.classList.add('dragging');
+            
+            e.dataTransfer.setData('text/plain', '');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.target.closest('.column').classList.add('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const column = e.target.closest('.column');
+            column.classList.remove('drag-over');
+            
+            if (gameState.selectedCard) {
+                const toCol = parseInt(column.dataset.column);
+                if (canMoveCards(gameState.selectedCard.col, gameState.selectedCard.index, toCol)) {
+                    moveCards(gameState.selectedCard.col, gameState.selectedCard.index, toCol);
+                }
+                clearSelection();
+            }
+            
+            document.querySelectorAll('.card.dragging').forEach(card => {
+                card.classList.remove('dragging');
+            });
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+            
+            // Remove drag-over class when dragging leaves
+            document.addEventListener('dragleave', function(e) {
+                if (e.target.classList.contains('column')) {
+                    e.target.classList.remove('drag-over');
+                }
+            });
+        });
 
         // Add your analytics code here
         // Example: Google Analytics, Meta Pixel, etc.
