@@ -6,90 +6,71 @@
   <title>imp beauty — Spider Solitaire (4-suit)</title>
   <meta name="description" content="Play Imp Beauty — a polished 4-suit Spider Solitaire in your browser. Responsive UI, Apple-style colors, touch & mouse controls. No downloads." />
   <link rel="canonical" href="https://imp.beauty/" />
-  <!-- Open Graph -->
-  <meta property="og:title" content="imp beauty — Spider Solitaire (4-suit)" />
-  <meta property="og:description" content="Play Imp Beauty — a polished 4-suit Spider Solitaire in your browser. Responsive UI, Apple-style colors, touch & mouse controls. No downloads." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://imp.beauty/" />
-  <!-- Tailwind Play CDN + custom theme (Apple-like colors) -->
-  <script>
-    tailwind = window.tailwind || {};
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'apple-blue': '#0A84FF',
-            'apple-green': '#34C759',
-            'apple-orange': '#FF9F0A',
-            'apple-red': '#FF3B30',
-            'apple-purple': '#5856D6',
-            'apple-gray': '#F2F2F7',
-            'card-face': '#ffffff',
-            'card-back': '#111827'
-          }
-        }
-      }
-    }
-  </script>
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* Minimal custom CSS for cards and smooth interactions */
     .card {
-      width: 84px;
-      height: 120px;
-      border-radius: 10px;
-      box-shadow: 0 6px 14px rgba(16,24,40,0.15);
+      width: 100%;
+      aspect-ratio: 5/7;
+      border-radius: 0.6rem;
+      box-shadow: 0 4px 10px rgba(16,24,40,0.12);
       user-select: none;
       -webkit-user-select: none;
       touch-action: manipulation;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px;
+      padding: 6%;
       font-weight: 600;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      backface-visibility: hidden;
+      background: white;
       transition: transform .12s ease, box-shadow .12s ease;
     }
-    .card.small { width: 64px; height: 96px; border-radius: 8px; padding:6px; }
-    .card.face-up { background: white; color: #111827; }
-    .card.face-down { background: linear-gradient(135deg,#0f172a,#111827); color: #fff; }
-    .card .corner { font-size: 14px; line-height: 1; }
-    .card .suit { font-size: 22px; text-align: center; margin-top: 6px; }
-    .pile {
-      width: 92px;
-      min-height: 36px;
-      display: inline-block;
-      vertical-align: top;
+    .card.face-down {
+      background: linear-gradient(135deg,#0f172a,#111827);
+      color: white;
     }
-    .pile .stack { position: relative; margin: 4px; cursor: pointer; min-height: 36px; }
+    .card .corner {
+      font-size: clamp(0.6rem, 1.5vw, 1rem);
+      line-height: 1.1;
+    }
+    .card .suit {
+      font-size: clamp(1rem, 3vw, 1.6rem);
+      text-align: center;
+      margin-top: 0.4em;
+    }
+
+    #piles {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: clamp(0.2rem, 0.5vw, 0.5rem);
+    }
+    .pile { width: 100%; }
+    .pile .stack { position: relative; min-height: 2rem; }
     .pile .stack .card {
       position: absolute;
-      left: 0;
-      right: 0;
-      margin-left: auto;
-      margin-right: auto;
+      left: 0; right: 0; margin: auto;
+      top: calc(var(--i) * 18%);
     }
+    @media (min-width: 768px) {
+      .pile .stack .card { top: calc(var(--i) * 14%); }
+    }
+
     .pile .stack .card.dragging {
       z-index: 999;
-      transform: scale(1.06) translateY(-8px);
+      transform: scale(1.06) translateY(-6px);
       box-shadow: 0 18px 36px rgba(2,6,23,0.45);
     }
-    .controls button:active { transform: translateY(1px); }
-    /* responsive tweaks */
-    @media (max-width:640px) {
-      .card { width: 64px; height: 92px; }
-      .pile { width: 72px; }
-    }
-    /* subtle highlighting for potential drop target */
     .pile .stack.drop-highlight {
-      box-shadow: inset 0 0 0 2px rgba(10,132,255,0.12);
-      border-radius: 8px;
+      box-shadow: inset 0 0 0 2px rgba(10,132,255,0.25);
+      border-radius: 0.5rem;
+    }
+    .card.selected {
+      outline: 2px solid #2563eb;
     }
   </style>
 </head>
-<body class="bg-apple-gray text-slate-800 antialiased">
+<body class="bg-gray-100 text-slate-800 antialiased">
   <div class="max-w-6xl mx-auto p-4 sm:p-6">
     <header class="flex items-center justify-between mb-4">
       <div>
@@ -97,17 +78,15 @@
         <p class="text-sm text-slate-600 mt-1">A clean, mobile-friendly 4-suit Spider Solitaire — play instantly.</p>
       </div>
       <div class="space-x-2">
-        <button id="newBtn" class="px-3 py-2 bg-apple-blue text-white rounded-lg shadow-sm text-sm">New Game</button>
+        <button id="newBtn" class="px-3 py-2 bg-blue-500 text-white rounded-lg shadow-sm text-sm">New Game</button>
         <button id="dealBtn" class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm">Deal +</button>
       </div>
     </header>
 
-    <!-- One-liner -->
     <section class="mb-4">
       <p class="text-sm text-slate-600">One-liner: <span class="font-medium text-slate-800">Imp Beauty — timeless Spider Solitaire, built for desktop & touch.</span></p>
     </section>
 
-    <!-- Game area -->
     <main class="bg-white rounded-2xl p-4 shadow-md">
       <div class="flex items-center justify-between mb-3">
         <div class="text-xs text-slate-600">Score: <span id="score">0</span></div>
@@ -115,559 +94,136 @@
       </div>
 
       <div id="table" class="w-full overflow-x-auto pb-6">
-        <div id="piles" class="flex gap-2 px-2 sm:px-6">
-          <!-- 10 piles appended by JS -->
-        </div>
-      </div>
-
-      <div class="mt-4 flex gap-3 items-center justify-between">
-        <div class="text-sm text-slate-700">Tips: Tap a face-up card to select, then tap target pile to move. Drag supported on desktop.</div>
-        <div class="flex items-center gap-2">
-          <button id="hintBtn" class="px-3 py-2 rounded-lg bg-apple-purple text-white text-sm">Hint</button>
-          <button id="undoBtn" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-sm">Undo</button>
-        </div>
+        <div id="piles"></div>
       </div>
     </main>
-
-    <footer class="mt-6 text-xs text-slate-500">
-      <p>Game: Spider Solitaire (4-suit). Domain / keyword: <span class="font-medium">imp beauty</span>. Built with care — responsive & accessible.</p>
-    </footer>
   </div>
 
-  <!-- Minimal SVG suits (text fallback included) -->
-  <template id="card-template">
-    <div class="card face-up">
-      <div class="corner top-left"></div>
-      <div class="suit"></div>
-      <div class="corner bottom-right transform rotate-180"></div>
-    </div>
-  </template>
-
   <script>
-  /* ---------- Spider Solitaire (4-suit) - simplified but functional implementation ----------
-     Rules implemented:
-       - 2 standard decks (104 cards): each suit & rank appears twice.
-       - Initial tableau: 10 piles (first 4 have 6 cards; last 6 have 5), top cards face up.
-       - Remaining stock (50 cards) dealt 10 at a time to each pile on "Deal".
-       - Build downward by rank regardless of suit; moving a stack requires that the moved sequence is consecutive descending and all same suit.
-       - Completed sequences K→A of same suit auto-removed and score incremented.
-       - Tap to select & move (mobile-friendly), basic drag visuals on desktop.
-     This aims for a good balance of clarity & playability; extend as desired.
-  -------------------------------------------------------------------------------------------*/
+    const SUITS = ['♠','♥','♦','♣'];
+    const RANK_LABEL = {1:'A',11:'J',12:'Q',13:'K'};
+    const state = { piles: [], stock: [], score: 0, selected: null };
 
-  // --- Utilities
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
+    const pilesEl = document.getElementById('piles');
+    const stockCountEl = document.getElementById('stockCount');
+    const scoreEl = document.getElementById('score');
 
-  const SUITS = ['♠','♥','♦','♣'];
-  const SUIT_CLASS = { '♠':'spade','♥':'heart','♦':'diamond','♣':'club' };
-  const RANK_LABEL = {1:'A',11:'J',12:'Q',13:'K'};
-
-  // Game state
-  const state = {
-    piles: [],        // arrays of card objects {rank, suit, faceUp}
-    stock: [],        // array of remaining cards (face-down)
-    score: 0,
-    history: [],      // simple undo history snapshots
-    selected: null    // {pileIndex, cardIndex} selected for move
-  };
-
-  // DOM refs
-  const pilesEl = document.getElementById('piles');
-  const stockCountEl = document.getElementById('stockCount');
-  const scoreEl = document.getElementById('score');
-  const dealBtn = document.getElementById('dealBtn');
-  const newBtn = document.getElementById('newBtn');
-  const undoBtn = document.getElementById('undoBtn');
-  const hintBtn = document.getElementById('hintBtn');
-
-  // Create a double deck (each suit/rank appears twice) and shuffle
-  function createDeck() {
-    const deck = [];
-    for (let copy=0; copy<2; copy++) {
-      for (const s of SUITS) {
-        for (let r=1; r<=13; r++) {
-          deck.push({rank:r, suit:s, faceUp:false, id: `${s}${r}-${copy}-${Math.random().toString(36).slice(2,8)}`});
-        }
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
       }
+      return array;
     }
-    return shuffle(deck);
-  }
-
-  // Initialize new game
-  function newGame() {
-    saveHistory(); // allow undo to previous
-    state.score = 0;
-    state.selected = null;
-    state.history = [];
-    const deck = createDeck();
-    state.piles = Array.from({length:10}, () => []);
-    // initial deal: first 4 piles get 6, remaining 6 piles get 5
-    for (let i=0;i<10;i++) {
-      const count = i < 4 ? 6 : 5;
-      for (let j=0;j<count;j++) {
-        const card = deck.shift();
-        state.piles[i].push(card);
-      }
-    }
-    // flip top card of each pile face-up
-    for (let i=0;i<10;i++) {
-      const pile = state.piles[i];
-      if (pile.length) pile[pile.length-1].faceUp = true;
-    }
-    // remaining are stock
-    state.stock = deck;
-    render();
-  }
-
-  // Save snapshot for undo (lightweight but deep enough)
-  function saveHistory() {
-    try {
-      const snapshot = {
-        piles: JSON.parse(JSON.stringify(state.piles)),
-        stock: JSON.parse(JSON.stringify(state.stock)),
-        score: state.score
-      };
-      state.history.push(snapshot);
-      if (state.history.length > 50) state.history.shift();
-    } catch (e) {
-      // ignore
-    }
-  }
-
-  function undo() {
-    if (!state.history.length) return;
-    const last = state.history.pop();
-    state.piles = last.piles;
-    state.stock = last.stock;
-    state.score = last.score;
-    state.selected = null;
-    render();
-  }
-
-  // Build card element
-  function createCardEl(card) {
-    const el = document.createElement('div');
-    el.className = 'card face-up';
-    el.dataset.rank = card.rank;
-    el.dataset.suit = card.suit;
-    el.dataset.id = card.id;
-    el.setAttribute('draggable', false);
-
-    const top = document.createElement('div');
-    top.className = 'corner top-left';
-    top.innerText = rankLabel(card.rank) + '\n' + card.suit;
-
-    const suit = document.createElement('div');
-    suit.className = 'suit';
-    suit.innerText = card.suit;
-
-    const bottom = document.createElement('div');
-    bottom.className = 'corner bottom-right';
-    bottom.innerText = rankLabel(card.rank) + '\n' + card.suit;
-
-    el.appendChild(top);
-    el.appendChild(suit);
-    el.appendChild(bottom);
-
-    // color suits
-    if (card.suit === '♥' || card.suit === '♦') {
-      el.style.color = '#DC2626'; // red-ish
-    } else {
-      el.style.color = '#111827';
-    }
-    return el;
-  }
-
-  function createCardBackEl() {
-    const el = document.createElement('div');
-    el.className = 'card face-down';
-    el.innerHTML = '<div style="font-size:18px;text-align:center;opacity:.95;margin:auto">IMP</div>';
-    return el;
-  }
-
-  function rankLabel(r) {
-    return RANK_LABEL[r] || String(r);
-  }
-
-  // Render entire table
-  function render() {
-    // update meta
-    stockCountEl.innerText = state.stock.length;
-    scoreEl.innerText = state.score;
-
-    // clear piles
-    pilesEl.innerHTML = '';
-    state.piles.forEach((pile, pileIndex) => {
-      const pileWrap = document.createElement('div');
-      pileWrap.className = 'pile';
-      const stack = document.createElement('div');
-      stack.className = 'stack p-1';
-      stack.dataset.pile = pileIndex;
-
-      // pile click to drop selected
-      stack.addEventListener('click', (e) => {
-        onPileClick(pileIndex);
-      });
-
-      // compute positions and append cards
-      pile.forEach((card, i) => {
-        const cardEl = card.faceUp ? createCardEl(card) : createCardBackEl();
-        cardEl.classList.add('card-el');
-        // position via top offset
-        cardEl.style.top = (i * 24) + 'px';
-        if (i === pile.length - 1) {
-          // top card clickable to select or drag
-          cardEl.style.cursor = 'pointer';
-        }
-        // add data attributes
-        cardEl.dataset.pile = pileIndex;
-        cardEl.dataset.index = i;
-
-        // click to select (mobile)
-        cardEl.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          onCardClick(pileIndex, i);
-        });
-
-        // simple drag support (desktop): start dragging stack if valid
-        cardEl.addEventListener('mousedown', (ev) => {
-          ev.preventDefault();
-          onStartDrag(pileIndex, i, cardEl, ev);
-        });
-
-        stack.appendChild(cardEl);
-      });
-
-      pileWrap.appendChild(stack);
-      pilesEl.appendChild(pileWrap);
-    });
-  }
-
-  // Tap/click actions
-  function onCardClick(pileIndex, index) {
-    const pile = state.piles[pileIndex];
-    if (!pile[index]) return;
-    if (!pile[index].faceUp) {
-      // flip if top card and face down
-      if (index === pile.length -1) {
-        saveHistory();
-        pile[index].faceUp = true;
-        state.selected = null;
-        render();
-      }
-      return;
-    }
-    // if nothing selected, select sequence from this card to top if valid stack
-    if (!state.selected) {
-      // check if the sub-stack from index forms a valid same-suit descending sequence (so can be moved)
-      const moveSeq = pile.slice(index);
-      // single-card can always be moved (as long as top is face-up)
-      let canMove = true;
-      for (let i=0;i<moveSeq.length-1;i++) {
-        if (moveSeq[i].rank !== moveSeq[i+1].rank + 1 || moveSeq[i].suit !== moveSeq[i+1].suit) {
-          canMove = false;
-          break;
-        }
-      }
-      if (!canMove && moveSeq.length > 1) {
-        // cannot move the whole stack; but allow selecting single top card
-        if (index === pile.length -1) {
-          state.selected = {pileIndex, cardIndex: index};
-        } else {
-          // make feedback: select top only
-          state.selected = {pileIndex, cardIndex: pile.length -1};
-        }
-      } else {
-        state.selected = {pileIndex, cardIndex: index};
-      }
-      highlightSelected();
-    } else {
-      // if already selected, treat as attempt to move to this pile
-      attemptMove(state.selected.pileIndex, state.selected.cardIndex, pileIndex);
-    }
-  }
-
-  function onPileClick(pileIndex) {
-    if (!state.selected) {
-      // nothing selected: if pile empty, flip top of other piles? ignore
-      return;
-    }
-    attemptMove(state.selected.pileIndex, state.selected.cardIndex, pileIndex);
-  }
-
-  function highlightSelected() {
-    // visual highlight by briefly scaling selected cards
-    // Re-render to apply possible visual cues (we'll not add complex classes for brevity)
-    render();
-    // simple flash: we'll apply CSS transform to selected card element if present
-    requestAnimationFrame(() => {
-      const sel = state.selected;
-      if (!sel) return;
-      const el = document.querySelector(`.card-el[data-pile="${sel.pileIndex}"][data-index="${sel.cardIndex}"]`);
-      if (el) {
-        el.style.transform = 'translateY(-6px) scale(1.02)';
-        setTimeout(()=> el.style.transform = '', 240);
-      }
-    });
-  }
-
-  // Attempt to move cards from srcPile starting at srcIndex to destPile
-  function attemptMove(srcPileIdx, srcIndex, destPileIdx) {
-    if (srcPileIdx === destPileIdx) {
-      state.selected = null;
-      render();
-      return;
-    }
-    const srcPile = state.piles[srcPileIdx];
-    const destPile = state.piles[destPileIdx];
-    const moving = srcPile.slice(srcIndex);
-    if (moving.length === 0) { state.selected = null; return; }
-
-    // Validate: destination top card must be rank = moving[0].rank +1 (because build down)
-    const destTop = destPile[destPile.length -1];
-    if (destTop) {
-      if (destTop.rank !== moving[0].rank + 1) {
-        // invalid
-        flashInvalid(destPileIdx);
-        state.selected = null;
-        return;
-      }
-    } else {
-      // empty pile: allowed to move any sequence
-    }
-
-    // Additionally, ensure that the moving sequence itself is valid as a same-suit descending chain
-    let seqValid = true;
-    for (let i=0;i<moving.length-1;i++) {
-      if (moving[i].rank !== moving[i+1].rank +1 || moving[i].suit !== moving[i+1].suit) {
-        seqValid = false;
-        break;
-      }
-    }
-    // If sequence invalid (e.g., mixed suits), we allow only moving the top single card
-    let actualMove = moving;
-    if (!seqValid) {
-      if (moving.length === 1) {
-        actualMove = moving;
-      } else {
-        // restrict to single top card
-        actualMove = moving.slice(0,1);
-        // and source index should be the top card index
-        if (srcIndex !== srcPile.length -1) {
-          srcIndex = srcPile.length -1;
-        }
-      }
-    }
-
-    // Perform move
-    saveHistory();
-    const moved = srcPile.splice(srcIndex, actualMove.length);
-    state.piles[destPileIdx] = destPile.concat(moved);
-    // flip new top of src pile if face-down
-    const srcTop = state.piles[srcPileIdx][state.piles[srcPileIdx].length -1];
-    if (srcTop && !srcTop.faceUp) srcTop.faceUp = true;
-
-    state.selected = null;
-    // After moving, check for completed sequences in dest pile
-    checkForCompleteSequences(destPileIdx);
-    render();
-    checkWin();
-  }
-
-  function checkForCompleteSequences(pileIndex) {
-    const pile = state.piles[pileIndex];
-    // scan from top downward to find K..A sequence of same suit
-    // We only need to check when the top part forms a complete same-suit descending sequence length 13
-    if (pile.length < 13) return;
-    let idx = pile.length - 13;
-    const seq = pile.slice(idx);
-    const suit = seq[0].suit;
-    for (let i=0;i<13;i++) {
-      if (seq[i].suit !== suit || seq[i].rank !== 13 - i) {
-        return;
-      }
-    }
-    // remove sequence
-    saveHistory();
-    pile.splice(idx, 13);
-    state.score += 100; // arbitrary scoring
-    // flip new top card if exists and face-down
-    const newTop = pile[pile.length-1];
-    if (newTop && !newTop.faceUp) newTop.faceUp = true;
-    // update UI
-    render();
-  }
-
-  function checkWin() {
-    const allRemoved = state.piles.every(p => p.length === 0) && state.stock.length === 0;
-    if (allRemoved) {
-      setTimeout(()=> alert('Congratulations — you completed the game!'), 80);
-    }
-  }
-
-  // Deal 10 cards from stock to each pile (if enough)
-  function dealFromStock() {
-    if (state.stock.length < 10) {
-      alert('Not enough cards in stock to deal.');
-      return;
-    }
-    // cannot deal if any pile is empty? Official rule: you can always deal if stock has 10, but many implementations disallow if any pile empty.
-    // We'll allow deal only when no pile is empty (to stay closer to common rules).
-    const anyEmpty = state.piles.some(p => p.length === 0);
-    if (anyEmpty) {
-      if (!confirm('Some piles are empty. Dealing when piles are empty can make game harder. Continue?')) {
-        return;
-      }
-    }
-    saveHistory();
-    for (let i=0;i<10;i++) {
-      const card = state.stock.shift();
-      card.faceUp = true;
-      state.piles[i].push(card);
-    }
-    render();
-  }
-
-  // UI helpers
-  function flashInvalid(pileIndex) {
-    const el = document.querySelector(`.stack[data-pile="${pileIndex}"]`);
-    if (!el) return;
-    el.classList.add('drop-highlight');
-    setTimeout(()=> el.classList.remove('drop-highlight'), 420);
-  }
-
-  // Basic drag (desktop) - limited: supports dragging top face-up sequence if same suit descending
-  let dragState = null;
-  function onStartDrag(pileIndex, cardIndex, cardEl, ev) {
-    const pile = state.piles[pileIndex];
-    const card = pile[cardIndex];
-    if (!card || !card.faceUp) {
-      // if top card face-down and clicked, flip
-      if (cardIndex === pile.length -1 && card && !card.faceUp) {
-        saveHistory();
-        card.faceUp = true;
-        render();
-      }
-      return;
-    }
-    // determine movable sequence from this index (must be same-suit descending)
-    const moving = pile.slice(cardIndex);
-    let seqValid = true;
-    for (let i=0;i<moving.length-1;i++) {
-      if (moving[i].rank !== moving[i+1].rank +1 || moving[i].suit !== moving[i+1].suit) {
-        seqValid = false;
-        break;
-      }
-    }
-    const moveCount = seqValid ? moving.length : 1;
-    dragState = { fromPile: pileIndex, fromIndex: cardIndex, moveCount, grabbedEl: cardEl, offsetY: ev.clientY, ghost: null };
-
-    // create ghost group
-    const ghost = document.createElement('div');
-    ghost.style.position = 'fixed';
-    ghost.style.left = ev.clientX - 60 + 'px';
-    ghost.style.top = ev.clientY - 40 + 'px';
-    ghost.style.pointerEvents = 'none';
-    ghost.style.zIndex = 9999;
-    // clone moved cards into ghost
-    for (let i=0;i<moveCount;i++) {
-      const c = state.piles[pileIndex][cardIndex + i];
-      const el = c.faceUp ? createCardEl(c) : createCardBackEl();
-      el.classList.add('small');
-      el.style.marginTop = (i * 22) + 'px';
-      ghost.appendChild(el);
-    }
-    document.body.appendChild(ghost);
-    dragState.ghost = ghost;
-
-    function onMove(e) {
-      if (!dragState) return;
-      dragState.ghost.style.left = (e.clientX - 60) + 'px';
-      dragState.ghost.style.top = (e.clientY - 40) + 'px';
-    }
-    function onUp(e) {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      if (!dragState) return;
-      // find pile under pointer
-      const elems = document.elementsFromPoint(e.clientX, e.clientY);
-      const stackEl = elems.find(el => el.classList && el.classList.contains('stack'));
-      if (stackEl) {
-        const destPile = Number(stackEl.dataset.pile);
-        attemptMove(dragState.fromPile, dragState.fromIndex, destPile);
-      }
-      // cleanup
-      dragState.ghost.remove();
-      dragState = null;
-    }
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }
-
-  // Hint: simple scan for any valid move
-  function showHint() {
-    for (let s=0;s<10;s++) {
-      const pileS = state.piles[s];
-      for (let i=0;i<pileS.length;i++) {
-        if (!pileS[i].faceUp) continue;
-        // compute movable sequence validity for this index
-        const moving = pileS.slice(i);
-        let seqValid = true;
-        for (let k=0;k<moving.length-1;k++) {
-          if (moving[k].rank !== moving[k+1].rank +1 || moving[k].suit !== moving[k+1].suit) { seqValid = false; break; }
-        }
-        const moveCount = seqValid ? moving.length : 1;
-        const topCard = moving[0];
-        // try all dest piles
-        for (let d=0; d<10; d++) {
-          if (d === s) continue;
-          const dest = state.piles[d];
-          const destTop = dest[dest.length -1];
-          if (!destTop) {
-            // empty pile — allowed
-            highlightHint(s,i,d);
-            return;
-          } else {
-            if (destTop.rank === topCard.rank + 1) {
-              highlightHint(s,i,d);
-              return;
-            }
+    function createDeck() {
+      const deck = [];
+      for (let copy=0; copy<2; copy++) {
+        for (const s of SUITS) {
+          for (let r=1; r<=13; r++) {
+            deck.push({rank:r, suit:s, faceUp:false, id: s+r+'-'+copy+Math.random()});
           }
         }
       }
+      return shuffle(deck);
     }
-    alert('No hints found.');
-  }
 
-  function highlightHint(fromPile, fromIndex, toPile) {
-    // small visual highlight
-    const elFrom = document.querySelector(`.stack[data-pile="${fromPile}"]`);
-    const elTo = document.querySelector(`.stack[data-pile="${toPile}"]`);
-    if (elFrom) elFrom.classList.add('drop-highlight');
-    if (elTo) elTo.classList.add('drop-highlight');
-    setTimeout(()=> {
-      if (elFrom) elFrom.classList.remove('drop-highlight');
-      if (elTo) elTo.classList.remove('drop-highlight');
-    }, 700);
-  }
+    function newGame() {
+      state.score = 0;
+      const deck = createDeck();
+      state.piles = Array.from({length:10}, () => []);
+      for (let i=0;i<10;i++) {
+        const count = i < 4 ? 6 : 5;
+        for (let j=0;j<count;j++) {
+          const card = deck.shift();
+          state.piles[i].push(card);
+        }
+      }
+      for (let i=0;i<10;i++) {
+        const pile = state.piles[i];
+        if (pile.length) pile[pile.length-1].faceUp = true;
+      }
+      state.stock = deck;
+      render();
+    }
 
-  // Attach controls
-  newBtn.addEventListener('click', () => { if (confirm('Start a new game?')) newGame(); });
-  dealBtn.addEventListener('click', () => dealFromStock());
-  undoBtn.addEventListener('click', () => undo());
-  hintBtn.addEventListener('click', () => showHint());
+    function rankLabel(r) { return RANK_LABEL[r] || r; }
+    function createCardEl(card) {
+      const el = document.createElement('div');
+      el.className = card.faceUp ? 'card face-up' : 'card face-down';
+      if (card.faceUp) {
+        el.innerHTML = `
+          <div class="corner top-left">${rankLabel(card.rank)}<br>${card.suit}</div>
+          <div class="suit">${card.suit}</div>
+          <div class="corner bottom-right">${rankLabel(card.rank)}<br>${card.suit}</div>
+        `;
+        if (card.suit==='♥' || card.suit==='♦') el.style.color = '#DC2626';
+      } else {
+        el.innerHTML = '<div style="margin:auto;font-size:14px;opacity:.8">IMP</div>';
+      }
+      return el;
+    }
 
-  // Start
-  newGame();
+    function canPlace(card, targetPile) {
+      if (targetPile.length === 0) return true;
+      const top = targetPile[targetPile.length - 1];
+      return top.faceUp && card.rank === top.rank - 1 && card.suit === top.suit;
+    }
 
-  // Expose for debugging in console
-  window.impBeauty = { state, newGame, dealFromStock, undo };
+    function render() {
+      stockCountEl.innerText = state.stock.length;
+      scoreEl.innerText = state.score;
+      pilesEl.innerHTML = '';
+      state.piles.forEach((pile, pi) => {
+        const pileDiv = document.createElement('div');
+        pileDiv.className = 'pile';
+        const stack = document.createElement('div');
+        stack.className = 'stack';
+        stack.dataset.pile = pi;
+
+        pile.forEach((card, i) => {
+          const cardEl = createCardEl(card);
+          cardEl.dataset.pile = pi;
+          cardEl.dataset.index = i;
+          cardEl.style.setProperty('--i', i);
+          if (state.selected && state.selected.pile === pi && state.selected.index === i) {
+            cardEl.classList.add('selected');
+          }
+
+          cardEl.addEventListener('click', () => {
+            if (!card.faceUp) return;
+            if (state.selected) {
+              const sel = state.selected;
+              if (sel.pile === pi && sel.index === i) {
+                state.selected = null;
+              } else {
+                const moving = state.piles[sel.pile].slice(sel.index);
+                if (canPlace(moving[0], state.piles[pi])) {
+                  state.piles[pi].push(...moving);
+                  state.piles[sel.pile] = state.piles[sel.pile].slice(0, sel.index);
+                  if (state.piles[sel.pile].length) {
+                    state.piles[sel.pile][state.piles[sel.pile].length - 1].faceUp = true;
+                  }
+                  state.selected = null;
+                } else {
+                  state.selected = null;
+                }
+              }
+            } else {
+              state.selected = {pile: pi, index: i};
+            }
+            render();
+          });
+
+          stack.appendChild(cardEl);
+        });
+
+        pileDiv.appendChild(stack);
+        pilesEl.appendChild(pileDiv);
+      });
+    }
+
+    document.getElementById('newBtn').addEventListener('click', newGame);
+    newGame();
   </script>
 </body>
 </html>
