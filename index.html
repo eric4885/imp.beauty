@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小丑鱼的水流游戏</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #f0f8ff;
+        }
+        canvas {
+            display: block;
+            background-color: #87cefa;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- === 基础 SEO & 响应式 === -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imp Beauty – Classic Spider Solitaire Online</title>
-  <meta name="description" content="Play the original Spider Solitaire online for free. Same rules, same controls, now in your browser.">
+  <meta name="description" content="Play Imp Beauty: the original Spider Solitaire online for free. Same gameplay as Microsoft Windows, smooth on PC & mobile. No download needed.">
   <meta name="keywords" content="Imp Beauty, Spider Solitaire, online solitaire, free card game, Microsoft solitaire">
   <link rel="canonical" href="https://imp.beauty">
 
-  <!-- Open Graph / Twitter -->
+  <!-- === Open Graph / Twitter === -->
   <meta property="og:title" content="Imp Beauty – Classic Spider Solitaire Online">
   <meta property="og:description" content="Play the original Spider Solitaire online for free. Same rules, same controls, now in your browser.">
   <meta property="og:type" content="website">
@@ -16,6 +40,7 @@
   <meta property="og:image" content="https://imp.beauty/og-spider.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
+  <!-- === 苹果色系 + 轻量 Reset === -->
   <style>
     :root{
       --apple-blue:#007AFF;
@@ -45,6 +70,8 @@
     }
     h1{font-size:3rem;font-weight:700;color:var(--apple-blue);letter-spacing:-.5px}
     .tagline{font-size:1.25rem;color:var(--apple-text-2);font-weight:400;margin-top:8px}
+
+    /* 游戏区 */
     .game-section{
       background:var(--apple-white);
       border-radius:20px;
@@ -63,6 +90,8 @@
       box-shadow:inset 0 0 8px var(--shadow);
       position:relative;
     }
+
+    /* 说明区 */
     .info{
       background:var(--apple-white);
       border-radius:20px;
@@ -75,8 +104,10 @@
     .list{list-style:none;padding-left:0}
     .list li{padding:10px 0 10px 30px;position:relative;color:var(--apple-text-2);font-size:1.1rem}
     .list li::before{content:"✓";position:absolute;left:0;color:var(--apple-blue);font-weight:bold;font-size:1.2rem}
+
     footer{text-align:center;padding:40px 0;color:var(--apple-text-2);font-size:.9rem}
 
+    /* === 响应式 === */
     @media(max-width:768px){
       h1{font-size:2rem}
       .tagline{font-size:1rem}
@@ -94,11 +125,12 @@
     </header>
 
     <section class="game-section">
-      <!-- 关键修复：去掉最前面 "/" 使用相对路径 -->
+      <!-- 游戏入口：把编译好的 Spider 资源放到 /game 目录，下面 object 自动加载 -->
       <div id="gameArea">
         <object data="game/index.html" style="width:100%;height:100%;border:none;">
+          <!-- 降级提示 -->
           <p style="text-align:center;padding:80px 20px;color:var(--apple-text-2);">
-            Game failed to load. <a href="game/index.html" target="_blank" style="color:var(--apple-blue);">Open directly</a> or refresh the page.
+            Game failed to load. <a href="/game/index.html" target="_blank" style="color:var(--apple-blue);">Open directly</a> or refresh the page.
           </p>
         </object>
       </div>
@@ -122,7 +154,7 @@
       <h3>Features</h3>
       <ul class="list">
         <li>Pixel-perfect replica of Windows Spider Solitaire</li>
-        <li>Three official difficulties: 1-suit, 2-suit, 4-suit</li>
+        <li>Three difficulties: 1-suit, 2-suit, 4-suit</li>
         <li>Undo, hint, auto-move, best-time statistics</li>
         <li>Keyboard shortcuts (Ctrl+Z, Ctrl+H, F2 new deal)</li>
         <li>Touch & mouse support; fully responsive</li>
@@ -142,5 +174,7 @@
       © 2024 Imp Beauty · Play Classic Spider Solitaire Online
     </footer>
   </div>
+
+  <!-- 可选：结构化数据 / GA / PWA manifest 等 -->
 </body>
 </html>
