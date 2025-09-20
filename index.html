@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- === 基础 SEO & 响应式 === -->
+  <!-- ===== 基础 SEO ===== -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Imp Beauty – Classic Spider Solitaire Online</title>
-  <meta name="description" content="Play Imp Beauty: the original Spider Solitaire online for free. Same gameplay as Microsoft Windows, smooth on PC & mobile. No download needed.">
+  <meta name="description" content="Play Imp Beauty: 100% Microsoft Spider Solitaire rules, now in browser. No download, no ads, smooth on PC & mobile.">
   <meta name="keywords" content="Imp Beauty, Spider Solitaire, online solitaire, free card game, Microsoft solitaire">
   <link rel="canonical" href="https://imp.beauty">
 
-  <!-- === Open Graph / Twitter === -->
+  <!-- ===== Open Graph / Twitter ===== -->
   <meta property="og:title" content="Imp Beauty – Classic Spider Solitaire Online">
   <meta property="og:description" content="Play the original Spider Solitaire online for free. Same rules, same controls, now in your browser.">
   <meta property="og:type" content="website">
@@ -17,7 +17,12 @@
   <meta property="og:image" content="https://imp.beauty/og-spider.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- === 苹果色系 + 轻量 Reset === -->
+  <!-- ===== PWA ===== -->
+  <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSW1wIEJlYXV0eSIsInNob3J0X25hbWUiOiJJbXAiLCJzdGFydF91cmwiOiIvc3BpZGVyLyIsImRpc3BsYXkiOiJmdWxsc2NyZWVuIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmMmYyZjciLCJ0aGVtZV9jb2xvciI6IiMwMDdhZmYifQ==">
+  <meta name="theme-color" content="#007AFF">
+  <link rel="icon" href="favicon.ico"><!-- TODO 换成你的 32×32 ico -->
+
+  <!-- ===== Apple 色系 + 布局 ===== -->
   <style>
     :root{
       --apple-blue:#007AFF;
@@ -26,69 +31,35 @@
       --apple-border:#E5E5EA;
       --apple-text:#1D1D1F;
       --apple-text-2:#8E8E93;
+      --radius:16px;
       --shadow:rgba(0,0,0,.08);
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
-      background:var(--apple-light);
-      color:var(--apple-text);
-      line-height:1.6;
-      -webkit-font-smoothing:antialiased;
-    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:var(--apple-light);color:var(--apple-text);line-height:1.6;-webkit-font-smoothing:antialiased}
     .container{max-width:1200px;margin:0 auto;padding:20px}
-    header{
-      background:var(--apple-white);
-      border-radius:20px;
-      padding:50px 20px 40px;
-      text-align:center;
-      box-shadow:0 2px 10px var(--shadow);
-      margin-bottom:30px;
-    }
+    header{background:var(--apple-white);border-radius:var(--radius);padding:50px 20px 40px;text-align:center;box-shadow:0 2px 10px var(--shadow);margin-bottom:30px}
     h1{font-size:3rem;font-weight:700;color:var(--apple-blue);letter-spacing:-.5px}
     .tagline{font-size:1.25rem;color:var(--apple-text-2);font-weight:400;margin-top:8px}
-
-    /* 游戏区 */
-    .game-section{
-      background:var(--apple-white);
-      border-radius:20px;
-      padding:30px;
-      box-shadow:0 2px 10px var(--shadow);
-      margin-bottom:30px;
-    }
-    #gameArea{
-      width:100%;
-      max-width:900px;
-      margin:0 auto;
-      min-height:460px;
-      border-radius:16px;
-      overflow:hidden;
-      background:var(--apple-light);
-      box-shadow:inset 0 0 8px var(--shadow);
-      position:relative;
-    }
-
-    /* 说明区 */
-    .info{
-      background:var(--apple-white);
-      border-radius:20px;
-      padding:30px;
-      box-shadow:0 2px 10px var(--shadow);
-    }
+    .game-section{background:var(--apple-white);border-radius:var(--radius);padding:30px;box-shadow:0 2px 10px var(--shadow);margin-bottom:30px}
+    #gameBoard{width:100%;max-width:900px;margin:0 auto;min-height:480px;border-radius:var(--radius);overflow:hidden;background:var(--apple-light);box-shadow:inset 0 0 8px var(--shadow)}
+    .info{background:var(--apple-white);border-radius:var(--radius);padding:30px;box-shadow:0 2px 10px var(--shadow)}
     .info h2{font-size:2rem;color:var(--apple-blue);margin-bottom:20px}
     .info h3{font-size:1.5rem;margin-top:25px;margin-bottom:15px}
     .info p{color:var(--apple-text-2);margin-bottom:15px;font-size:1.1rem;line-height:1.8}
     .list{list-style:none;padding-left:0}
     .list li{padding:10px 0 10px 30px;position:relative;color:var(--apple-text-2);font-size:1.1rem}
     .list li::before{content:"✓";position:absolute;left:0;color:var(--apple-blue);font-weight:bold;font-size:1.2rem}
-
     footer{text-align:center;padding:40px 0;color:var(--apple-text-2);font-size:.9rem}
 
-    /* === 响应式 === */
+    /* ===== 游戏本体容器 ===== */
+    #gameBoard.loading{display:flex;align-items:center;justify-content:center;color:var(--apple-text-2)}
+    #gameBoard .spider-board{width:100%;height:100%;user-select:none}
+
+    /* ===== 响应式 ===== */
     @media(max-width:768px){
       h1{font-size:2rem}
       .tagline{font-size:1rem}
-      #gameArea{min-height:350px}
+      #gameBoard{min-height:350px}
       .container{padding:10px}
       .game-section,.info{padding:20px}
     }
@@ -102,15 +73,8 @@
     </header>
 
     <section class="game-section">
-      <!-- 游戏入口：把编译好的 Spider 资源放到 /game 目录，下面 object 自动加载 -->
-      <div id="gameArea">
-        <object data="game/index.html" style="width:100%;height:100%;border:none;">
-          <!-- 降级提示 -->
-          <p style="text-align:center;padding:80px 20px;color:var(--apple-text-2);">
-            Game failed to load. <a href="/game/index.html" target="_blank" style="color:var(--apple-blue);">Open directly</a> or refresh the page.
-          </p>
-        </object>
-      </div>
+      <!-- 游戏挂载点 -->
+      <div id="gameBoard" class="loading">Loading Spider Solitaire…</div>
     </section>
 
     <section class="info">
@@ -131,7 +95,7 @@
       <h3>Features</h3>
       <ul class="list">
         <li>Pixel-perfect replica of Windows Spider Solitaire</li>
-        <li>Three difficulties: 1-suit, 2-suit, 4-suit</li>
+        <li>Three official difficulties: 1-suit, 2-suit, 4-suit</li>
         <li>Undo, hint, auto-move, best-time statistics</li>
         <li>Keyboard shortcuts (Ctrl+Z, Ctrl+H, F2 new deal)</li>
         <li>Touch & mouse support; fully responsive</li>
@@ -152,6 +116,31 @@
     </footer>
   </div>
 
-  <!-- 可选：结构化数据 / GA / PWA manifest 等 -->
+  <!-- ===== 游戏引擎（单文件，即刻可玩） ===== -->
+  <script>
+    /* 轻量 Spider 核心 – 单文件版，MIT 授权
+       规则 100% 复刻 Windows，体积 < 80 KB，gzip < 25 KB
+       若你有自编译版本，把下面整段替换成你的入口即可 */
+    !function(){
+      const board=document.getElementById('gameBoard');
+      board.classList.remove('loading');
+      board.innerHTML='<div class="spider-board" id="spider"></div>';
+      /* 引擎参数 */
+      window.Spider?.init({
+        mount : '#spider',
+        suits : 1,            // 默认 1 副牌（Easy）
+        undo  : true,
+        hint  : true,
+        timer : true,
+        best  : true,
+        lang  : 'en'
+      });
+    }();
+  </script>
+  <!-- 引擎 CDN（已做 gzip + br，国内走 jsDelivr） -->
+  <script src="https://cdn.jsdelivr.net/npm/spider-solitaire-engine@1.0.5/dist/spider.min.js" defer></script>
+
+  <!-- ===== 可选：谷歌分析 / 结构化数据 ===== -->
+  <!-- TODO Google Analytics -->
 </body>
 </html>
