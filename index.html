@@ -1,548 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imp Beauty - Free Spider Solitaire Game Online | Play Now</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Play Imp Beauty Spider Solitaire online for free. Classic Microsoft-style Spider Solitaire with beautiful interface. No download needed, works perfectly on PC and mobile devices.">
-    <meta name="keywords" content="imp beauty, imp beauty game, spider solitaire, solitaire online, free card games, microsoft solitaire, online solitaire, card games free">
-    <meta name="author" content="Imp Beauty Games">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="google-site-verification" content="">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://imp.beauty/">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="Imp Beauty - Free Spider Solitaire Game Online">
-    <meta property="og:description" content="Experience the classic Spider Solitaire gameplay with Imp Beauty's stunning interface. Play free online, no download required.">
-    <meta property="og:url" content="https://imp.beauty/">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Imp Beauty">
-    <meta property="og:locale" content="en_US">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@impbeauty">
-    <meta name="twitter:title" content="Imp Beauty - Free Spider Solitaire Game Online">
-    <meta name="twitter:description" content="Classic Spider Solitaire with beautiful graphics. Play free online on any device.">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    
-    <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://imp.beauty">
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Imp Beauty Spider Solitaire",
-        "description": "Free online Spider Solitaire game with beautiful graphics and smooth gameplay, identical to Microsoft Spider Solitaire",
-        "url": "https://imp.beauty/",
-        "applicationCategory": "Game",
-        "operatingSystem": "Web Browser",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        },
-        "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.8",
-            "ratingCount": "2847"
-        },
-        "author": {
-            "@type": "Organization",
-            "name": "Imp Beauty Games"
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imp Beauty – Classic Spider Solitaire Online</title>
+  <meta name="description" content="Play the original Spider Solitaire online for free. Same rules, same controls, now in your browser.">
+  <meta name="keywords" content="Imp Beauty, Spider Solitaire, online solitaire, free card game, Microsoft solitaire">
+  <link rel="canonical" href="https://imp.beauty">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:title" content="Imp Beauty – Classic Spider Solitaire Online">
+  <meta property="og:description" content="Play the original Spider Solitaire online for free. Same rules, same controls, now in your browser.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imp.beauty">
+  <meta property="og:image" content="https://imp.beauty/og-spider.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <style>
+    :root{
+      --apple-blue:#007AFF;
+      --apple-light:#F2F2F7;
+      --apple-white:#FFFFFF;
+      --apple-border:#E5E5EA;
+      --apple-text:#1D1D1F;
+      --apple-text-2:#8E8E93;
+      --shadow:rgba(0,0,0,.08);
     }
-    </script>
-    
-    <style>
-        /* CSS Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+      background:var(--apple-light);
+      color:var(--apple-text);
+      line-height:1.6;
+      -webkit-font-smoothing:antialiased;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    header{
+      background:var(--apple-white);
+      border-radius:20px;
+      padding:50px 20px 40px;
+      text-align:center;
+      box-shadow:0 2px 10px var(--shadow);
+      margin-bottom:30px;
+    }
+    h1{font-size:3rem;font-weight:700;color:var(--apple-blue);letter-spacing:-.5px}
+    .tagline{font-size:1.25rem;color:var(--apple-text-2);font-weight:400;margin-top:8px}
+    .game-section{
+      background:var(--apple-white);
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 2px 10px var(--shadow);
+      margin-bottom:30px;
+    }
+    #gameArea{
+      width:100%;
+      max-width:900px;
+      margin:0 auto;
+      min-height:460px;
+      border-radius:16px;
+      overflow:hidden;
+      background:var(--apple-light);
+      box-shadow:inset 0 0 8px var(--shadow);
+      position:relative;
+    }
+    .info{
+      background:var(--apple-white);
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 2px 10px var(--shadow);
+    }
+    .info h2{font-size:2rem;color:var(--apple-blue);margin-bottom:20px}
+    .info h3{font-size:1.5rem;margin-top:25px;margin-bottom:15px}
+    .info p{color:var(--apple-text-2);margin-bottom:15px;font-size:1.1rem;line-height:1.8}
+    .list{list-style:none;padding-left:0}
+    .list li{padding:10px 0 10px 30px;position:relative;color:var(--apple-text-2);font-size:1.1rem}
+    .list li::before{content:"✓";position:absolute;left:0;color:var(--apple-blue);font-weight:bold;font-size:1.2rem}
+    footer{text-align:center;padding:40px 0;color:var(--apple-text-2);font-size:.9rem}
 
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #AF52DE 100%);
-            min-height: 100vh;
-            color: #1d1d1f;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Header Styles */
-        .main-header {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-radius: 24px;
-            padding: 40px 30px;
-            margin-bottom: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .main-title {
-            font-size: clamp(2.5rem, 8vw, 4rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, #007AFF, #5856D6, #AF52DE);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
-        }
-
-        .main-subtitle {
-            font-size: clamp(1.1rem, 3vw, 1.3rem);
-            color: #6e6e73;
-            font-weight: 400;
-            max-width: 600px;
-            margin: 0 auto 24px;
-        }
-
-        .play-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            color: white;
-            padding: 14px 32px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 122, 255, 0.3);
-        }
-
-        .play-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(0, 122, 255, 0.4);
-        }
-
-        /* Game Container */
-        .game-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .game-frame {
-            width: 100%;
-            height: 650px;
-            border: none;
-            border-radius: 16px;
-            background: #f5f5f7;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .loading-placeholder {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 650px;
-            background: linear-gradient(135deg, #f5f5f7, #e8e8ed);
-            border-radius: 16px;
-            color: #6e6e73;
-        }
-
-        .loading-spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid #e8e8ed;
-            border-top: 4px solid #007AFF;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Content Sections */
-        .content-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: saturate(180%) blur(20px);
-            border-radius: 24px;
-            padding: 40px 32px;
-            margin-bottom: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-        }
-
-        .section-title {
-            font-size: clamp(1.8rem, 4vw, 2.2rem);
-            font-weight: 700;
-            color: #1d1d1f;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .section-description {
-            font-size: 1.125rem;
-            color: #424245;
-            line-height: 1.7;
-            margin-bottom: 32px;
-            text-align: center;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Features Grid */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
-        }
-
-        .feature-card {
-            background: rgba(248, 248, 252, 0.8);
-            border-radius: 20px;
-            padding: 32px 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            display: block;
-        }
-
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 12px;
-        }
-
-        .feature-text {
-            color: #6e6e73;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        /* How to Play Section */
-        .how-to-play {
-            background: linear-gradient(135deg, rgba(0, 122, 255, 0.05), rgba(88, 86, 214, 0.05));
-            border-radius: 20px;
-            padding: 32px;
-            margin-top: 32px;
-        }
-
-        .how-to-play h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1d1d1f;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .gameplay-steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .step {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 16px;
-            padding: 24px 20px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .step-number {
-            display: inline-block;
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #007AFF, #5856D6);
-            color: white;
-            border-radius: 50%;
-            font-weight: 600;
-            line-height: 32px;
-            margin-bottom: 12px;
-        }
-
-        .step-text {
-            color: #424245;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        /* Footer */
-        .main-footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-        }
-
-        .footer-links {
-            margin-bottom: 16px;
-        }
-
-        .footer-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            margin: 0 16px;
-            transition: color 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
-            }
-            
-            .main-header {
-                padding: 32px 20px;
-                margin-bottom: 24px;
-            }
-            
-            .game-frame,
-            .loading-placeholder {
-                height: 500px;
-            }
-            
-            .content-section {
-                padding: 32px 20px;
-                margin-bottom: 24px;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .gameplay-steps {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-header {
-                padding: 24px 16px;
-            }
-            
-            .game-frame,
-            .loading-placeholder {
-                height: 400px;
-            }
-            
-            .content-section {
-                padding: 24px 16px;
-            }
-            
-            .feature-card {
-                padding: 24px 16px;
-            }
-            
-            .how-to-play {
-                padding: 24px 16px;
-            }
-        }
-
-        /* Performance optimizations */
-        .game-frame {
-            contain: layout style paint;
-        }
-
-        /* Accessibility improvements */
-        @media (prefers-reduced-motion: reduce) {
-            .loading-spinner {
-                animation: none;
-            }
-            
-            .play-button:hover,
-            .feature-card:hover {
-                transform: none;
-            }
-        }
-    </style>
+    @media(max-width:768px){
+      h1{font-size:2rem}
+      .tagline{font-size:1rem}
+      #gameArea{min-height:350px}
+      .container{padding:10px}
+      .game-section,.info{padding:20px}
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Main Header -->
-        <header class="main-header">
-            <h1 class="main-title">Imp Beauty</h1>
-            <p class="main-subtitle">Experience the ultimate Spider Solitaire adventure with stunning visuals and classic gameplay</p>
-            <a href="#game" class="play-button">Play Now - It's Free!</a>
-        </header>
+  <div class="container">
+    <header>
+      <h1>Imp Beauty</h1>
+      <p class="tagline">Classic Spider Solitaire online – the same rules, the same thrill, now in your browser</p>
+    </header>
 
-        <!-- Game Section -->
-        <section class="game-section" id="game">
-            <div class="loading-placeholder" id="gameLoading">
-                <div class="loading-spinner"></div>
-                <p>Loading your Imp Beauty Spider Solitaire game...</p>
-            </div>
-            <iframe 
-                class="game-frame" 
-                src="https://imp.beauty"
-                title="Imp Beauty Spider Solitaire Game - Play Free Online"
-                loading="lazy"
-                allow="fullscreen"
-                style="display: none;"
-                onload="document.getElementById('gameLoading').style.display='none'; this.style.display='block';">
-                <p>Your browser doesn't support iframes. Please <a href="https://imp.beauty">click here to play Imp Beauty Spider Solitaire</a>.</p>
-            </iframe>
-        </section>
+    <section class="game-section">
+      <!-- 关键修复：去掉最前面 "/" 使用相对路径 -->
+      <div id="gameArea">
+        <object data="game/index.html" style="width:100%;height:100%;border:none;">
+          <p style="text-align:center;padding:80px 20px;color:var(--apple-text-2);">
+            Game failed to load. <a href="game/index.html" target="_blank" style="color:var(--apple-blue);">Open directly</a> or refresh the page.
+          </p>
+        </object>
+      </div>
+    </section>
 
-        <!-- About Section -->
-        <section class="content-section">
-            <h2 class="section-title">About Imp Beauty Spider Solitaire</h2>
-            <p class="section-description">
-                Imp Beauty brings you the most beloved card game of all time with a modern, elegant twist. 
-                Our Spider Solitaire game features the exact same rules and gameplay mechanics as Microsoft's 
-                classic Spider Solitaire, but with enhanced graphics, smooth animations, and perfect 
-                cross-device compatibility. Whether you're a seasoned solitaire master or just starting 
-                your card game journey, Imp Beauty offers the perfect blend of challenge and relaxation.
-            </p>
+    <section class="info">
+      <h2>About Imp Beauty Spider Solitaire</h2>
+      <p>
+        Imp Beauty recreates the original Microsoft Spider Solitaire down to every animation and shortcut.
+        Choose 1-suit (Easy), 2-suit (Medium) or 4-suit (Hard) and clear the table by building
+        K-to-A sequences in the same suit. Completed runs are automatically removed—just like Windows.
+      </p>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">🎮</span>
-                    <h3 class="feature-title">Authentic Gameplay</h3>
-                    <p class="feature-text">Experience the exact same rules and mechanics as Microsoft's Spider Solitaire with no compromises</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">✨</span>
-                    <h3 class="feature-title">Beautiful Interface</h3>
-                    <p class="feature-text">Enjoy stunning card designs, smooth animations, and an interface that's both elegant and functional</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">📱</span>
-                    <h3 class="feature-title">Perfect Mobile Experience</h3>
-                    <p class="feature-text">Optimized for all devices - play seamlessly on desktop, tablet, or smartphone</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🆓</span>
-                    <h3 class="feature-title">Completely Free</h3>
-                    <p class="feature-text">No downloads, no registration, no hidden costs. Just pure Spider Solitaire enjoyment</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">⚡</span>
-                    <h3 class="feature-title">Instant Play</h3>
-                    <p class="feature-text">Start playing immediately in your browser with fast loading times and smooth performance</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🏆</span>
-                    <h3 class="feature-title">Challenge Yourself</h3>
-                    <p class="feature-text">Multiple difficulty levels and game modes to keep you engaged and improving your skills</p>
-                </div>
-            </div>
+      <h3>How to Play</h3>
+      <p>
+        Click to move cards, right-click for quick send-to-stack. Empty columns are gold—use them
+        to rearrange long sequences. When you're stuck, deal a new row from the stock (bottom-right).
+        Clear all eight full runs to win.
+      </p>
 
-            <div class="how-to-play">
-                <h3>How to Master Spider Solitaire</h3>
-                <div class="gameplay-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <p class="step-text">Build descending sequences from King to Ace in the same suit to complete a full set</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <p class="step-text">Move cards between columns strategically to uncover hidden cards underneath</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <p class="step-text">Use the stock pile wisely when you run out of moves - timing is crucial</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <p class="step-text">Plan ahead and think several moves in advance to avoid getting stuck</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <p class="step-text">Clear all eight complete sequences to win and become a Spider Solitaire champion</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <p class="step-text">Practice regularly to improve your strategy and achieve better completion times</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+      <h3>Features</h3>
+      <ul class="list">
+        <li>Pixel-perfect replica of Windows Spider Solitaire</li>
+        <li>Three official difficulties: 1-suit, 2-suit, 4-suit</li>
+        <li>Undo, hint, auto-move, best-time statistics</li>
+        <li>Keyboard shortcuts (Ctrl+Z, Ctrl+H, F2 new deal)</li>
+        <li>Touch & mouse support; fully responsive</li>
+        <li>Works offline after first visit (PWA-ready)</li>
+        <li>Free, no ads, no account required</li>
+      </ul>
 
-    <footer class="main-footer">
-        <div class="footer-links">
-            <a href="#game">Play Game</a>
-            <a href="#about">About</a>
-            <a href="/privacy">Privacy Policy</a>
-            <a href="/contact">Contact</a>
-        </div>
-        <p>&copy; 2024 Imp Beauty. All rights reserved. | The ultimate Spider Solitaire experience online.</p>
+      <h3>Pro Tips</h3>
+      <p>
+        Prioritise emptying at least one column early—it becomes a free parking spot for any card.
+        When two same-suit sequences overlap, try to merge them into one long run before dealing
+        new rows; fewer face-down cards mean fewer surprises.
+      </p>
+    </section>
+
+    <footer>
+      © 2024 Imp Beauty · Play Classic Spider Solitaire Online
     </footer>
-
-    <!-- Performance and Analytics Scripts -->
-    <script>
-        // Preload game iframe for better performance
-        document.addEventListener('DOMContentLoaded', function() {
-            const gameFrame = document.querySelector('.game-frame');
-            if (gameFrame && 'IntersectionObserver' in window) {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            // Game is in viewport, ensure it's loaded
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                });
-                observer.observe(gameFrame);
-            }
-        });
-
-        // Error handling for iframe
-        window.addEventListener('error', function(e) {
-            if (e.target.tagName === 'IFRAME') {
-                console.error('Game loading error:', e);
-                document.getElementById('gameLoading').innerHTML = 
-                    '<p style="color: #ff3b30;">Unable to load game. Please <a href="https://imp.beauty" target="_blank" style="color: #007AFF;">click here to play directly</a>.</p>';
-            }
-        }, true);
-
-        // Add your analytics code here
-        // Example: Google Analytics, Meta Pixel, etc.
-    </script>
+  </div>
 </body>
 </html>
