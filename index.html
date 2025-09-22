@@ -88,14 +88,16 @@
         .card-container {
             width: var(--card-width);
             height: var(--card-height);
-            position: relative;
+            position: absolute;
             transform-style: preserve-3d;
-            transition: transform 0.6s;
             cursor: pointer;
             perspective: 1000px;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
+            top: 0;
+            left: 0;
+            /* 移除可能干扰的transition */
         }
         
         .card-container.transitioning {
@@ -105,8 +107,10 @@
         .card-container.dragging {
             z-index: 1000 !important;
             pointer-events: none;
-            opacity: 0.8;
-            transform: scale(1.02);
+            opacity: 0.9;
+            transform: scale(1.02) !important;
+            transition: none !important; /* 禁用过渡动画以确保流畅拖拽 */
+            will-change: transform, left, top; /* 优化GPU加速 */
         }
 
         .card-face {
@@ -148,12 +152,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .card-container.is-flipped {
-            transform: rotateY(0deg);
+        /* 修复翻转逻辑 */
+        .card-container {
+            transform: rotateY(180deg); /* 默认显示背面 */
         }
-
-        .card-container:not(.is-flipped) {
-            transform: rotateY(180deg);
+        
+        .card-container.is-flipped {
+            transform: rotateY(0deg); /* 翻开时显示正面 */
         }
 
         .tableau-pile {
@@ -689,6 +694,9 @@
                     console.log(`渲染桩 ${pileIndex}，包含 ${pile.length} 张牌`);
                     pileElement.innerHTML = '';
                     
+                    // 确保桩元素有正确的定位上下文
+                    pileElement.style.position = 'relative';
+                    
                     pile.forEach((card, cardIndex) => {
                         const cardContainer = document.createElement('div');
                         cardContainer.className = 'card-container';
@@ -703,10 +711,16 @@
                         cardContainer.dataset.pileIndex = pileIndex.toString();
                         cardContainer.dataset.cardId = card.id;
                         
+                        // 关键修复：确保正确的定位
                         const topOffset = cardIndex * 15;
-                        cardContainer.style.top = `${topOffset}px`;
                         cardContainer.style.position = 'absolute';
+                        cardContainer.style.top = `${topOffset}px`;
                         cardContainer.style.left = '0px';
+                        cardContainer.style.zIndex = cardIndex.toString();
+                        
+                        // 清除可能干扰定位的属性
+                        cardContainer.style.transform = '';
+                        cardContainer.style.transition = '';
                         
                         const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
                         
@@ -1029,10 +1043,17 @@
                 
                 // 设置拖拽样式
                 this.draggedCards.forEach((card, index) => {
+                    // 重要：先清除所有可能影响定位的CSS属性
+                    card.style.transition = 'none';
+                    card.style.transform = 'none';
+                    
+                    // 设置拖拽定位
                     card.style.position = 'fixed';
                     card.style.zIndex = (1000 + index).toString();
                     card.style.pointerEvents = 'none';
                     card.style.cursor = 'grabbing';
+                    
+                    // 最后添加拖拽类
                     card.classList.add('dragging');
                 });
                 
@@ -1056,25 +1077,47 @@
                 e.preventDefault();
                 e.stopPropagation();
                 
-                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+                // 获取准确的鼠标/触摸位置
+                let clientX, clientY;
+                if (e.type.startsWith('touch')) {
+                    clientX = e.touches && e.touches[0] ? e.touches[0].clientX : 0;
+                    clientY = e.touches && e.touches[0] ? e.touches[0].clientY : 0;
+                } else {
+                    clientX = e.clientX || 0;
+                    clientY = e.clientY || 0;
+                }
                 
-                this.updateDragPosition(clientX, clientY);
-                this.highlightDropTargets(clientX, clientY);
+                // 使用requestAnimationFrame确保流畅的拖拽
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                }
+                
+                this.animationFrameId = requestAnimationFrame(() => {
+                    this.updateDragPosition(clientX, clientY);
+                    this.highlightDropTargets(clientX, clientY);
+                });
             }
 
             updateDragPosition(clientX, clientY) {
                 if (!this.draggedCards || this.draggedCards.length === 0) return;
                 
-                this.draggedCards.forEach((card, index) => {
-                    if (card && card.style) {
-                        const newLeft = clientX - this.offsetX;
-                        const newTop = clientY - this.offsetY + (index * 15);
-                        
-                        card.style.left = `${newLeft}px`;
-                        card.style.top = `${newTop}px`;
-                    }
-                });
+                // 使用requestAnimationFrame确保流畅的动画
+                const updatePosition = () => {
+                    this.draggedCards.forEach((card, index) => {
+                        if (card && card.style) {
+                            const newLeft = clientX - this.offsetX;
+                            const newTop = clientY - this.offsetY + (index * 15);
+                            
+                            // 直接设置位置，不使用transition以确保即时响应
+                            card.style.left = `${newLeft}px`;
+                            card.style.top = `${newTop}px`;
+                            card.style.transform = 'none'; // 清除可能干扰的transform
+                        }
+                    });
+                };
+                
+                // 立即更新位置
+                updatePosition();
             }
 
             highlightDropTargets(clientX, clientY) {
@@ -1148,6 +1191,8 @@
             }
 
             performMove(targetPileIndex, cardsDataToMove) {
+                console.log('执行移动到桩', targetPileIndex);
+                
                 // 执行实际的数据移动
                 this.gameState.tableauPiles[this.originalPileIndex].splice(this.originalCardIndex);
                 this.gameState.tableauPiles[targetPileIndex].push(...cardsDataToMove);
@@ -1159,6 +1204,7 @@
                     if (!newTopCard.isFaceUp) {
                         newTopCard.isFaceUp = true;
                         this.gameState.score += 5;
+                        console.log('翻开新的顶牌');
                     }
                 }
                 
@@ -1167,6 +1213,7 @@
                 // 检查完整序列
                 const targetPile = this.gameState.tableauPiles[targetPileIndex];
                 if (this.checkCompleteSequence(targetPile)) {
+                    console.log('发现完整序列，移除到基础桩');
                     const completedSequence = targetPile.splice(targetPile.length - 13, 13);
                     this.gameState.foundations.push(completedSequence);
                     this.gameState.score += 100;
@@ -1184,27 +1231,54 @@
                     this.checkWinState();
                 }
                 
-                // 重新渲染游戏
-                this.renderGame();
+                // 重新渲染游戏 - 确保正确的定位
+                setTimeout(() => {
+                    this.renderGame();
+                }, 50);
             }
 
             returnCardsToOriginalPosition() {
                 if (!this.originalPositions || this.originalPositions.length === 0) return;
                 
+                console.log('返回原位置，卡片数量:', this.originalPositions.length);
+                
                 this.originalPositions.forEach((pos, index) => {
                     const element = pos.element;
-                    element.style.transition = 'all 0.3s ease';
-                    element.style.position = 'absolute';
-                    element.style.top = pos.top;
-                    element.style.left = pos.left || '0px';
-                    element.style.zIndex = pos.zIndex || 'auto';
+                    if (element && element.style) {
+                        // 重要：先移除dragging类和相关样式
+                        element.classList.remove('dragging');
+                        
+                        // 添加过渡动画
+                        element.style.transition = 'all 0.3s ease';
+                        
+                        // 恢复原始定位模式
+                        element.style.position = pos.position;
+                        element.style.top = pos.top;
+                        element.style.left = pos.left;
+                        element.style.zIndex = pos.zIndex;
+                        
+                        // 清除拖拽相关样式
+                        element.style.transform = '';
+                        element.style.pointerEvents = '';
+                        element.style.cursor = '';
+                        
+                        console.log(`卡片 ${index} 返回位置:`, {
+                            top: pos.top,
+                            left: pos.left,
+                            position: pos.position
+                        });
+                    }
                 });
                 
-                // 清理过渡效果
+                // 清理过渡效果并重新渲染
                 setTimeout(() => {
-                    this.originalPositions.forEach(pos => {
-                        pos.element.style.transition = '';
-                    });
+                    if (this.originalPositions) {
+                        this.originalPositions.forEach(pos => {
+                            if (pos.element && pos.element.style) {
+                                pos.element.style.transition = '';
+                            }
+                        });
+                    }
                     this.renderGame();
                 }, 300);
             }
@@ -1217,7 +1291,13 @@
             }
 
             cleanupDrag() {
-                console.log('清理拖拽状态'); // 调试日志
+                console.log('清理拖拽状态');
+                
+                // 取消动画帧
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
                 
                 // 移除高亮
                 document.querySelectorAll('.tableau-pile.drag-over').forEach(pile => {
@@ -1231,6 +1311,10 @@
                             card.classList.remove('dragging');
                             card.style.pointerEvents = '';
                             card.style.cursor = '';
+                            // 清理拖拽相关的样式
+                            card.style.transition = '';
+                            card.style.transform = '';
+                            card.style.willChange = '';
                         }
                     });
                 }
@@ -1422,4 +1506,3 @@
     </script>
 </body>
 </html>
-
