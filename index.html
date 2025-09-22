@@ -1,229 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>imp beauty — Spider Solitaire (4-suit)</title>
-  <meta name="description" content="Play Imp Beauty — a polished 4-suit Spider Solitaire in your browser. Responsive UI, Apple-style colors, touch & mouse controls. No downloads." />
-  <link rel="canonical" href="https://imp.beauty/" />
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Imp Beauty - The Ultimate Imp Spider Solitaire Game</title>
+    <meta name="description" content="Play Imp Beauty, a modern and elegant spider solitaire game. Enjoy a minimalist design with smooth gameplay on both desktop and mobile devices.">
+    <link rel="canonical" href="https://imp.beauty/">
 
-  <style>
-    .card {
-      width: 100%;
-      aspect-ratio: 5/7;
-      border-radius: 0.6rem;
-      box-shadow: 0 4px 10px rgba(16,24,40,0.12);
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 6%;
-      font-weight: 600;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: white;
-      transition: transform .12s ease, box-shadow .12s ease;
-    }
-    .card.face-down {
-      background: linear-gradient(135deg,#0f172a,#111827);
-      color: white;
-    }
-    .card .corner {
-      font-size: clamp(0.6rem, 1.5vw, 1rem);
-      line-height: 1.1;
-    }
-    .card .suit {
-      font-size: clamp(1rem, 3vw, 1.6rem);
-      text-align: center;
-      margin-top: 0.4em;
-    }
+    <meta property="og:title" content="Imp Beauty - The Ultimate Imp Spider Solitaire Game">
+    <meta property="og:description" content="Play Imp Beauty, a modern and elegant spider solitaire game. Enjoy a minimalist design with smooth gameplay on both desktop and mobile devices.">
+    <meta property="og:url" content="https://imp.beauty/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://imp.beauty/social-share-image.jpg"> <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom Apple-inspired colors */
+        :root {
+            --color-dark-bg: #1C1C1E;
+            --color-light-text: #F2F2F7;
+            --color-accent-blue: #0A84FF;
+            --color-accent-green: #30D158;
+            --color-card-bg: #2C2C2E;
+        }
 
-    #piles {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: clamp(0.2rem, 0.5vw, 0.5rem);
-    }
-    .pile { width: 100%; }
-    .pile .stack { position: relative; min-height: 2rem; }
-    .pile .stack .card {
-      position: absolute;
-      left: 0; right: 0; margin: auto;
-      top: calc(var(--i) * 18%);
-    }
-    @media (min-width: 768px) {
-      .pile .stack .card { top: calc(var(--i) * 14%); }
-    }
-
-    .pile .stack .card.dragging {
-      z-index: 999;
-      transform: scale(1.06) translateY(-6px);
-      box-shadow: 0 18px 36px rgba(2,6,23,0.45);
-    }
-    .pile .stack.drop-highlight {
-      box-shadow: inset 0 0 0 2px rgba(10,132,255,0.25);
-      border-radius: 0.5rem;
-    }
-    .card.selected {
-      outline: 2px solid #2563eb;
-    }
-  </style>
+        body {
+            background-color: var(--color-dark-bg);
+            color: var(--color-light-text);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 text-slate-800 antialiased">
-  <div class="max-w-6xl mx-auto p-4 sm:p-6">
-    <header class="flex items-center justify-between mb-4">
-      <div>
-        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">imp beauty</h1>
-        <p class="text-sm text-slate-600 mt-1">A clean, mobile-friendly 4-suit Spider Solitaire — play instantly.</p>
-      </div>
-      <div class="space-x-2">
-        <button id="newBtn" class="px-3 py-2 bg-blue-500 text-white rounded-lg shadow-sm text-sm">New Game</button>
-        <button id="dealBtn" class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm">Deal +</button>
-      </div>
-    </header>
+<body class="font-sans antialiased text-white">
 
-    <section class="mb-4">
-      <p class="text-sm text-slate-600">One-liner: <span class="font-medium text-slate-800">Imp Beauty — timeless Spider Solitaire, built for desktop & touch.</span></p>
-    </section>
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <main class="bg-white rounded-2xl p-4 shadow-md">
-      <div class="flex items-center justify-between mb-3">
-        <div class="text-xs text-slate-600">Score: <span id="score">0</span></div>
-        <div class="text-xs text-slate-600">Stock: <span id="stockCount">50</span></div>
-      </div>
+        <header class="text-center mb-8">
+            <h1 class="text-6xl md:text-8xl font-bold tracking-tight" style="color: var(--color-accent-green);">Imp Beauty</h1>
+            <p class="mt-4 text-lg md:text-xl font-light text-gray-400">The most elegant spider solitaire game you'll ever play.</p>
+        </header>
 
-      <div id="table" class="w-full overflow-x-auto pb-6">
-        <div id="piles"></div>
-      </div>
-    </main>
-  </div>
+        <main class="w-full max-w-2xl text-center">
+            
+            <p class="text-xl md:text-2xl font-medium leading-relaxed mb-8">
+                Unwind with <span style="color: var(--color-accent-blue);" class="font-bold">Imp Beauty</span>, a beautifully designed spider solitaire experience. With a minimalist interface and fluid animations, it's the perfect way to pass the time.
+            </p>
 
-  <script>
-    const SUITS = ['♠','♥','♦','♣'];
-    const RANK_LABEL = {1:'A',11:'J',12:'Q',13:'K'};
-    const state = { piles: [], stock: [], score: 0, selected: null };
+            <div id="game-container" class="w-full bg-gray-800 rounded-2xl shadow-xl border-4" style="border-color: var(--color-card-bg);">
+                <div class="h-96 md:h-[600px] flex items-center justify-center text-xl font-semibold text-gray-400 p-8">
+                    Your Solitaire Game Here
+                </div>
+            </div>
 
-    const pilesEl = document.getElementById('piles');
-    const stockCountEl = document.getElementById('stockCount');
-    const scoreEl = document.getElementById('score');
+            <div class="mt-12 text-left space-y-6">
+                <h2 class="text-3xl font-bold" style="color: var(--color-accent-blue);">Game Overview</h2>
+                <p class="text-base leading-relaxed text-gray-400">
+                    <strong class="text-white">Imp Beauty</strong> is a modern take on the classic spider solitaire game. The goal is to create sets of cards from King to Ace, which are then removed from the tableau. The game is designed for a seamless experience on any device, from a large desktop monitor to a smartphone.
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-base text-gray-400">
+                    <li><strong class="text-white">Fluid Gameplay:</strong> Drag and drop cards with smooth, intuitive controls.</li>
+                    <li><strong class="text-white">Minimalist Design:</strong> A clean interface that lets you focus on the game, not the clutter.</li>
+                    <li><strong class="text-white">Adaptive Display:</strong> Automatically adjusts to your screen size for optimal play.</li>
+                    <li><strong class="text-white">Offline Mode:</strong> Play anytime, anywhere, with no internet required.</li>
+                </ul>
+            </div>
+            
+        </main>
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      return array;
-    }
-    function createDeck() {
-      const deck = [];
-      for (let copy=0; copy<2; copy++) {
-        for (const s of SUITS) {
-          for (let r=1; r<=13; r++) {
-            deck.push({rank:r, suit:s, faceUp:false, id: s+r+'-'+copy+Math.random()});
-          }
-        }
-      }
-      return shuffle(deck);
-    }
-
-    function newGame() {
-      state.score = 0;
-      const deck = createDeck();
-      state.piles = Array.from({length:10}, () => []);
-      for (let i=0;i<10;i++) {
-        const count = i < 4 ? 6 : 5;
-        for (let j=0;j<count;j++) {
-          const card = deck.shift();
-          state.piles[i].push(card);
-        }
-      }
-      for (let i=0;i<10;i++) {
-        const pile = state.piles[i];
-        if (pile.length) pile[pile.length-1].faceUp = true;
-      }
-      state.stock = deck;
-      render();
-    }
-
-    function rankLabel(r) { return RANK_LABEL[r] || r; }
-    function createCardEl(card) {
-      const el = document.createElement('div');
-      el.className = card.faceUp ? 'card face-up' : 'card face-down';
-      if (card.faceUp) {
-        el.innerHTML = `
-          <div class="corner top-left">${rankLabel(card.rank)}<br>${card.suit}</div>
-          <div class="suit">${card.suit}</div>
-          <div class="corner bottom-right">${rankLabel(card.rank)}<br>${card.suit}</div>
-        `;
-        if (card.suit==='♥' || card.suit==='♦') el.style.color = '#DC2626';
-      } else {
-        el.innerHTML = '<div style="margin:auto;font-size:14px;opacity:.8">IMP</div>';
-      }
-      return el;
-    }
-
-    function canPlace(card, targetPile) {
-      if (targetPile.length === 0) return true;
-      const top = targetPile[targetPile.length - 1];
-      return top.faceUp && card.rank === top.rank - 1 && card.suit === top.suit;
-    }
-
-    function render() {
-      stockCountEl.innerText = state.stock.length;
-      scoreEl.innerText = state.score;
-      pilesEl.innerHTML = '';
-      state.piles.forEach((pile, pi) => {
-        const pileDiv = document.createElement('div');
-        pileDiv.className = 'pile';
-        const stack = document.createElement('div');
-        stack.className = 'stack';
-        stack.dataset.pile = pi;
-
-        pile.forEach((card, i) => {
-          const cardEl = createCardEl(card);
-          cardEl.dataset.pile = pi;
-          cardEl.dataset.index = i;
-          cardEl.style.setProperty('--i', i);
-          if (state.selected && state.selected.pile === pi && state.selected.index === i) {
-            cardEl.classList.add('selected');
-          }
-
-          cardEl.addEventListener('click', () => {
-            if (!card.faceUp) return;
-            if (state.selected) {
-              const sel = state.selected;
-              if (sel.pile === pi && sel.index === i) {
-                state.selected = null;
-              } else {
-                const moving = state.piles[sel.pile].slice(sel.index);
-                if (canPlace(moving[0], state.piles[pi])) {
-                  state.piles[pi].push(...moving);
-                  state.piles[sel.pile] = state.piles[sel.pile].slice(0, sel.index);
-                  if (state.piles[sel.pile].length) {
-                    state.piles[sel.pile][state.piles[sel.pile].length - 1].faceUp = true;
-                  }
-                  state.selected = null;
-                } else {
-                  state.selected = null;
-                }
-              }
-            } else {
-              state.selected = {pile: pi, index: i};
-            }
-            render();
-          });
-
-          stack.appendChild(cardEl);
-        });
-
-        pileDiv.appendChild(stack);
-        pilesEl.appendChild(pileDiv);
-      });
-    }
-
-    document.getElementById('newBtn').addEventListener('click', newGame);
-    newGame();
-  </script>
+        <footer class="mt-12 text-center text-sm font-light text-gray-500">
+            <p>&copy; 2023 Imp.Beauty. All rights reserved.</p>
+        </footer>
+    </div>
 </body>
 </html>
