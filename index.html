@@ -149,6 +149,10 @@
         }
 
         .card-container.is-flipped {
+            transform: rotateY(0deg);
+        }
+
+        .card-container:not(.is-flipped) {
             transform: rotateY(180deg);
         }
 
