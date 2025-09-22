@@ -1,57 +1,4 @@
-checkWinState() {
-                let totalFoundationCards = 0;
-                this.gameState.foundations.forEach(pile => {
-                    totalFoundationCards += pile.length;
-                });
-
-                if (totalFoundationCards === 104) {
-                    this.winGame();
-                }
-            }
-
-            dealCards() {
-                if (this.gameState.stockPiles.length === 0) {
-                    console.log("库存牌已用完");
-                    return;
-                }
-
-                for (let i = 0; i < 10; i++) {
-                    if (this.gameState.tableauPiles[i].length === 0) {
-                        alert("有空桩时无法发牌，请先移动牌到空桩");
-                        return;
-                    }
-                }
-
-                for (let i = 0; i < 10; i++) {
-                    if (this.gameState.stockPiles.length > 0) {
-                        const cardToDeal = this.gameState.stockPiles.shift();
-                        cardToDeal.isFaceUp = true;
-                        this.gameState.tableauPiles[i].push(cardToDeal);
-                    }
-                }
-                
-                this.gameState.moves++;
-                this.gameState.score -= 1;
-                this.renderGame();
-                this.checkForAutoFlips();
-            }
-
-            checkForAutoFlips() {
-                let hasFlipped = false;
-                this.gameState.tableauPiles.forEach(pile => {
-                    if (pile.length > 0) {
-                        const topCard = pile[pile.length - 1];
-                        if (!topCard.isFaceUp) {
-                            topCard.isFaceUp = true;
-                            hasFlipped = true;
-                        }
-                    }
-                });
-                
-                if (hasFlipped) {
-                    setTimeout(() => this.renderGame(), 100);
-                }
-            }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1475,3 +1422,4 @@ checkWinState() {
     </script>
 </body>
 </html>
+
