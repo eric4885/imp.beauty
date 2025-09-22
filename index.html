@@ -157,6 +157,8 @@
             border: 2px dashed transparent;
             border-radius: var(--card-radius);
             transition: border-color 0.2s;
+            /* 确保有足够的点击区域 */
+            padding-bottom: 60px;
         }
 
         .tableau-pile.drag-over {
@@ -462,6 +464,7 @@
 
         class SpiderSolitaire {
             constructor() {
+                console.log('SpiderSolitaire 构造函数被调用'); // 调试日志
                 this.gameState = null;
                 this.timerInterval = null;
                 this.startTime = null;
@@ -472,7 +475,9 @@
                 this.isDragging = false;
                 this.animationFrameId = null;
                 
+                console.log('开始初始化事件监听器'); // 调试日志
                 this.initializeEventListeners();
+                console.log('事件监听器初始化完成'); // 调试日志
             }
 
             createAndShuffleDeck() {
@@ -501,9 +506,13 @@
             }
 
             initializeGame(shuffledDeck = null) {
+                console.log('初始化游戏开始'); // 调试日志
+                
                 if (!shuffledDeck) {
                     shuffledDeck = this.createAndShuffleDeck();
                 }
+
+                console.log('创建了', shuffledDeck.length, '张牌'); // 调试日志
 
                 this.gameState = {
                     tableauPiles: Array.from({ length: 10 }, () => []),
@@ -517,22 +526,36 @@
                 let cardIndex = 0;
                 const cardsPerPile = [6, 6, 6, 6, 5, 5, 5, 5, 5, 5];
 
+                // 分发初始牌
                 for (let pileIndex = 0; pileIndex < 10; pileIndex++) {
+                    console.log(`为桩 ${pileIndex} 分发 ${cardsPerPile[pileIndex]} 张牌`);
                     for (let i = 0; i < cardsPerPile[pileIndex]; i++) {
-                        let card = shuffledDeck[cardIndex];
-                        this.gameState.tableauPiles[pileIndex].push(card);
-                        cardIndex++;
+                        if (cardIndex < shuffledDeck.length) {
+                            let card = shuffledDeck[cardIndex];
+                            this.gameState.tableauPiles[pileIndex].push(card);
+                            cardIndex++;
+                        }
                     }
+                    // 翻开每堆的顶牌
                     let topCard = this.gameState.tableauPiles[pileIndex][this.gameState.tableauPiles[pileIndex].length - 1];
                     if (topCard) {
                         topCard.isFaceUp = true;
+                        console.log(`桩 ${pileIndex} 顶牌 ${topCard.name} 已翻开`);
                     }
                 }
                 
+                // 剩余的牌放入库存
                 this.gameState.stockPiles = shuffledDeck.slice(cardIndex);
+                console.log('库存牌数:', this.gameState.stockPiles.length);
+                
+                // 验证分发结果
+                const totalCards = this.gameState.tableauPiles.reduce((sum, pile) => sum + pile.length, 0) + this.gameState.stockPiles.length;
+                console.log('总牌数验证:', totalCards, '应为 104');
                 
                 this.startTimer();
-                this.renderGame();
+                
+                console.log('游戏初始化完成，准备渲染');
+                // 不在这里调用 renderGame，由 startGame 调用
             }
 
             startTimer() {
@@ -557,12 +580,25 @@
             }
 
             renderGame() {
-                if (!this.gameState) return;
+                console.log('开始渲染游戏'); // 调试日志
+                if (!this.gameState) {
+                    console.error('游戏状态为空，无法渲染');
+                    return;
+                }
+
+                console.log('渲染游戏状态:', {
+                    moves: this.gameState.moves,
+                    score: this.gameState.score,
+                    stockPiles: this.gameState.stockPiles.length,
+                    tableauPiles: this.gameState.tableauPiles.map(pile => pile.length)
+                });
 
                 this.updateGameStats();
                 this.renderStockPile();
                 this.renderFoundations();
                 this.renderTableauPiles();
+                
+                console.log('游戏渲染完成');
             }
 
             updateGameStats() {
@@ -615,21 +651,30 @@
             }
 
             renderTableauPiles() {
+                console.log('开始渲染tableau piles'); // 调试日志
                 const suitSymbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
                 
                 this.gameState.tableauPiles.forEach((pile, pileIndex) => {
                     const pileElement = document.getElementById(`pile-${pileIndex}`);
+                    if (!pileElement) {
+                        console.error(`找不到桩元素: pile-${pileIndex}`);
+                        return;
+                    }
+                    
+                    console.log(`渲染桩 ${pileIndex}，包含 ${pile.length} 张牌`);
                     pileElement.innerHTML = '';
                     
                     pile.forEach((card, cardIndex) => {
                         const cardContainer = document.createElement('div');
                         cardContainer.className = 'card-container';
-                        cardContainer.dataset.cardIndex = cardIndex;
-                        cardContainer.dataset.pileIndex = pileIndex;
+                        cardContainer.dataset.cardIndex = cardIndex.toString();
+                        cardContainer.dataset.pileIndex = pileIndex.toString();
                         cardContainer.dataset.cardId = card.id;
                         
                         const topOffset = cardIndex * 15;
                         cardContainer.style.top = `${topOffset}px`;
+                        cardContainer.style.position = 'absolute';
+                        cardContainer.style.left = '0px';
                         
                         const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
                         
@@ -651,8 +696,8 @@
                         if (card.isFaceUp) {
                             cardContainer.classList.add('is-flipped');
                             cardContainer.style.cursor = 'grab';
-                            // Add draggable attribute for better UX
                             cardContainer.setAttribute('draggable', 'false');
+                            console.log(`牌 ${card.name}${suitSymbols[card.suit]} 已翻开，可拖拽`);
                         } else {
                             cardContainer.style.cursor = 'default';
                         }
@@ -660,6 +705,8 @@
                         pileElement.appendChild(cardContainer);
                     });
                 });
+                
+                console.log('tableau piles 渲染完成');
             }
 
             checkCompleteSequence(pile) {
@@ -768,33 +815,90 @@
             }
 
             getDropTarget(x, y) {
-                const elements = document.elementsFromPoint(x, y);
-                for (const element of elements) {
-                    const pile = element.closest('.tableau-pile');
-                    if (pile) {
+                console.log('检测拖放目标，坐标:', x, y); // 调试日志
+                
+                if (!x || !y) {
+                    console.log('无效坐标'); // 调试日志
+                    return null;
+                }
+                
+                // 首先尝试用elementsFromPoint
+                try {
+                    const elements = document.elementsFromPoint(x, y);
+                    console.log('坐标下的元素:', elements.map(el => el.className || el.tagName)); // 调试日志
+                    
+                    for (const element of elements) {
+                        // 跳过正在拖拽的元素
+                        if (element.classList.contains('dragging')) continue;
+                        
+                        const pile = element.closest('.tableau-pile');
+                        if (pile) {
+                            console.log('找到目标桩:', pile.id); // 调试日志
+                            return pile;
+                        }
+                    }
+                } catch (e) {
+                    console.error('elementsFromPoint 出错:', e);
+                }
+                
+                // 如果没有找到，手动检查每个桩的边界
+                const piles = document.querySelectorAll('.tableau-pile');
+                console.log('手动检查', piles.length, '个桩'); // 调试日志
+                
+                for (const pile of piles) {
+                    const rect = pile.getBoundingClientRect();
+                    const margin = 30; // 增大检测边距
+                    
+                    if (x >= rect.left - margin && 
+                        x <= rect.right + margin && 
+                        y >= rect.top - margin && 
+                        y <= rect.bottom + margin + 120) { // 增加更大的底部区域
+                        console.log('边界检测找到目标桩:', pile.id); // 调试日志
                         return pile;
                     }
                 }
+                
+                console.log('没有找到目标桩'); // 调试日志
                 return null;
             }
 
             initializeEventListeners() {
+                console.log('正在初始化事件监听器'); // 调试日志
+                
+                // 检查关键元素是否存在
+                const startBtn = document.getElementById('start-game-btn');
+                const backBtn = document.getElementById('back-to-landing');
+                
+                console.log('开始按钮:', startBtn ? '存在' : '不存在');
+                console.log('返回按钮:', backBtn ? '存在' : '不存在');
+                
                 // Landing page to game transition
-                document.getElementById('start-game-btn').addEventListener('click', () => {
-                    this.startGame();
-                });
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => {
+                        console.log('开始按钮被点击'); // 调试日志
+                        this.startGame();
+                    });
+                } else {
+                    console.error('找不到开始游戏按钮');
+                }
 
-                document.getElementById('back-to-landing').addEventListener('click', () => {
-                    this.backToLanding();
-                });
+                if (backBtn) {
+                    backBtn.addEventListener('click', () => {
+                        this.backToLanding();
+                    });
+                }
 
-                document.getElementById('back-to-home-win').addEventListener('click', () => {
-                    this.backToLanding();
-                });
+                const backWinBtn = document.getElementById('back-to-home-win');
+                if (backWinBtn) {
+                    backWinBtn.addEventListener('click', () => {
+                        this.backToLanding();
+                    });
+                }
 
                 // Game controls - using event delegation to handle dynamic elements
                 document.addEventListener('click', (e) => {
                     if (e.target.closest('#stock-pile')) {
+                        console.log('库存桩被点击'); // 调试日志
                         this.dealCards();
                     } else if (e.target.closest('#restart-btn-top')) {
                         this.restartGame();
@@ -820,12 +924,24 @@
                         this.cancelDrag();
                     }
                 });
+                
+                console.log('事件监听器设置完成'); // 调试日志
             }
 
             startGame() {
+                console.log('开始游戏'); // 调试日志
                 document.body.classList.add('game-active');
                 document.body.classList.add('fade-in');
+                
+                // 确保游戏状态被正确初始化
                 this.initializeGame();
+                
+                // 添加一个小延迟确保DOM更新完成
+                setTimeout(() => {
+                    console.log('游戏状态:', this.gameState);
+                    console.log('tableau piles:', this.gameState?.tableauPiles?.map(pile => pile.length));
+                    this.renderGame();
+                }, 100);
             }
 
             backToLanding() {
@@ -839,7 +955,7 @@
             }
 
             handleStart(e) {
-                // Only handle drag events when in game mode and targeting cards
+                // 只在游戏模式下处理拖拽
                 if (!document.body.classList.contains('game-active')) return;
                 
                 const cardElement = e.target.closest('.card-container');
@@ -847,101 +963,142 @@
                     return;
                 }
 
-                // Prevent default behavior for dragging
+                // 防止默认行为
                 e.preventDefault();
                 e.stopPropagation();
+                
+                console.log('开始拖拽，卡片:', cardElement.dataset); // 调试日志
                 
                 this.originalPileIndex = parseInt(cardElement.dataset.pileIndex);
                 this.originalCardIndex = parseInt(cardElement.dataset.cardIndex);
                 
+                if (isNaN(this.originalPileIndex) || isNaN(this.originalCardIndex)) {
+                    console.error('无效的桩索引或卡片索引');
+                    return;
+                }
+                
                 const pile = this.gameState.tableauPiles[this.originalPileIndex];
+                if (!pile || this.originalCardIndex >= pile.length) {
+                    console.error('找不到对应的牌堆或卡片');
+                    return;
+                }
+                
                 const cardsToCheck = pile.slice(this.originalCardIndex);
                 
+                // 检查是否可以拖拽这个序列
                 if (!this.isValidDragSequence(cardsToCheck)) {
                     if (cardsToCheck.length > 1) {
+                        console.log('无效的拖拽序列，只能拖拽单张牌');
                         return;
                     }
                 }
                 
-                const cardElements = Array.from(cardElement.parentElement.children)
-                    .slice(this.originalCardIndex);
+                // 获取要拖拽的所有DOM元素
+                const allCardsInPile = Array.from(cardElement.parentElement.children);
+                const cardsToDrag = allCardsInPile.slice(this.originalCardIndex);
                 
-                this.draggedCards = cardElements;
+                this.draggedCards = cardsToDrag;
                 this.isDragging = true;
                 
+                console.log('准备拖拽', cardsToDrag.length, '张牌'); // 调试日志
+                
+                // 保存原始位置
                 this.originalPositions = this.draggedCards.map(card => ({
                     element: card,
                     top: card.style.top,
-                    left: card.style.left,
-                    position: card.style.position,
-                    zIndex: card.style.zIndex
+                    left: card.style.left || '0px',
+                    position: card.style.position || 'absolute',
+                    zIndex: card.style.zIndex || 'auto'
                 }));
                 
+                // 设置拖拽样式
                 this.draggedCards.forEach((card, index) => {
                     card.classList.add('dragging');
                     card.style.position = 'fixed';
-                    card.style.zIndex = 1000 + index;
+                    card.style.zIndex = (1000 + index).toString();
                     card.style.pointerEvents = 'none';
                     card.style.cursor = 'grabbing';
                 });
                 
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
+                // 获取鼠标/触摸位置
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
                 
+                // 计算偏移量
                 const rect = cardElement.getBoundingClientRect();
                 this.offsetX = clientX - rect.left;
                 this.offsetY = clientY - rect.top;
                 
+                console.log('拖拽开始位置:', clientX, clientY); // 调试日志
+                
+                // 设置初始拖拽位置
                 this.updateDragPosition(clientX, clientY);
                 
                 document.body.style.userSelect = 'none';
+                document.body.style.cursor = 'grabbing';
             }
 
             handleMove(e) {
-                if (!this.isDragging || !this.draggedCards) return;
+                if (!this.isDragging || !this.draggedCards || this.draggedCards.length === 0) return;
                 
                 e.preventDefault();
+                e.stopPropagation();
                 
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
                 
                 this.updateDragPosition(clientX, clientY);
                 this.highlightDropTargets(clientX, clientY);
             }
 
             updateDragPosition(clientX, clientY) {
-                if (!this.draggedCards) return;
+                if (!this.draggedCards || this.draggedCards.length === 0) return;
                 
                 this.draggedCards.forEach((card, index) => {
-                    card.style.left = `${clientX - this.offsetX}px`;
-                    card.style.top = `${clientY - this.offsetY + (index * 15)}px`;
+                    if (card && card.style) {
+                        const newLeft = clientX - this.offsetX;
+                        const newTop = clientY - this.offsetY + (index * 15);
+                        
+                        card.style.left = `${newLeft}px`;
+                        card.style.top = `${newTop}px`;
+                    }
                 });
             }
 
             highlightDropTargets(clientX, clientY) {
+                // 移除之前的高亮
                 document.querySelectorAll('.tableau-pile.drag-over').forEach(pile => {
                     pile.classList.remove('drag-over');
                 });
                 
+                // 高亮当前悬停的桩
                 const dropTarget = this.getDropTarget(clientX, clientY);
                 if (dropTarget) {
                     const targetPileIndex = parseInt(dropTarget.id.replace('pile-', ''));
                     const draggedCardsData = this.gameState.tableauPiles[this.originalPileIndex]
                         .slice(this.originalCardIndex);
                     
-                    if (this.isValidMove(draggedCardsData, targetPileIndex)) {
+                    // 确保不是同一个桩，并且移动有效
+                    if (targetPileIndex !== this.originalPileIndex && 
+                        this.isValidMove(draggedCardsData, targetPileIndex)) {
                         dropTarget.classList.add('drag-over');
                     }
                 }
             }
 
             handleEnd(e) {
-                if (!this.isDragging || !this.draggedCards) return;
+                if (!this.isDragging || !this.draggedCards || this.draggedCards.length === 0) return;
                 
-                const clientX = e.clientX || e.changedTouches?.[0]?.clientX || e.clientX;
-                const clientY = e.clientY || e.changedTouches?.[0]?.clientY || e.clientY;
+                console.log('结束拖拽'); // 调试日志
+                
+                const clientX = e.clientX || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
+                const clientY = e.clientY || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
+                
+                console.log('放下位置:', clientX, clientY); // 调试日志
                 
                 const dropTarget = this.getDropTarget(clientX, clientY);
+                console.log('目标桩:', dropTarget ? dropTarget.id : '无'); // 调试日志
+                
                 const cardsDataToMove = this.gameState.tableauPiles[this.originalPileIndex]
                     .slice(this.originalCardIndex);
                 
@@ -949,14 +1106,23 @@
                 
                 if (dropTarget) {
                     const targetPileIndex = parseInt(dropTarget.id.replace('pile-', ''));
+                    console.log('目标桩索引:', targetPileIndex, '原始桩索引:', this.originalPileIndex); // 调试日志
                     
-                    if (this.isValidMove(cardsDataToMove, targetPileIndex)) {
+                    // 确保不是移动到同一个位置，并且移动有效
+                    if (targetPileIndex !== this.originalPileIndex && 
+                        this.isValidMove(cardsDataToMove, targetPileIndex)) {
+                        console.log('执行移动'); // 调试日志
                         this.performMove(targetPileIndex, cardsDataToMove);
                         moveSuccessful = true;
+                    } else {
+                        console.log('移动无效或同桩移动'); // 调试日志
                     }
+                } else {
+                    console.log('没有找到有效的目标桩'); // 调试日志
                 }
                 
                 if (!moveSuccessful) {
+                    console.log('返回原位置'); // 调试日志
                     this.returnCardsToOriginalPosition();
                 }
                 
@@ -964,9 +1130,11 @@
             }
 
             performMove(targetPileIndex, cardsDataToMove) {
+                // 执行实际的数据移动
                 this.gameState.tableauPiles[this.originalPileIndex].splice(this.originalCardIndex);
                 this.gameState.tableauPiles[targetPileIndex].push(...cardsDataToMove);
                 
+                // 翻开源桩的新顶牌
                 const sourcePile = this.gameState.tableauPiles[this.originalPileIndex];
                 if (sourcePile.length > 0) {
                     const newTopCard = sourcePile[sourcePile.length - 1];
@@ -978,6 +1146,7 @@
                 
                 this.gameState.moves++;
                 
+                // 检查完整序列
                 const targetPile = this.gameState.tableauPiles[targetPileIndex];
                 if (this.checkCompleteSequence(targetPile)) {
                     const completedSequence = targetPile.splice(targetPile.length - 13, 13);
@@ -985,6 +1154,7 @@
                     this.gameState.score += 100;
                     this.gameState.completedSequences++;
                     
+                    // 翻开移除序列后的新顶牌
                     if (targetPile.length > 0) {
                         const newTopCard = targetPile[targetPile.length - 1];
                         if (!newTopCard.isFaceUp) {
@@ -996,18 +1166,27 @@
                     this.checkWinState();
                 }
                 
+                // 重新渲染游戏
                 this.renderGame();
             }
 
             returnCardsToOriginalPosition() {
-                this.originalPositions.forEach(pos => {
-                    pos.element.style.top = pos.top;
-                    pos.element.style.left = pos.left;
-                    pos.element.style.position = pos.position;
-                    pos.element.style.zIndex = pos.zIndex;
+                if (!this.originalPositions || this.originalPositions.length === 0) return;
+                
+                this.originalPositions.forEach((pos, index) => {
+                    const element = pos.element;
+                    element.style.transition = 'all 0.3s ease';
+                    element.style.position = 'absolute';
+                    element.style.top = pos.top;
+                    element.style.left = pos.left || '0px';
+                    element.style.zIndex = pos.zIndex || 'auto';
                 });
                 
+                // 清理过渡效果
                 setTimeout(() => {
+                    this.originalPositions.forEach(pos => {
+                        pos.element.style.transition = '';
+                    });
                     this.renderGame();
                 }, 300);
             }
@@ -1020,22 +1199,36 @@
             }
 
             cleanupDrag() {
+                console.log('清理拖拽状态'); // 调试日志
+                
+                // 移除高亮
                 document.querySelectorAll('.tableau-pile.drag-over').forEach(pile => {
                     pile.classList.remove('drag-over');
                 });
                 
-                if (this.draggedCards) {
+                // 重置拖拽状态
+                if (this.draggedCards && this.draggedCards.length > 0) {
                     this.draggedCards.forEach(card => {
-                        card.classList.remove('dragging');
-                        card.style.pointerEvents = '';
-                        card.style.cursor = '';
+                        if (card && card.classList) {
+                            card.classList.remove('dragging');
+                            card.style.pointerEvents = '';
+                            card.style.cursor = '';
+                        }
                     });
                 }
                 
+                // 重置全局状态
                 this.draggedCards = null;
                 this.isDragging = false;
                 this.originalPositions = [];
+                this.originalPileIndex = null;
+                this.originalCardIndex = null;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                
+                // 恢复页面样式
                 document.body.style.userSelect = '';
+                document.body.style.cursor = '';
             }
 
             showHint() {
@@ -1175,7 +1368,29 @@
         }
 
         // Initialize the game
+        console.log('准备初始化SpiderSolitaire实例'); // 调试日志
         const game = new SpiderSolitaire();
+        console.log('SpiderSolitaire实例创建完成'); // 调试日志
+        
+        // 确保在开始游戏时正确初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM加载完成，游戏准备就绪');
+            
+            // 检查关键DOM元素
+            const gameBoard = document.getElementById('game-board');
+            const stockPile = document.getElementById('stock-pile');
+            const startBtn = document.getElementById('start-game-btn');
+            
+            console.log('游戏面板:', gameBoard ? '存在' : '不存在');
+            console.log('库存桩:', stockPile ? '存在' : '不存在');
+            console.log('开始按钮:', startBtn ? '存在' : '不存在');
+            
+            // 检查tableau桩
+            for (let i = 0; i < 10; i++) {
+                const pile = document.getElementById(`pile-${i}`);
+                console.log(`桩 ${i}:`, pile ? '存在' : '不存在');
+            }
+        });
         
         // Prevent memory leaks on page unload
         window.addEventListener('beforeunload', () => {
