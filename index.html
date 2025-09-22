@@ -105,6 +105,8 @@
         .card-container.dragging {
             z-index: 1000 !important;
             pointer-events: none;
+            opacity: 0.8;
+            transform: scale(1.02);
         }
 
         .card-face {
@@ -828,8 +830,12 @@
                     console.log('坐标下的元素:', elements.map(el => el.className || el.tagName)); // 调试日志
                     
                     for (const element of elements) {
-                        // 跳过正在拖拽的元素
-                        if (element.classList.contains('dragging')) continue;
+                        // 跳过正在拖拽的元素和其子元素
+                        if (element.classList.contains('dragging') || 
+                            element.closest('.dragging') ||
+                            (this.draggedCards && this.draggedCards.includes(element))) {
+                            continue;
+                        }
                         
                         const pile = element.closest('.tableau-pile');
                         if (pile) {
@@ -846,6 +852,11 @@
                 console.log('手动检查', piles.length, '个桩'); // 调试日志
                 
                 for (const pile of piles) {
+                    // 跳过源桩，避免在同一桩内拖拽
+                    if (this.originalPileIndex !== null && pile.id === `pile-${this.originalPileIndex}`) {
+                        continue;
+                    }
+                    
                     const rect = pile.getBoundingClientRect();
                     const margin = 30; // 增大检测边距
                     
@@ -1011,13 +1022,13 @@
                     zIndex: card.style.zIndex || 'auto'
                 }));
                 
-                // 设置拖拽样式
+                // 设置拖拽样式 - 重要：先隐藏再设置dragging类
                 this.draggedCards.forEach((card, index) => {
-                    card.classList.add('dragging');
                     card.style.position = 'fixed';
                     card.style.zIndex = (1000 + index).toString();
                     card.style.pointerEvents = 'none';
                     card.style.cursor = 'grabbing';
+                    card.classList.add('dragging'); // 放在最后设置
                 });
                 
                 // 获取鼠标/触摸位置
