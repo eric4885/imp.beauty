@@ -94,6 +94,8 @@
             cursor: pointer;
             perspective: 1000px;
             touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
         }
         
         .card-container.transitioning {
@@ -649,6 +651,10 @@
                         if (card.isFaceUp) {
                             cardContainer.classList.add('is-flipped');
                             cardContainer.style.cursor = 'grab';
+                            // Add draggable attribute for better UX
+                            cardContainer.setAttribute('draggable', 'false');
+                        } else {
+                            cardContainer.style.cursor = 'default';
                         }
 
                         pileElement.appendChild(cardContainer);
@@ -786,24 +792,20 @@
                     this.backToLanding();
                 });
 
-                // Game controls
-                document.getElementById('stock-pile').addEventListener('click', () => {
-                    this.dealCards();
+                // Game controls - using event delegation to handle dynamic elements
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('#stock-pile')) {
+                        this.dealCards();
+                    } else if (e.target.closest('#restart-btn-top')) {
+                        this.restartGame();
+                    } else if (e.target.closest('#restart-btn-win')) {
+                        this.restartGame();
+                    } else if (e.target.closest('#hint-btn')) {
+                        this.showHint();
+                    }
                 });
 
-                document.getElementById('restart-btn-top').addEventListener('click', () => {
-                    this.restartGame();
-                });
-                
-                document.getElementById('restart-btn-win').addEventListener('click', () => {
-                    this.restartGame();
-                });
-
-                document.getElementById('hint-btn').addEventListener('click', () => {
-                    this.showHint();
-                });
-
-                // Drag events
+                // Drag events - using event delegation for dynamic card elements
                 document.addEventListener('mousedown', (e) => this.handleStart(e));
                 document.addEventListener('touchstart', (e) => this.handleStart(e), { passive: false });
                 
@@ -837,14 +839,17 @@
             }
 
             handleStart(e) {
+                // Only handle drag events when in game mode and targeting cards
                 if (!document.body.classList.contains('game-active')) return;
                 
                 const cardElement = e.target.closest('.card-container');
                 if (!cardElement || !cardElement.classList.contains('is-flipped')) {
                     return;
                 }
-                
+
+                // Prevent default behavior for dragging
                 e.preventDefault();
+                e.stopPropagation();
                 
                 this.originalPileIndex = parseInt(cardElement.dataset.pileIndex);
                 this.originalCardIndex = parseInt(cardElement.dataset.cardIndex);
