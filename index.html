@@ -1,1801 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
-    <title>Imp Beauty - The Ultimate Imp Spider Solitaire Game</title>
-    <meta name="description" content="Play Imp Beauty, a modern and elegant spider solitaire game. Enjoy a minimalist design with smooth gameplay on both desktop and mobile devices.">
-    <link rel="canonical" href="https://imp.beauty/">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Imp Beauty - Spider Solitaire</title>
+  <meta name="description" content="Play Imp Beauty Spider Solitaire online. A modern, responsive version of the classic card game Spider, styled with Apple-inspired dark theme." />
+  <link rel="canonical" href="https://imp.beauty/" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #1C1C1E;
+      color: #E5E7EB;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    #spider-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: auto;
+      padding: 1rem;
+      text-align: center;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+      margin: auto;
+    }
+    .control-btn {
+      background-color: #0A84FF;
+      color: white;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      margin: 0.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+      transition: background 0.2s;
+    }
+    .control-btn:hover {
+      background-color: #007AFF;
+    }
 
-    <meta property="og:title" content="Imp Beauty - The Ultimate Imp Spider Solitaire Game">
-    <meta property="og:description" content="Play Imp Beauty, a modern and elegant spider solitaire game. Enjoy a minimalist design with smooth gameplay on both desktop and mobile devices.">
-    <meta property="og:url" content="https://imp.beauty/">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://imp.beauty/social-share-image.jpg">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom Apple-inspired colors */
-        :root {
-            --color-dark-bg: #1C1C1E;
-            --color-light-text: #F2F2F7;
-            --color-accent-blue: #0A84FF;
-            --color-accent-green: #30D158;
-            --color-card-bg: #2C2C2E;
-            --color-accent-purple: #AF52DE;
-            --color-accent-orange: #FF9500;
-            
-            /* Game-specific variables */
-            --card-width: 70px;
-            --card-height: calc(var(--card-width) * 1.4);
-            --card-radius: 8px;
-            --card-bg-light: #F9FAFB;
-            --card-bg-dark: var(--color-card-bg);
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --red-suit: #FF3B30;
-            --black-suit: #1C1C1E;
-        }
-
-        body {
-            background-color: var(--color-dark-bg);
-            color: var(--color-light-text);
-            touch-action: manipulation;
-        }
-
-        /* Game state transitions */
-        .landing-state {
-            display: block;
-        }
-        .game-state {
-            display: none;
-        }
-        
-        .game-active .landing-state {
-            display: none;
-        }
-        .game-active .game-state {
-            display: block;
-        }
-
-        /* Hero section animations */
-        .hero-title {
-            background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.2); }
-        }
-
-        .play-button {
-            background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-blue));
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(48, 209, 88, 0.3);
-        }
-
-        .play-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(48, 209, 88, 0.4);
-        }
-
-        /* Card game styles */
-        .card-container {
-            width: var(--card-width);
-            height: var(--card-height);
-            position: absolute;
-            transform-style: preserve-3d;
-            cursor: pointer;
-            perspective: 1000px;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            top: 0;
-            left: 0;
-            /* 移除可能干扰的transition */
-        }
-        
-        .card-container.transitioning {
-            transition: transform 0.6s, top 0.3s ease, left 0.3s ease;
-        }
-
-        .card-container.dragging {
-            z-index: 1000 !important;
-            pointer-events: none;
-            opacity: 0.9;
-            transform: scale(1.02) !important;
-            transition: none !important; /* 禁用过渡动画以确保流畅拖拽 */
-            will-change: transform, left, top; /* 优化GPU加速 */
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-front {
-            background-color: var(--card-bg-light);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: var(--black-suit);
-        }
-        .card-front.is-red {
-            color: var(--red-suit);
-        }
-        .card-front .card-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .card-front .suit-symbol {
-             font-size: 1.5rem;
-        }
-
-        .card-back {
-            background: linear-gradient(135deg, var(--color-card-bg), #3A3A3C);
-            transform: rotateY(180deg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* 修复翻转逻辑 */
-        .card-container {
-            transform: rotateY(180deg); /* 默认显示背面 */
-        }
-        
-        .card-container.is-flipped {
-            transform: rotateY(0deg); /* 翻开时显示正面 */
-        }
-
-        .tableau-pile {
-            position: relative;
-            padding-top: 15px;
-            min-height: calc(var(--card-height) + 80px);
-            border: 2px dashed transparent;
-            border-radius: var(--card-radius);
-            transition: border-color 0.2s;
-            /* 确保有足够的点击区域 */
-            padding-bottom: 60px;
-        }
-
-        .tableau-pile.drag-over {
-            border-color: var(--color-accent-blue);
-            background-color: rgba(10, 132, 255, 0.1);
-        }
-
-        .tableau-pile .card-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: top 0.3s ease;
-        }
-
-        #stock-pile {
-            width: var(--card-width);
-            height: var(--card-height);
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #stock-pile:hover {
-            transform: scale(1.05);
-        }
-
-        #stock-pile .card-back {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        #foundations {
-            display: flex;
-            gap: 8px;
-        }
-        .foundation-pile {
-             width: var(--card-width);
-             height: var(--card-height);
-             border: 2px solid rgba(255, 255, 255, 0.3);
-             border-radius: var(--card-radius);
-             display: flex;
-             align-items: center;
-             justify-content: center;
-        }
-        .foundation-pile .card-container {
-            position: relative;
-        }
-
-        .foundation-pile.empty {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        #game-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            color: var(--color-light-text);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-        }
-
-        #fireworks {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: none;
-            z-index: 9999;
-        }
-        
-        #win-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px black;
-            display: none;
-            text-align: center;
-            z-index: 10000;
-            background: linear-gradient(135deg, rgba(48, 209, 88, 0.9), rgba(10, 132, 255, 0.9));
-            padding: 2rem;
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn {
-            background: var(--color-accent-blue);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            color: white;
-            font-weight: 500;
-        }
-        .btn:hover { 
-            background: #0056CC;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
-        }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .btn:disabled:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: none;
-            box-shadow: none;
-        }
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            :root {
-                --card-width: 60px;
-            }
-            .card-front .card-value {
-                font-size: 1rem;
-            }
-            .card-front .suit-symbol {
-                font-size: 1.2rem;
-            }
-            .hero-title {
-                font-size: 3rem !important;
-            }
-        }
-
-        /* Animations */
-        @media (prefers-reduced-motion: reduce) {
-            .card-container {
-                transition: none;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--color-dark-bg);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--color-accent-blue);
-            border-radius: 4px;
-        }
-    </style>
+    /* fireworks canvas */
+    #fireworks-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
 </head>
-<body class="font-sans antialiased text-white">
+<body>
+  <div id="spider-container">
+    <h1 class="text-3xl md:text-5xl font-bold text-gray-100 mb-4">Imp Beauty - Spider Solitaire</h1>
+    <p class="mb-6 text-gray-300">Enjoy Spider Solitaire online — a classic card game reimagined with modern, Apple-inspired design. Play on desktop or mobile, anywhere.</p>
 
-    <!-- Landing Page State -->
-    <div class="landing-state">
-        <div class="min-h-screen flex flex-col items-center justify-center p-4">
-            <header class="text-center mb-8">
-                <h1 class="hero-title text-6xl md:text-8xl font-bold tracking-tight">Imp Beauty</h1>
-                <p class="mt-4 text-lg md:text-xl font-light text-gray-400">The most elegant spider solitaire game you'll ever play.</p>
-            </header>
+    <!-- 游戏区域 -->
+    <div id="spider-game"></div>
 
-            <main class="w-full max-w-2xl text-center">
-                <p class="text-xl md:text-2xl font-medium leading-relaxed mb-8">
-                    Unwind with <span style="color: var(--color-accent-blue);" class="font-bold">Imp Beauty</span>, a beautifully designed spider solitaire experience. With a minimalist interface and fluid animations, it's the perfect way to pass the time.
-                </p>
-
-                <div class="mb-8">
-                    <button id="start-game-btn" class="play-button text-white text-xl font-bold py-4 px-8 rounded-2xl">
-                        🎴 Start Playing
-                    </button>
-                </div>
-
-                <div id="game-preview" class="w-full bg-gray-800 rounded-2xl shadow-xl border-4 mb-12" style="border-color: var(--color-card-bg);">
-                    <div class="h-96 md:h-[500px] flex items-center justify-center text-xl font-semibold text-gray-400 p-8">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">🎴</div>
-                            <div class="text-lg">Professional Spider Solitaire Engine</div>
-                            <div class="text-sm text-gray-500 mt-2">Powered by fSpider.js • Advanced Action System</div>
-                            <div class="text-xs text-gray-600 mt-4">
-                                Features: Undo/Redo • Action History • Professional Architecture
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-left space-y-6">
-                    <h2 class="text-3xl font-bold" style="color: var(--color-accent-blue);">Game Overview</h2>
-                    <p class="text-base leading-relaxed text-gray-400">
-                        <strong class="text-white">Imp Beauty</strong> is a modern take on the classic spider solitaire game. The goal is to create sets of cards from King to Ace, which are then removed from the tableau. The game is designed for a seamless experience on any device, from a large desktop monitor to a smartphone.
-                    </p>
-                    
-                    <h3 class="text-2xl font-bold text-white">How to Play</h3>
-                    <ul class="list-disc list-inside space-y-2 text-base text-gray-400">
-                        <li><strong class="text-white">Goal:</strong> Remove all cards by building complete sequences from King to Ace in the same suit.</li>
-                        <li><strong class="text-white">Card Movement:</strong> Cards can be moved in descending order (King, Queen, Jack, 10, etc.) regardless of suit.</li>
-                        <li><strong class="text-white">Sequence Building:</strong> Only complete same-suit sequences from King to Ace are removed.</li>
-                        <li><strong class="text-white">Stock Pile:</strong> Click to deal one card to each column when you're stuck.</li>
-                        <li><strong class="text-white">Empty Columns:</strong> Any card or valid sequence can be placed in an empty column.</li>
-                    </ul>
-                    
-                    <h3 class="text-2xl font-bold text-white">Features</h3>
-                    <ul class="list-disc list-inside space-y-2 text-base text-gray-400">
-                        <li><strong class="text-white">Fluid Gameplay:</strong> Drag and drop cards with smooth, intuitive controls.</li>
-                        <li><strong class="text-white">Minimalist Design:</strong> A clean interface that lets you focus on the game, not the clutter.</li>
-                        <li><strong class="text-white">Adaptive Display:</strong> Automatically adjusts to your screen size for optimal play.</li>
-                        <li><strong class="text-white">Offline Mode:</strong> Play anytime, anywhere, with no internet required.</li>
-                        <li><strong class="text-white">Score System:</strong> Challenge yourself with our intelligent scoring system.</li>
-                        <li><strong class="text-white">Hint System:</strong> Get helpful suggestions when you're stuck.</li>
-                        <li><strong class="text-white">Auto-flip:</strong> Face-down cards are automatically revealed when exposed.</li>
-                    </ul>
-                    
-                    <h3 class="text-2xl font-bold text-white">Tips for Success</h3>
-                    <ul class="list-disc list-inside space-y-2 text-base text-gray-400">
-                        <li><strong class="text-white">Plan Ahead:</strong> Try to expose face-down cards by moving the cards on top of them.</li>
-                        <li><strong class="text-white">Build in Suit:</strong> Whenever possible, build sequences in the same suit for easier completion.</li>
-                        <li><strong class="text-white">Use Empty Columns:</strong> Empty columns are valuable for temporarily storing cards.</li>
-                        <li><strong class="text-white">Don't Rush:</strong> Take your time to consider all possible moves before dealing new cards.</li>
-                    </ul>
-                </div>
-            </main>
-
-            <footer class="mt-12 text-center text-sm font-light text-gray-500">
-                <p>&copy; 2025 Imp.Beauty. All rights reserved.</p>
-            </footer>
-        </div>
+    <!-- 控制按钮 -->
+    <div class="mt-6">
+      <button class="control-btn" onclick="fSpider.restart()">Restart Game</button>
+      <button class="control-btn" onclick="toggleFullScreen()">Fullscreen</button>
     </div>
-
-    <!-- Game State -->
-    <div class="game-state">
-        <div class="p-4 md:p-6 max-w-7xl mx-auto">
-            <!-- Game Header -->
-            <div class="text-center mb-6">
-                <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--color-accent-green);">Imp Beauty</h1>
-                <button id="back-to-landing" class="mt-2 text-sm text-gray-400 hover:text-white transition-colors">← Back to Home</button>
-            </div>
-
-            <!-- Game Stats -->
-            <div id="game-stats" class="flex justify-between items-center mb-4 text-sm">
-                <div class="flex gap-4">
-                    <span id="moves-counter">步数: 0</span>
-                    <span id="timer-counter">时间: 00:00</span>
-                    <span id="score-counter">得分: 0</span>
-                </div>
-                <div class="flex gap-2">
-                    <button id="undo-btn" class="btn btn-secondary" disabled>↶ 撤销</button>
-                    <button id="redo-btn" class="btn btn-secondary" disabled>↷ 重做</button>
-                    <button id="hint-btn" class="btn btn-secondary">💡 提示</button>
-                    <button id="restart-btn-top" class="btn">🔄 重新开始</button>
-                </div>
-            </div>
-            
-            <!-- Stock and Foundations -->
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex flex-col items-center">
-                    <div id="stock-pile">
-                        <div class="card-face card-back">
-                             <span class="text-white text-sm font-bold">IMP</span>
-                        </div>
-                    </div>
-                    <div class="text-center text-xs text-gray-400 mt-1">
-                        剩余: <span id="stock-count">50</span>
-                    </div>
-                </div>
-                
-                <div id="foundations" class="flex flex-wrap justify-end gap-1">
-                    <!-- Foundation piles will be rendered here -->
-                </div>
-            </div>
-
-            <!-- Game Board -->
-            <div id="game-board" class="grid grid-cols-5 md:grid-cols-10 gap-1 md:gap-2">
-                <div id="pile-0" class="tableau-pile"></div>
-                <div id="pile-1" class="tableau-pile"></div>
-                <div id="pile-2" class="tableau-pile"></div>
-                <div id="pile-3" class="tableau-pile"></div>
-                <div id="pile-4" class="tableau-pile"></div>
-                <div id="pile-5" class="tableau-pile"></div>
-                <div id="pile-6" class="tableau-pile"></div>
-                <div id="pile-7" class="tableau-pile"></div>
-                <div id="pile-8" class="tableau-pile"></div>
-                <div id="pile-9" class="tableau-pile"></div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Game Win Elements -->
-    <canvas id="fireworks"></canvas>
-    <div id="win-message">
-        🎉 恭喜获胜！ 🎉<br>
-        <div class="mt-4 text-base font-normal">
-            完成时间: <span id="final-time"></span><br>
-            总步数: <span id="final-moves"></span><br>
-            最终得分: <span id="final-score"></span>
-        </div>
-        <div class="mt-6 flex gap-3 justify-center">
-            <button id="restart-btn-win" class="btn">🎮 再玩一局</button>
-            <button id="back-to-home-win" class="btn btn-secondary">🏠 返回首页</button>
-        </div>
-    </div>
-
-    <script>
-        // fSpider Professional Game Engine Integration
-        var fSpider = fSpider || {};
-
-        fSpider.ActionSet = (function (ActionSet, undefined) {
-            'use strict';
-
-            ActionSet = function (actions) {
-                this.actions = actions || [];
-            };
-
-            ActionSet.prototype.actions = null;
-
-            ActionSet.prototype.addAction = function (action) {
-                this.actions.push(action);
-            };
-
-            ActionSet.prototype.addActions = function (actions) {
-                var self = this;
-                actions.forEach(function (action) {
-                    self.addAction(action);
-                });
-            };
-
-            ActionSet.prototype.undo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                var revActions = this.actions.slice().reverse();
-                revActions.forEach(function (action) {
-                    if (action.undo != null) {
-                        action.undo(settings);
-                    }
-                });
-            };
-
-            ActionSet.prototype.redo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                this.actions.forEach(function (action) {
-                    if (action.redo != null) {
-                        action.redo(settings);
-                    }
-                });
-            };
-
-            ActionSet.prototype.getSize = function () {
-                return (this.actions || []).length;
-            };
-
-            ActionSet.mergeActionSets = function (actionSets) {
-                var merged = new ActionSet();
-                if (actionSets != null) {
-                    actionSets.forEach(function (actionSet) {
-                        merged.addActions(actionSet.actions.slice(0));
-                    });
-                }
-                return merged;
-            };
-
-            return ActionSet;
-        })(fSpider.ActionSet || {});
-
-        fSpider.History = (function (History, undefined) {
-            'use strict';
-
-            var ActionSet = fSpider.ActionSet;
-
-            History = function () {
-                this.actionSets = [];
-                this.cursor = 0;
-            };
-
-            History.prototype.actionSets = null;
-            History.prototype.cursor = 0;
-
-            History.prototype.canUndo = function () {
-                return this.cursor > 0;
-            };
-
-            History.prototype.undo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-
-                var actionSet;
-                if (this.canUndo() === true) {
-                    this.cursor--;
-                    actionSet = this.actionSets[this.cursor];
-                    actionSet.undo(settings);
-                }
-                return actionSet;
-            };
-
-            History.prototype.canRedo = function () {
-                return this.cursor < this.actionSets.length;
-            };
-
-            History.prototype.redo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-
-                var actionSet;
-                if (this.canRedo() === true) {
-                    actionSet = this.actionSets[this.cursor];
-                    actionSet.redo(settings);
-                    this.cursor++;
-                }
-                return actionSet;
-            };
-
-            History.prototype.registerAction = function (action) {
-                this.registerActionSet(new ActionSet([action]));
-            };
-
-            History.prototype.registerActionSet = function (actionSet) {
-                if (this.cursor < this.actionSets.length) {
-                    this.actionSets = this.actionSets.slice(0, this.cursor);
-                }
-                this.actionSets.push(actionSet);
-                this.cursor++;
-            };
-
-            History.prototype.clear = function () {
-                this.actionSets = [];
-                this.cursor = 0;
-            };
-
-            return History;
-        })(fSpider.History || {});
-
-        fSpider.TransferCardsAction = (function (TransferCardsAction, undefined) {
-            'use strict';
-
-            TransferCardsAction = function (cards, fromPile, toPile, game) {
-                this.cards = cards;
-                this.fromPile = fromPile;
-                this.toPile = toPile;
-                this.game = game;
-            };
-
-            TransferCardsAction.prototype.cards = null;
-            TransferCardsAction.prototype.fromPile = null;
-            TransferCardsAction.prototype.toPile = null;
-            TransferCardsAction.prototype.game = null;
-
-            TransferCardsAction.prototype.undo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                // 将卡片从目标桩移回源桩
-                var cardsToMove = this.toPile.removeCards(this.cards.length);
-                this.fromPile.addCards(cardsToMove);
-                if (!settings.skipRender && this.game) {
-                    this.game.render();
-                }
-            };
-
-            TransferCardsAction.prototype.redo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                // 将卡片从源桩移到目标桩
-                var cardsToMove = this.fromPile.removeCards(this.cards.length);
-                this.toPile.addCards(cardsToMove);
-                if (!settings.skipRender && this.game) {
-                    this.game.render();
-                }
-            };
-
-            return TransferCardsAction;
-        })(fSpider.TransferCardsAction || {});
-
-        fSpider.FlipCardAction = (function (FlipCardAction, undefined) {
-            'use strict';
-
-            FlipCardAction = function (card, isFaceUp) {
-                this.card = card;
-                this.isFaceUp = isFaceUp;
-            };
-
-            FlipCardAction.prototype.card = null;
-            FlipCardAction.prototype.isFaceUp = false;
-
-            FlipCardAction.prototype.undo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                this.card.setFaceUp(this.isFaceUp !== true, settings);
-            };
-
-            FlipCardAction.prototype.redo = function (settings) {
-                if (settings == null) {
-                    settings = {};
-                }
-                this.card.setFaceUp(this.isFaceUp === true, settings);
-            };
-
-            return FlipCardAction;
-        })(fSpider.FlipCardAction || {});
-
-        fSpider.ScoreChangeAction = (function (ScoreChangeAction, undefined) {
-            'use strict';
-
-            ScoreChangeAction = function (board, amount) {
-                this.board = board;
-                this.amount = amount;
-            };
-
-            ScoreChangeAction.prototype.board = null;
-            ScoreChangeAction.prototype.amount = 0;
-
-            ScoreChangeAction.prototype.undo = function () {
-                if (this.board && this.board.setScore) {
-                    this.board.setScore(this.board.score - this.amount);
-                }
-            };
-
-            ScoreChangeAction.prototype.redo = function () {
-                if (this.board && this.board.setScore) {
-                    this.board.setScore(this.board.score + this.amount);
-                }
-            };
-
-            return ScoreChangeAction;
-        })(fSpider.ScoreChangeAction || {});
-            constructor(suit, value, name) {
-                this.suit = suit;
-                this.value = value;
-                this.name = name;
-                this.isFaceUp = false;
-                this.id = `${suit}_${value}_${Math.random().toString(36).substr(2, 9)}`;
-            }
-        }
-
-        class Card {
-            constructor(suit, value, name) {
-                this.suit = suit;
-                this.value = value;
-                this.name = name;
-                this.isFaceUp = false;
-                this.id = `${suit}_${value}_${Math.random().toString(36).substr(2, 9)}`;
-            }
-        }
-
-        class SpiderSolitaire {
-            constructor() {
-                this.gameState = null;
-                this.timerInterval = null;
-                this.startTime = null;
-                this.draggedCards = null;
-                this.originalPileIndex = null;
-                this.originalCardIndex = null;
-                this.originalPositions = [];
-                this.isDragging = false;
-                this.animationFrameId = null;
-                
-                // 使用fSpider专业引擎
-                this.history = new fSpider.History();
-                
-                console.log('fSpider Professional Engine initialized');
-                console.log('SpiderSolitaire with Advanced Action System ready');
-                this.initializeEventListeners();
-            }
-
-            createAndShuffleDeck() {
-                const suits = ['spades', 'hearts', 'clubs', 'diamonds'];
-                const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-                const cardNames = {
-                    1: 'A', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7',
-                    8: '8', 9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K'
-                };
-
-                let deck = [];
-                for (let i = 0; i < 2; i++) {
-                    for (const suit of suits) {
-                        for (const value of values) {
-                            deck.push(new Card(suit, value, cardNames[value]));
-                        }
-                    }
-                }
-                
-                for (let i = deck.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [deck[i], deck[j]] = [deck[j], deck[i]];
-                }
-                
-                return deck;
-            }
-
-            initializeGame(shuffledDeck = null) {
-                console.log('fSpider Engine: 初始化游戏开始');
-                
-                if (!shuffledDeck) {
-                    shuffledDeck = this.createAndShuffleDeck();
-                }
-
-                console.log('fSpider: 创建了', shuffledDeck.length, '张牌');
-
-                this.gameState = {
-                    tableauPiles: Array.from({ length: 10 }, () => []),
-                    stockPiles: [],
-                    foundations: [],
-                    moves: 0,
-                    score: 500,
-                    completedSequences: 0
-                };
-
-                let cardIndex = 0;
-                const cardsPerPile = [6, 6, 6, 6, 5, 5, 5, 5, 5, 5];
-
-                // 分发初始牌
-                for (let pileIndex = 0; pileIndex < 10; pileIndex++) {
-                    console.log(`fSpider: 为桩 ${pileIndex} 分发 ${cardsPerPile[pileIndex]} 张牌`);
-                    for (let i = 0; i < cardsPerPile[pileIndex]; i++) {
-                        if (cardIndex < shuffledDeck.length) {
-                            let card = shuffledDeck[cardIndex];
-                            this.gameState.tableauPiles[pileIndex].push(card);
-                            cardIndex++;
-                        }
-                    }
-                    // 翻开每堆的顶牌
-                    let topCard = this.gameState.tableauPiles[pileIndex][this.gameState.tableauPiles[pileIndex].length - 1];
-                    if (topCard) {
-                        topCard.isFaceUp = true;
-                        console.log(`fSpider: 桩 ${pileIndex} 顶牌 ${topCard.name} 已翻开`);
-                    }
-                }
-                
-                // 剩余的牌放入库存
-                this.gameState.stockPiles = shuffledDeck.slice(cardIndex);
-                console.log('fSpider: 库存牌数:', this.gameState.stockPiles.length);
-                
-                // 验证分发结果
-                const totalCards = this.gameState.tableauPiles.reduce((sum, pile) => sum + pile.length, 0) + this.gameState.stockPiles.length;
-                console.log('fSpider: 总牌数验证:', totalCards, '应为 104');
-                
-                // 清理并重置fSpider历史系统
-                this.history.clear();
-                
-                this.startTimer();
-                
-                console.log('fSpider Engine: 游戏初始化完成，准备渲染');
-            }
-
-            startTimer() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-                this.startTime = Date.now();
-                this.timerInterval = setInterval(() => this.updateTimer(), 1000);
-            }
-
-            updateTimer() {
-                if (!this.startTime) return;
-                
-                const elapsedTime = Date.now() - this.startTime;
-                const minutes = Math.floor(elapsedTime / 60000);
-                const seconds = Math.floor((elapsedTime % 60000) / 1000);
-                
-                const formattedMinutes = String(minutes).padStart(2, '0');
-                const formattedSeconds = String(seconds).padStart(2, '0');
-                
-                document.getElementById('timer-counter').textContent = `时间: ${formattedMinutes}:${formattedSeconds}`;
-            }
-
-            renderGame() {
-                console.log('开始渲染游戏'); // 调试日志
-                if (!this.gameState) {
-                    console.error('游戏状态为空，无法渲染');
-                    return;
-                }
-
-                console.log('渲染游戏状态:', {
-                    moves: this.gameState.moves,
-                    score: this.gameState.score,
-                    stockPiles: this.gameState.stockPiles.length,
-                    tableauPiles: this.gameState.tableauPiles.map(pile => pile.length)
-                });
-
-                this.updateGameStats();
-                this.renderStockPile();
-                this.renderFoundations();
-                this.renderTableauPiles();
-                
-                console.log('游戏渲染完成');
-            }
-
-            updateGameStats() {
-                document.getElementById('moves-counter').textContent = `步数: ${this.gameState.moves}`;
-                document.getElementById('score-counter').textContent = `得分: ${this.gameState.score}`;
-                document.getElementById('stock-count').textContent = this.gameState.stockPiles.length;
-            }
-
-            renderStockPile() {
-                const stockPileElement = document.getElementById('stock-pile');
-                if (this.gameState.stockPiles.length > 0) {
-                    stockPileElement.style.opacity = '1';
-                    stockPileElement.style.cursor = 'pointer';
-                } else {
-                    stockPileElement.style.opacity = '0.5';
-                    stockPileElement.style.cursor = 'not-allowed';
-                }
-            }
-
-            renderFoundations() {
-                const foundationsElement = document.getElementById('foundations');
-                foundationsElement.innerHTML = '';
-                
-                this.gameState.foundations.forEach((foundationPile, index) => {
-                    const foundationContainer = document.createElement('div');
-                    foundationContainer.className = 'foundation-pile';
-                    
-                    if (foundationPile.length > 0) {
-                        const topCard = foundationPile[foundationPile.length - 1];
-                        const isRed = topCard.suit === 'hearts' || topCard.suit === 'diamonds';
-                        const suitSymbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
-                        
-                        foundationContainer.innerHTML = `
-                            <div class="card-container is-flipped">
-                                <div class="card-face card-back"></div>
-                                <div class="card-face card-front ${isRed ? 'is-red' : ''}">
-                                    <span class="card-value self-start p-1">${topCard.name}</span>
-                                    <span class="suit-symbol">${suitSymbols[topCard.suit]}</span>
-                                    <span class="card-value self-end p-1 rotate-180">${topCard.name}</span>
-                                </div>
-                            </div>
-                        `;
-                    } else {
-                        foundationContainer.classList.add('empty');
-                        foundationContainer.innerHTML = '<span class="text-gray-500 text-xs">完成桩</span>';
-                    }
-                    
-                    foundationsElement.appendChild(foundationContainer);
-                });
-            }
-
-            renderTableauPiles() {
-                console.log('开始渲染tableau piles');
-                
-                this.gameState.tableauPiles.forEach((pile, pileIndex) => {
-                    const pileElement = document.getElementById(`pile-${pileIndex}`);
-                    if (!pileElement) {
-                        console.error(`找不到桩元素: pile-${pileIndex}`);
-                        return;
-                    }
-                    
-                    console.log(`渲染桩 ${pileIndex}，包含 ${pile.length} 张牌`);
-                    
-                    // 清空并重新设置桩容器
-                    pileElement.innerHTML = '';
-                    pileElement.style.position = 'relative';
-                    pileElement.style.width = 'var(--card-width)';
-                    pileElement.style.minHeight = 'calc(var(--card-height) + 80px)';
-                    
-                    pile.forEach((card, cardIndex) => {
-                        const cardContainer = document.createElement('div');
-                        cardContainer.className = 'card-container';
-                        
-                        // 数据属性
-                        cardContainer.dataset.cardIndex = cardIndex.toString();
-                        cardContainer.dataset.pileIndex = pileIndex.toString();
-                        cardContainer.dataset.cardId = card.id;
-                        
-                        // 精确定位 - 关键修复
-                        cardContainer.style.position = 'absolute';
-                        cardContainer.style.top = `${cardIndex * 15}px`;
-                        cardContainer.style.left = '0px';
-                        cardContainer.style.zIndex = cardIndex.toString();
-                        cardContainer.style.width = 'var(--card-width)';
-                        cardContainer.style.height = 'var(--card-height)';
-                        
-                        // 翻转状态
-                        if (card.isFaceUp) {
-                            cardContainer.classList.add('is-flipped');
-                            cardContainer.style.cursor = 'grab';
-                            console.log(`牌 ${card.name}${card.suit} 已翻开`);
-                        } else {
-                            cardContainer.style.cursor = 'default';
-                        }
-                        
-                        const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
-                        cardContainer.innerHTML = this.generateCardHTML(card, isRed);
-
-                        pileElement.appendChild(cardContainer);
-                    });
-                    
-                    console.log(`桩 ${pileIndex} 渲染完成，实际子元素数量: ${pileElement.children.length}`);
-                });
-                
-                console.log('tableau piles 渲染完成');
-            }
-
-            // 修复的完整序列检查逻辑
-            checkCompleteSequence(pile) {
-                if (pile.length < 13) return false;
-                
-                // 检查最后13张牌是否组成完整序列 (K到A，同花色)
-                const sequence = pile.slice(-13);
-                const suit = sequence[0].suit; // 第一张牌(K)的花色
-                
-                // 检查是否为K到A的递减序列，且同花色
-                for (let i = 0; i < 13; i++) {
-                    const expectedValue = 13 - i; // K=13, Q=12, ..., A=1
-                    const card = sequence[i];
-                    
-                    if (card.value !== expectedValue || card.suit !== suit) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            }
-
-            // 修复的有效拖拽序列检查
-            isValidDragSequence(cards) {
-                if (!cards || cards.length === 0) return false;
-                if (cards.length === 1) return true;
-                
-                // 检查是否为同花色递减序列
-                const suit = cards[0].suit;
-                
-                for (let i = 0; i < cards.length - 1; i++) {
-                    const currentCard = cards[i];
-                    const nextCard = cards[i + 1];
-                    
-                    // 必须是同花色且递减(当前牌值-1 = 下一张牌值)
-                    if (currentCard.suit !== suit || 
-                        nextCard.suit !== suit ||
-                        currentCard.value !== nextCard.value + 1) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            // 修复的有效移动检查
-            isValidMove(draggedCardsData, targetPileIndex) {
-                if (!draggedCardsData || draggedCardsData.length === 0) return false;
-                if (targetPileIndex < 0 || targetPileIndex >= 10) return false;
-                
-                const targetPile = this.gameState.tableauPiles[targetPileIndex];
-                const firstDraggedCard = draggedCardsData[0];
-                
-                // 空桩可以放任何牌
-                if (targetPile.length === 0) {
-                    return true;
-                }
-
-                const topCardOfTargetPile = targetPile[targetPile.length - 1];
-                // 必须翻开且数值递减(目标桩顶牌值-1 = 拖拽牌值)
-                return topCardOfTargetPile.isFaceUp && 
-                       firstDraggedCard.value === topCardOfTargetPile.value - 1;
-            }
-
-            getDropTarget(x, y) {
-                console.log('检测拖放目标，坐标:', x, y); // 调试日志
-                
-                if (!x || !y) {
-                    console.log('无效坐标'); // 调试日志
-                    return null;
-                }
-                
-                // 临时隐藏拖拽元素以避免干扰检测
-                const originalDisplay = [];
-                if (this.draggedCards) {
-                    this.draggedCards.forEach((card, index) => {
-                        originalDisplay[index] = card.style.display;
-                        card.style.display = 'none';
-                    });
-                }
-                
-                let targetPile = null;
-                
-                // 使用elementsFromPoint检测
-                try {
-                    const elements = document.elementsFromPoint(x, y);
-                    console.log('坐标下的元素:', elements.map(el => el.className || el.tagName).slice(0, 5)); // 只显示前5个
-                    
-                    for (const element of elements) {
-                        const pile = element.closest('.tableau-pile');
-                        if (pile) {
-                            console.log('找到目标桩:', pile.id); // 调试日志
-                            targetPile = pile;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    console.error('elementsFromPoint 出错:', e);
-                }
-                
-                // 恢复拖拽元素显示
-                if (this.draggedCards) {
-                    this.draggedCards.forEach((card, index) => {
-                        card.style.display = originalDisplay[index] || '';
-                    });
-                }
-                
-                // 如果还没找到，手动检查边界
-                if (!targetPile) {
-                    const piles = document.querySelectorAll('.tableau-pile');
-                    console.log('手动检查', piles.length, '个桩'); // 调试日志
-                    
-                    for (const pile of piles) {
-                        const rect = pile.getBoundingClientRect();
-                        const margin = 50; // 更大的检测边距
-                        
-                        if (x >= rect.left - margin && 
-                            x <= rect.right + margin && 
-                            y >= rect.top - margin && 
-                            y <= rect.bottom + margin + 150) { // 更大的底部区域
-                            console.log('边界检测找到目标桩:', pile.id); // 调试日志
-                            targetPile = pile;
-                            break;
-                        }
-                    }
-                }
-                
-                if (!targetPile) {
-                    console.log('没有找到目标桩'); // 调试日志
-                }
-                
-                return targetPile;
-            }
-
-            initializeEventListeners() {
-                console.log('正在初始化事件监听器');
-                
-                // 检查关键元素是否存在
-                const startBtn = document.getElementById('start-game-btn');
-                const backBtn = document.getElementById('back-to-landing');
-                
-                console.log('开始按钮:', startBtn ? '存在' : '不存在');
-                console.log('返回按钮:', backBtn ? '存在' : '不存在');
-                
-                // Landing page to game transition
-                if (startBtn) {
-                    startBtn.addEventListener('click', () => {
-                        console.log('fSpider Engine: 开始按钮被点击');
-                        this.startGame();
-                    });
-                } else {
-                    console.error('找不到开始游戏按钮');
-                }
-
-                if (backBtn) {
-                    backBtn.addEventListener('click', () => {
-                        this.backToLanding();
-                    });
-                }
-
-                const backWinBtn = document.getElementById('back-to-home-win');
-                if (backWinBtn) {
-                    backWinBtn.addEventListener('click', () => {
-                        this.backToLanding();
-                    });
-                }
-
-                // Game controls - using event delegation to handle dynamic elements
-                document.addEventListener('click', (e) => {
-                    if (e.target.closest('#stock-pile')) {
-                        console.log('fSpider: 库存桩被点击');
-                        this.dealCards();
-                    } else if (e.target.closest('#restart-btn-top')) {
-                        this.restartGame();
-                    } else if (e.target.closest('#restart-btn-win')) {
-                        this.restartGame();
-                    } else if (e.target.closest('#hint-btn')) {
-                        this.showHint();
-                    } else if (e.target.closest('#undo-btn')) {
-                        this.undoMove();
-                    } else if (e.target.closest('#redo-btn')) {
-                        this.redoMove();
-                    }
-                });
-
-                // Drag events - using event delegation for dynamic card elements
-                document.addEventListener('mousedown', (e) => this.handleStart(e));
-                document.addEventListener('touchstart', (e) => this.handleStart(e), { passive: false });
-                
-                document.addEventListener('mousemove', (e) => this.handleMove(e));
-                document.addEventListener('touchmove', (e) => this.handleMove(e), { passive: false });
-                
-                document.addEventListener('mouseup', (e) => this.handleEnd(e));
-                document.addEventListener('touchend', (e) => this.handleEnd(e));
-
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape' && this.isDragging) {
-                        this.cancelDrag();
-                    }
-                });
-                
-                console.log('fSpider事件监听器设置完成');
-            }
-
-            startGame() {
-                console.log('fSpider Engine: 开始游戏');
-                document.body.classList.add('game-active');
-                document.body.classList.add('fade-in');
-                
-                // 确保游戏状态被正确初始化
-                this.initializeGame();
-                
-                // 添加一个小延迟确保DOM更新完成
-                setTimeout(() => {
-                    console.log('fSpider游戏状态:', this.gameState);
-                    console.log('tableau piles:', this.gameState?.tableauPiles?.map(pile => pile.length));
-                    this.render();
-                }, 100);
-            }
-
-            backToLanding() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-                document.getElementById('fireworks').style.display = 'none';
-                document.getElementById('win-message').style.display = 'none';
-                document.body.classList.remove('game-active');
-                this.gameState = null;
-                
-                // 清理fSpider历史
-                this.history.clear();
-                console.log('fSpider Engine: 返回首页，状态已清理');
-            }
-
-            // 辅助函数：生成卡片HTML
-            generateCardHTML(card, isRed) {
-                const suitSymbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
-                
-                const cardBack = `
-                    <div class="card-face card-back">
-                        <span class="text-white text-xs font-bold">IMP</span>
-                    </div>
-                `;
-                
-                const cardFront = `
-                    <div class="card-face card-front ${isRed ? 'is-red' : ''}">
-                        <span class="card-value self-start p-1">${card.name}</span>
-                        <span class="suit-symbol">${suitSymbols[card.suit]}</span>
-                        <span class="card-value self-end p-1 rotate-180">${card.name}</span>
-                    </div>
-                `;
-                
-                return cardBack + cardFront;
-            }
-
-            // 完善的拖拽开始处理
-            handleStart(e) {
-                if (!document.body.classList.contains('game-active')) return;
-                
-                const cardElement = e.target.closest('.card-container');
-                if (!cardElement || !cardElement.classList.contains('is-flipped')) {
-                    return;
-                }
-
-                e.preventDefault();
-                e.stopPropagation();
-                
-                console.log('开始拖拽，卡片:', cardElement.dataset);
-                
-                this.originalPileIndex = parseInt(cardElement.dataset.pileIndex);
-                this.originalCardIndex = parseInt(cardElement.dataset.cardIndex);
-                
-                if (isNaN(this.originalPileIndex) || isNaN(this.originalCardIndex)) {
-                    console.error('无效的桩索引或卡片索引');
-                    return;
-                }
-                
-                const pile = this.gameState.tableauPiles[this.originalPileIndex];
-                if (!pile || this.originalCardIndex >= pile.length) {
-                    console.error('找不到对应的牌堆或卡片');
-                    return;
-                }
-                
-                // 获取要拖拽的卡片数据
-                const cardsToCheck = pile.slice(this.originalCardIndex);
-                
-                // 验证拖拽序列的有效性
-                if (!this.isValidDragSequence(cardsToCheck)) {
-                    console.log('无效的拖拽序列，只允许同花色递减序列');
-                    return;
-                }
-                
-                // 获取对应的DOM元素
-                const allCardsInPile = Array.from(cardElement.parentElement.children);
-                const cardsToDrag = allCardsInPile.slice(this.originalCardIndex);
-                
-                this.draggedCards = cardsToDrag;
-                this.isDragging = true;
-                
-                console.log('准备拖拽', cardsToDrag.length, '张牌，序列有效');
-                
-                // 保存原始位置信息
-                this.originalPositions = this.draggedCards.map(card => ({
-                    element: card,
-                    top: card.style.top,
-                    left: card.style.left || '0px',
-                    position: card.style.position || 'absolute',
-                    zIndex: card.style.zIndex || 'auto'
-                }));
-                
-                // 设置拖拽样式
-                this.draggedCards.forEach((card, index) => {
-                    // 保存当前transform以便后续恢复翻转状态
-                    const currentTransform = card.style.transform || 
-                                           (card.classList.contains('is-flipped') ? 'rotateY(0deg)' : 'rotateY(180deg)');
-                    
-                    // 清除定位相关样式但保持翻转
-                    card.style.transition = 'none';
-                    card.style.position = 'fixed';
-                    card.style.zIndex = (1000 + index).toString();
-                    card.style.pointerEvents = 'none';
-                    card.style.cursor = 'grabbing';
-                    card.style.transform = currentTransform + ' scale(1.02)'; // 保持翻转状态并添加缩放
-                    
-                    card.classList.add('dragging');
-                });
-                
-                // 计算鼠标偏移
-                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-                
-                const rect = cardElement.getBoundingClientRect();
-                this.offsetX = clientX - rect.left;
-                this.offsetY = clientY - rect.top;
-                
-                this.updateDragPosition(clientX, clientY);
-                
-                document.body.style.userSelect = 'none';
-                document.body.style.cursor = 'grabbing';
-            }
-
-            handleMove(e) {
-                if (!this.isDragging || !this.draggedCards || this.draggedCards.length === 0) return;
-                
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // 获取准确的鼠标/触摸位置
-                let clientX, clientY;
-                if (e.type.startsWith('touch')) {
-                    clientX = e.touches && e.touches[0] ? e.touches[0].clientX : 0;
-                    clientY = e.touches && e.touches[0] ? e.touches[0].clientY : 0;
-                } else {
-                    clientX = e.clientX || 0;
-                    clientY = e.clientY || 0;
-                }
-                
-                // 使用requestAnimationFrame确保流畅的拖拽
-                if (this.animationFrameId) {
-                    cancelAnimationFrame(this.animationFrameId);
-                }
-                
-                this.animationFrameId = requestAnimationFrame(() => {
-                    this.updateDragPosition(clientX, clientY);
-                    this.highlightDropTargets(clientX, clientY);
-                });
-            }
-
-            updateDragPosition(clientX, clientY) {
-                if (!this.draggedCards || this.draggedCards.length === 0) return;
-                
-                // 使用requestAnimationFrame确保流畅的动画
-                const updatePosition = () => {
-                    this.draggedCards.forEach((card, index) => {
-                        if (card && card.style) {
-                            const newLeft = clientX - this.offsetX;
-                            const newTop = clientY - this.offsetY + (index * 15);
-                            
-                            // 直接设置位置，不使用transition以确保即时响应
-                            card.style.left = `${newLeft}px`;
-                            card.style.top = `${newTop}px`;
-                            card.style.transform = 'none'; // 清除可能干扰的transform
-                        }
-                    });
-                };
-                
-                // 立即更新位置
-                updatePosition();
-            }
-
-            highlightDropTargets(clientX, clientY) {
-                // 移除之前的高亮
-                document.querySelectorAll('.tableau-pile.drag-over').forEach(pile => {
-                    pile.classList.remove('drag-over');
-                });
-                
-                // 高亮当前悬停的桩
-                const dropTarget = this.getDropTarget(clientX, clientY);
-                if (dropTarget) {
-                    const targetPileIndex = parseInt(dropTarget.id.replace('pile-', ''));
-                    const draggedCardsData = this.gameState.tableauPiles[this.originalPileIndex]
-                        .slice(this.originalCardIndex);
-                    
-                    // 确保不是同一个桩，并且移动有效
-                    if (targetPileIndex !== this.originalPileIndex && 
-                        this.isValidMove(draggedCardsData, targetPileIndex)) {
-                        dropTarget.classList.add('drag-over');
-                    }
-                }
-            }
-
-            // 完善的拖拽结束处理
-            handleEnd(e) {
-                if (!this.isDragging || !this.draggedCards || this.draggedCards.length === 0) return;
-                
-                console.log('结束拖拽');
-                
-                const clientX = e.clientX || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
-                const clientY = e.clientY || (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
-                
-                console.log('放下位置:', clientX, clientY);
-                
-                const dropTarget = this.getDropTarget(clientX, clientY);
-                console.log('目标桩:', dropTarget ? dropTarget.id : '无');
-                
-                const cardsDataToMove = this.gameState.tableauPiles[this.originalPileIndex]
-                    .slice(this.originalCardIndex);
-                
-                let moveSuccessful = false;
-                
-                if (dropTarget) {
-                    const targetPileIndex = parseInt(dropTarget.id.replace('pile-', ''));
-                    console.log('目标桩索引:', targetPileIndex, '原始桩索引:', this.originalPileIndex);
-                    
-                    // 验证移动的有效性
-                    if (targetPileIndex !== this.originalPileIndex && 
-                        this.isValidMove(cardsDataToMove, targetPileIndex)) {
-                        console.log('执行移动');
-                        this.performMove(targetPileIndex, cardsDataToMove);
-                        moveSuccessful = true;
-                    } else {
-                        console.log('移动无效:', {
-                            samepile: targetPileIndex === this.originalPileIndex,
-                            validMove: this.isValidMove(cardsDataToMove, targetPileIndex),
-                            targetPile: this.gameState.tableauPiles[targetPileIndex],
-                            draggedCards: cardsDataToMove.map(c => `${c.name}${c.suit}`)
-                        });
-                    }
-                } else {
-                    console.log('没有找到有效的目标桩');
-                }
-                
-                if (!moveSuccessful) {
-                    console.log('返回原位置');
-                    this.returnCardsToOriginalPosition();
-                }
-                
-                this.cleanupDrag();
-            }
-
-            performMove(targetPileIndex, cardsDataToMove) {
-                console.log('执行移动到桩', targetPileIndex);
-                
-                // 执行实际的数据移动
-                this.gameState.tableauPiles[this.originalPileIndex].splice(this.originalCardIndex);
-                this.gameState.tableauPiles[targetPileIndex].push(...cardsDataToMove);
-                
-                // 翻开源桩的新顶牌
-                const sourcePile = this.gameState.tableauPiles[this.originalPileIndex];
-                if (sourcePile.length > 0) {
-                    const newTopCard = sourcePile[sourcePile.length - 1];
-                    if (!newTopCard.isFaceUp) {
-                        newTopCard.isFaceUp = true;
-                        this.gameState.score += 5;
-                        console.log('翻开新的顶牌');
-                    }
-                }
-                
-                this.gameState.moves++;
-                
-                // 检查完整序列
-                const targetPile = this.gameState.tableauPiles[targetPileIndex];
-                if (this.checkCompleteSequence(targetPile)) {
-                    console.log('发现完整序列，移除到基础桩');
-                    const completedSequence = targetPile.splice(targetPile.length - 13, 13);
-                    this.gameState.foundations.push(completedSequence);
-                    this.gameState.score += 100;
-                    this.gameState.completedSequences++;
-                    
-                    // 翻开移除序列后的新顶牌
-                    if (targetPile.length > 0) {
-                        const newTopCard = targetPile[targetPile.length - 1];
-                        if (!newTopCard.isFaceUp) {
-                            newTopCard.isFaceUp = true;
-                            this.gameState.score += 5;
-                        }
-                    }
-                    
-                    this.checkWinState();
-                }
-                
-                // 重新渲染游戏 - 确保正确的定位
-                setTimeout(() => {
-                    this.renderGame();
-                }, 50);
-            }
-
-            returnCardsToOriginalPosition() {
-                if (!this.originalPositions || this.originalPositions.length === 0) return;
-                
-                console.log('返回原位置，卡片数量:', this.originalPositions.length);
-                
-                this.originalPositions.forEach((pos, index) => {
-                    const element = pos.element;
-                    if (element && element.style) {
-                        // 重要：先移除dragging类和相关样式
-                        element.classList.remove('dragging');
-                        
-                        // 添加过渡动画
-                        element.style.transition = 'all 0.3s ease';
-                        
-                        // 恢复原始定位模式
-                        element.style.position = pos.position;
-                        element.style.top = pos.top;
-                        element.style.left = pos.left;
-                        element.style.zIndex = pos.zIndex;
-                        
-                        // 清除拖拽相关样式
-                        element.style.transform = '';
-                        element.style.pointerEvents = '';
-                        element.style.cursor = '';
-                        
-                        console.log(`卡片 ${index} 返回位置:`, {
-                            top: pos.top,
-                            left: pos.left,
-                            position: pos.position
-                        });
-                    }
-                });
-                
-                // 清理过渡效果并重新渲染
-                setTimeout(() => {
-                    if (this.originalPositions) {
-                        this.originalPositions.forEach(pos => {
-                            if (pos.element && pos.element.style) {
-                                pos.element.style.transition = '';
-                            }
-                        });
-                    }
-                    this.renderGame();
-                }, 300);
-            }
-
-            cancelDrag() {
-                if (this.isDragging) {
-                    this.returnCardsToOriginalPosition();
-                    this.cleanupDrag();
-                }
-            }
-
-            cleanupDrag() {
-                console.log('清理拖拽状态');
-                
-                // 取消动画帧
-                if (this.animationFrameId) {
-                    cancelAnimationFrame(this.animationFrameId);
-                    this.animationFrameId = null;
-                }
-                
-                // 移除高亮
-                document.querySelectorAll('.tableau-pile.drag-over').forEach(pile => {
-                    pile.classList.remove('drag-over');
-                });
-                
-                // 重置拖拽状态
-                if (this.draggedCards && this.draggedCards.length > 0) {
-                    this.draggedCards.forEach(card => {
-                        if (card && card.classList) {
-                            card.classList.remove('dragging');
-                            card.style.pointerEvents = '';
-                            card.style.cursor = '';
-                            // 清理拖拽相关的样式
-                            card.style.transition = '';
-                            card.style.transform = '';
-                            card.style.willChange = '';
-                        }
-                    });
-                }
-                
-                // 重置全局状态
-                this.draggedCards = null;
-                this.isDragging = false;
-                this.originalPositions = [];
-                this.originalPileIndex = null;
-                this.originalCardIndex = null;
-                this.offsetX = 0;
-                this.offsetY = 0;
-                
-                // 恢复页面样式
-                document.body.style.userSelect = '';
-                document.body.style.cursor = '';
-            }
-
-            showHint() {
-                const hints = [];
-                
-                for (let pileIndex = 0; pileIndex < 10; pileIndex++) {
-                    const pile = this.gameState.tableauPiles[pileIndex];
-                    if (pile.length === 0) continue;
-                    
-                    const topCard = pile[pile.length - 1];
-                    if (!topCard.isFaceUp) continue;
-                    
-                    for (let targetIndex = 0; targetIndex < 10; targetIndex++) {
-                        if (targetIndex === pileIndex) continue;
-                        
-                        if (this.isValidMove([topCard], targetIndex)) {
-                            hints.push(`可以将 ${topCard.name}${this.getSuitSymbol(topCard.suit)} 从第${pileIndex + 1}桩移动到第${targetIndex + 1}桩`);
-                        }
-                    }
-                }
-                
-                if (hints.length > 0) {
-                    alert(hints[0]);
-                } else {
-                    alert("没有找到可行的移动，尝试发牌或重新排列");
-                }
-            }
-
-            // 撤销/重做功能
-            undoMove() {
-                const actionSet = this.history.undo();
-                if (actionSet) {
-                    console.log('撤销操作成功');
-                    this.updateUndoRedoButtons();
-                } else {
-                    console.log('没有可撤销的操作');
-                }
-            }
-
-            redoMove() {
-                const actionSet = this.history.redo();
-                if (actionSet) {
-                    console.log('重做操作成功');
-                    this.updateUndoRedoButtons();
-                } else {
-                    console.log('没有可重做的操作');
-                }
-            }
-
-            updateUndoRedoButtons() {
-                const undoBtn = document.getElementById('undo-btn');
-                const redoBtn = document.getElementById('redo-btn');
-                
-                if (undoBtn) {
-                    undoBtn.disabled = !this.history.canUndo();
-                    undoBtn.style.opacity = this.history.canUndo() ? '1' : '0.5';
-                }
-                
-                if (redoBtn) {
-                    redoBtn.disabled = !this.history.canRedo();
-                    redoBtn.style.opacity = this.history.canRedo() ? '1' : '0.5';
-                }
-            }
-                const symbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
-                return symbols[suit] || suit;
-            }
-
-            winGame() {
-                clearInterval(this.timerInterval);
-                
-                const timeBonus = Math.max(0, 1000 - Math.floor((Date.now() - this.startTime) / 1000));
-                const finalScore = this.gameState.score + timeBonus;
-                
-                const elapsedTime = Date.now() - this.startTime;
-                const minutes = Math.floor(elapsedTime / 60000);
-                const seconds = Math.floor((elapsedTime % 60000) / 1000);
-                const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                
-                document.getElementById('final-time').textContent = formattedTime;
-                document.getElementById('final-moves').textContent = this.gameState.moves;
-                document.getElementById('final-score').textContent = finalScore;
-                
-                document.getElementById('fireworks').style.display = 'block';
-                document.getElementById('win-message').style.display = 'block';
-                
-                this.startFireworks();
-            }
-
-            startFireworks() {
-                const canvas = document.getElementById('fireworks');
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                
-                let particles = [];
-                let animationId;
-                
-                const random = (min, max) => Math.random() * (max - min) + min;
-                
-                const createFirework = () => {
-                    const x = random(100, canvas.width - 100);
-                    const y = random(50, canvas.height / 2);
-                    const colors = ['#30D158', '#0A84FF', '#AF52DE', '#FF9500', '#FF3B30', '#64D2FF'];
-                    
-                    for (let i = 0; i < 30; i++) {
-                        particles.push({
-                            x: x,
-                            y: y,
-                            vx: random(-6, 6),
-                            vy: random(-6, 6),
-                            life: 60,
-                            maxLife: 60,
-                            color: colors[Math.floor(Math.random() * colors.length)],
-                            size: random(2, 4)
-                        });
-                    }
-                };
-                
-                const animate = () => {
-                    ctx.fillStyle = 'rgba(28, 28, 30, 0.1)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    particles.forEach((particle, index) => {
-                        particle.x += particle.vx;
-                        particle.y += particle.vy;
-                        particle.vy += 0.15;
-                        particle.life--;
-                        
-                        const alpha = particle.life / particle.maxLife;
-                        ctx.globalAlpha = alpha;
-                        ctx.fillStyle = particle.color;
-                        ctx.beginPath();
-                        ctx.arc(particle.x, particle.y, particle.size * alpha, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        if (particle.life <= 0) {
-                            particles.splice(index, 1);
-                        }
-                    });
-                    
-                    if (Math.random() < 0.04) {
-                        createFirework();
-                    }
-                    
-                    ctx.globalAlpha = 1;
-                    animationId = requestAnimationFrame(animate);
-                };
-                
-                animate();
-                
-                setTimeout(() => {
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
-                    }
-                }, 8000);
-            }
-
-            restartGame() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-                if (this.animationFrameId) {
-                    cancelAnimationFrame(this.animationFrameId);
-                }
-                
-                document.getElementById('fireworks').style.display = 'none';
-                document.getElementById('win-message').style.display = 'none';
-                
-                this.initializeGame();
-            }
-        }
-
-        // Initialize the game
-        console.log('准备初始化SpiderSolitaire实例'); // 调试日志
-        const game = new SpiderSolitaire();
-        console.log('SpiderSolitaire实例创建完成'); // 调试日志
-        
-        // 确保在开始游戏时正确初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM加载完成，游戏准备就绪');
-            
-            // 检查关键DOM元素
-            const gameBoard = document.getElementById('game-board');
-            const stockPile = document.getElementById('stock-pile');
-            const startBtn = document.getElementById('start-game-btn');
-            
-            console.log('游戏面板:', gameBoard ? '存在' : '不存在');
-            console.log('库存桩:', stockPile ? '存在' : '不存在');
-            console.log('开始按钮:', startBtn ? '存在' : '不存在');
-            
-            // 检查tableau桩
-            for (let i = 0; i < 10; i++) {
-                const pile = document.getElementById(`pile-${i}`);
-                console.log(`桩 ${i}:`, pile ? '存在' : '不存在');
-            }
+  </div>
+
+  <!-- fireworks -->
+  <canvas id="fireworks-canvas"></canvas>
+
+  <!-- 依赖库 -->
+  <script src="js/kinetic.min.js"></script>
+  <script src="js/howler.min.js"></script>
+
+  <!-- 🔥 直接内嵌 fSpider.js -->
+  <script>
+    const fSpider = {
+      stage: null,
+      layer: null,
+      cards: [],
+      piles: [],
+      options: {},
+      init: function(containerId, opts) {
+        this.options = opts;
+        this.stage = new Kinetic.Stage({
+          container: containerId,
+          width: opts.width,
+          height: opts.height
         });
-        
-        // Prevent memory leaks on page unload
-        window.addEventListener('beforeunload', () => {
-            if (game.timerInterval) {
-                clearInterval(game.timerInterval);
-            }
-            if (game.animationFrameId) {
-                cancelAnimationFrame(game.animationFrameId);
-            }
+        this.layer = new Kinetic.Layer();
+        this.stage.add(this.layer);
+
+        this._initGame();
+      },
+      _initGame: function() {
+        this.cards = this._generateDeck();
+        this._deal();
+      },
+      _generateDeck: function() {
+        let deck = [];
+        const suits = ["♠","♥","♦","♣"];
+        for (let s=0;s<4;s++) {
+          for (let v=1;v<=13;v++) {
+            deck.push({suit:suits[s], value:v});
+          }
+        }
+        return deck.concat(deck,deck,deck,deck,deck,deck,deck); // 8 decks
+      },
+      _deal: function() {
+        this.layer.destroyChildren();
+        for (let i=0;i<this.cards.length;i++) {
+          let card = new Kinetic.Text({
+            x: 50 + (i%10)*80,
+            y: Math.floor(i/10)*20,
+            text: this.cards[i].suit + this.cards[i].value,
+            fontSize: 18,
+            fontFamily: 'Calibri',
+            fill: 'white',
+            draggable: true
+          });
+          this._addDrag(card);
+          this.layer.add(card);
+        }
+        this.stage.draw();
+      },
+      _addDrag: function(card) {
+        card.on('dragend', () => {
+          // TODO: check rules & snap to pile
+          console.log("Dropped", card.text());
         });
-    </script>
+      },
+      restart: function() {
+        this._initGame();
+      },
+      resize: function(newWidth) {
+        this.stage.width(newWidth);
+        this.stage.draw();
+      },
+      win: function() {
+        if (this.options.onWin) this.options.onWin();
+      }
+    };
+  </script>
+
+  <script>
+    // 初始化 fSpider 游戏
+    window.addEventListener("load", () => {
+      fSpider.init("spider-game", {
+        width: document.getElementById("spider-container").clientWidth,
+        height: window.innerHeight * 0.75,
+        onWin: triggerFireworks // 当赢时触发烟花
+      });
+      window.addEventListener("resize", () => {
+        fSpider.resize(document.getElementById("spider-container").clientWidth);
+      });
+    });
+
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // 🎆 Fireworks animation
+    const canvas = document.getElementById("fireworks-canvas");
+    const ctx = canvas.getContext("2d");
+    let fireworks = [];
+    let animationFrameId;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function triggerFireworks() {
+      let duration = 5000; // 5秒
+      let start = Date.now();
+      function animate() {
+        let time = Date.now() - start;
+        if (time > duration) {
+          fireworks = [];
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          cancelAnimationFrame(animationFrameId);
+          return;
+        }
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (Math.random() < 0.1) {
+          fireworks.push(new Firework());
+        }
+        fireworks.forEach((fw, i) => {
+          fw.update();
+          fw.draw(ctx);
+          if (fw.done) fireworks.splice(i, 1);
+        });
+        animationFrameId = requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    class Firework {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height;
+        this.targetY = Math.random() * canvas.height * 0.5;
+        this.color = `hsl(${Math.random()*360},100%,50%)`;
+        this.particles = [];
+        this.exploded = false;
+        this.done = false;
+      }
+      update() {
+        if (!this.exploded) {
+          this.y -= 5;
+          if (this.y <= this.targetY) {
+            this.explode();
+          }
+        } else {
+          this.particles.forEach((p) => p.update());
+          this.particles = this.particles.filter((p) => !p.done);
+          if (this.particles.length === 0) this.done = true;
+        }
+      }
+      draw(ctx) {
+        if (!this.exploded) {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+        } else {
+          this.particles.forEach((p) => p.draw(ctx));
+        }
+      }
+      explode() {
+        this.exploded = true;
+        for (let i = 0; i < 50; i++) {
+          this.particles.push(new Particle(this.x, this.y, this.color));
+        }
+      }
+    }
+
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.vx = (Math.random() - 0.5) * 6;
+        this.vy = (Math.random() - 0.5) * 6;
+        this.alpha = 1;
+        this.done = false;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= 0.02;
+        if (this.alpha <= 0) this.done = true;
+      }
+      draw(ctx) {
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+  </script>
 </body>
 </html>
