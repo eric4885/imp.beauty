@@ -4,47 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Imp Beauty - Spider Solitaire</title>
-  <meta name="description" content="Play Imp Beauty Spider Solitaire online. A modern, responsive version of the classic card game Spider, styled with Apple-inspired dark theme." />
-  <link rel="canonical" href="https://imp.beauty/" />
+  <meta name="description" content="Play Spider Solitaire online for free at Imp Beauty. Classic card game with a modern Apple-style design." />
+  <link rel="canonical" href="https://imp.beauty" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
   <style>
+    :root {
+      --card-bg-light: #f3f4f6;
+      --card-bg-dark: #374151;
+    }
     body {
-      margin: 0;
-      padding: 0;
-      background-color: #1C1C1E;
-      color: #E5E7EB;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    #spider-container {
-      width: 100%;
-      max-width: 1200px;
-      margin: auto;
-      padding: 1rem;
-      text-align: center;
+    .dark body {
+      background: linear-gradient(135deg, #1f2937, #374151);
     }
-    canvas {
-      width: 100% !important;
-      height: auto !important;
-      display: block;
-      margin: auto;
+    .card {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .control-btn {
-      background-color: #0A84FF;
-      color: white;
-      border: none;
-      border-radius: 0.75rem;
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      margin: 0.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-      transition: background 0.2s;
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
-    .control-btn:hover {
-      background-color: #007AFF;
+    .card-back {
+      background-color: var(--card-bg-dark);
+      transform: rotateY(180deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
     }
-
-    /* fireworks canvas */
-    #fireworks-canvas {
+    html:not(.dark) .card-back {
+      background-color: var(--card-bg-light);
+    }
+    canvas#fireworks {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -53,224 +51,363 @@
     }
   </style>
 </head>
-<body>
-  <div id="spider-container">
-    <h1 class="text-3xl md:text-5xl font-bold text-gray-100 mb-4">Imp Beauty - Spider Solitaire</h1>
-    <p class="mb-6 text-gray-300">Enjoy Spider Solitaire online — a classic card game reimagined with modern, Apple-inspired design. Play on desktop or mobile, anywhere.</p>
-
-    <!-- 游戏区域 -->
-    <div id="spider-game"></div>
+<body class="text-gray-800 dark:text-gray-200 dark:bg-gray-900">
+  <canvas id="fireworks"></canvas>
+  <!-- 🆕 暗黑模式开关 -->
+  <div class="absolute top-4 right-4">
+    <button id="dark-toggle" 
+      class="p-2 rounded-full bg-white/70 dark:bg-gray-800 shadow hover:scale-105 transition">
+      <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" 
+           class="h-6 w-6 text-yellow-500 block dark:hidden" 
+           fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 
+             1.414M6.05 17.95l-1.414 1.414M17.95 17.95l1.414-1.414M6.05 
+             6.05L4.636 4.636M12 7a5 5 0 100 10 5 5 0 000-10z"/>
+      </svg>
+      <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" 
+           class="h-6 w-6 text-gray-200 hidden dark:block" 
+           fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          d="M20.354 15.354A9 9 0 118.646 3.646 
+             7 7 0 0020.354 15.354z"/>
+      </svg>
+    </button>
+  </div>
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl md:text-4xl font-bold text-center mb-2 text-gray-900">
+      Imp Beauty - Spider Solitaire
+    </h1>
+    <p class="text-center text-gray-600 mb-4">
+      Play the classic Spider Solitaire with a fresh Apple-inspired design.
+    </p>
+    <!-- 🆕 最佳成绩区块（移动到标题下方） -->
+    <div id="best-scores" class="flex justify-center items-center gap-6 mb-6 text-lg flex-wrap">
+      <div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800">
+        Best Moves: <span id="best-moves">—</span>
+      </div>
+      <div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800">
+        Best Time: <span id="best-time">—</span>
+      </div>
+      <button id="reset-scores" class="p-2 rounded-full bg-white/80 hover:bg-red-100 shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500 hover:text-red-600"
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a2 
+                   2 0 01-2 2H9a2 2 0 01-2-2V6h10z" />
+        </svg>
+      </button>
+    </div>
+    <!-- 记分板（Moves/Stock/Time） -->
+    <div id="scoreboard" class="flex justify-center gap-6 mb-6 text-lg flex-wrap">
+      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
+        Moves: <span id="moves-counter">0</span>
+      </div>
+      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
+        Stock: <span id="stock-counter">50</span>
+      </div>
+      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
+        Time: <span id="time-counter">0:00</span>
+      </div>
+    </div>
 
     <!-- 控制按钮 -->
-    <div class="mt-6">
-      <button class="control-btn" onclick="fSpider.restart()">Restart Game</button>
-      <button class="control-btn" onclick="toggleFullScreen()">Fullscreen</button>
+    <div class="flex justify-center gap-4 mb-6">
+      <button id="new-game" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow">New Game</button>
+      <button id="deal-cards" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl shadow">Deal</button>
     </div>
+
+    <!-- 游戏区域 -->
+    <div id="game-board" class="grid grid-cols-10 gap-2 md:gap-4 justify-center bg-white/70 rounded-2xl p-4 shadow-lg"></div>
   </div>
 
-  <!-- fireworks -->
-  <canvas id="fireworks-canvas"></canvas>
-
-  <!-- 依赖库 -->
-  <script src="js/kinetic.min.js"></script>
-  <script src="js/howler.min.js"></script>
-
-  <!-- 🔥 直接内嵌 fSpider.js -->
+  <!-- 游戏逻辑 -->
   <script>
-    const fSpider = {
-      stage: null,
-      layer: null,
-      cards: [],
-      piles: [],
-      options: {},
-      init: function(containerId, opts) {
-        this.options = opts;
-        this.stage = new Kinetic.Stage({
-          container: containerId,
-          width: opts.width,
-          height: opts.height
-        });
-        this.layer = new Kinetic.Layer();
-        this.stage.add(this.layer);
+    class Card {
+      constructor(suit, value) {
+        this.suit = suit;
+        this.value = value;
+        this.faceUp = false;
+      }
+      get name() {
+        const names = {1: "A", 11: "J", 12: "Q", 13: "K"};
+        return names[this.value] || this.value;
+      }
+      get symbol() {
+        const suits = { spades: "♠", hearts: "♥", clubs: "♣", diamonds: "♦" };
+        return suits[this.suit];
+      }
+    }
 
-        this._initGame();
-      },
-      _initGame: function() {
-        this.cards = this._generateDeck();
-        this._deal();
-      },
-      _generateDeck: function() {
+    class SpiderSolitaire {
+      constructor() {
+        this.board = Array.from({ length: 10 }, () => []);
+        this.stock = [];
+        this.moves = 0;
+        this.startTime = null;
+        this.timerInterval = null;
+        this.init();
+      }
+
+      createDeck() {
+        const suits = ["spades", "hearts", "clubs", "diamonds"];
         let deck = [];
-        const suits = ["♠","♥","♦","♣"];
-        for (let s=0;s<4;s++) {
-          for (let v=1;v<=13;v++) {
-            deck.push({suit:suits[s], value:v});
+        for (let i = 0; i < 2; i++) {
+          for (let suit of suits) {
+            for (let v = 1; v <= 13; v++) {
+              deck.push(new Card(suit, v));
+            }
           }
         }
-        return deck.concat(deck,deck,deck,deck,deck,deck,deck); // 8 decks
-      },
-      _deal: function() {
-        this.layer.destroyChildren();
-        for (let i=0;i<this.cards.length;i++) {
-          let card = new Kinetic.Text({
-            x: 50 + (i%10)*80,
-            y: Math.floor(i/10)*20,
-            text: this.cards[i].suit + this.cards[i].value,
-            fontSize: 18,
-            fontFamily: 'Calibri',
-            fill: 'white',
-            draggable: true
-          });
-          this._addDrag(card);
-          this.layer.add(card);
-        }
-        this.stage.draw();
-      },
-      _addDrag: function(card) {
-        card.on('dragend', () => {
-          // TODO: check rules & snap to pile
-          console.log("Dropped", card.text());
-        });
-      },
-      restart: function() {
-        this._initGame();
-      },
-      resize: function(newWidth) {
-        this.stage.width(newWidth);
-        this.stage.draw();
-      },
-      win: function() {
-        if (this.options.onWin) this.options.onWin();
+        return deck;
       }
-    };
-  </script>
 
-  <script>
-    // 初始化 fSpider 游戏
-    window.addEventListener("load", () => {
-      fSpider.init("spider-game", {
-        width: document.getElementById("spider-container").clientWidth,
-        height: window.innerHeight * 0.75,
-        onWin: triggerFireworks // 当赢时触发烟花
-      });
-      window.addEventListener("resize", () => {
-        fSpider.resize(document.getElementById("spider-container").clientWidth);
-      });
+      shuffle(deck) {
+        for (let i = deck.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck;
+      }
+
+      init() {
+        let deck = this.shuffle(this.createDeck());
+        const distribution = [6,6,6,6,5,5,5,5,5,5];
+        for (let i = 0; i < 10; i++) {
+          for (let j = 0; j < distribution[i]; j++) {
+            this.board[i].push(deck.shift());
+          }
+          this.board[i][this.board[i].length - 1].faceUp = true;
+        }
+        this.stock = deck;
+        this.moves = 0;
+        this.startTimer();
+        this.render();
+      }
+
+      render() {
+        const boardElement = document.getElementById("game-board");
+        boardElement.innerHTML = "";
+
+        this.board.forEach((pile, pi) => {
+          const pileDiv = document.createElement("div");
+          pileDiv.className = "relative min-h-[220px]";
+          pileDiv.id = `pile-${pi}`;
+
+          pile.forEach((card, ci) => {
+            const cardDiv = document.createElement("div");
+            cardDiv.className = `card absolute w-16 h-24 rounded-xl border flex flex-col justify-between items-center bg-white text-black ${
+              card.faceUp ? "" : "bg-gray-300 text-gray-200 border-gray-400"
+            }`;
+            cardDiv.style.top = `${ci * 22}px`;
+            cardDiv.draggable = card.faceUp;
+
+            if (card.faceUp) {
+              const color = (card.suit === "hearts" || card.suit === "diamonds") ? "text-red-500" : "text-gray-800";
+              cardDiv.innerHTML = `
+                <span class="self-start p-1 text-sm font-semibold ${color}">${card.name}</span>
+                <span class="text-xl ${color}">${card.symbol}</span>
+                <span class="self-end p-1 text-sm rotate-180 font-semibold ${color}">${card.name}</span>
+              `;
+            } else {
+              cardDiv.innerHTML = `<span class="m-auto text-lg">🂠</span>`;
+            }
+
+            cardDiv.dataset.pile = pi;
+            cardDiv.dataset.index = ci;
+            pileDiv.appendChild(cardDiv);
+          });
+
+          boardElement.appendChild(pileDiv);
+        });
+
+        this.enableDrag();
+        this.updateScoreboard();
+        this.checkWin();
+      }
+
+      enableDrag() {
+        document.querySelectorAll(".card").forEach(card => {
+          card.addEventListener("dragstart", e => {
+            e.dataTransfer.setData("text/plain", JSON.stringify({
+              pile: card.dataset.pile,
+              index: card.dataset.index
+            }));
+          });
+        });
+
+        document.querySelectorAll("#game-board > div").forEach(pile => {
+          pile.addEventListener("dragover", e => e.preventDefault());
+          pile.addEventListener("drop", e => {
+            e.preventDefault();
+            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+            this.moveCards(data.pile, data.index, pile.id.split("-")[1]);
+          });
+        });
+      }
+
+      moveCards(fromPile, fromIndex, toPile) {
+        fromPile = parseInt(fromPile);
+        fromIndex = parseInt(fromIndex);
+        toPile = parseInt(toPile);
+
+        let movingCards = this.board[fromPile].slice(fromIndex);
+        this.board[fromPile] = this.board[fromPile].slice(0, fromIndex);
+
+        if (this.board[fromPile].length > 0) {
+          this.board[fromPile][this.board[fromPile].length - 1].faceUp = true;
+        }
+
+        this.board[toPile].push(...movingCards);
+        this.moves++;
+        this.render();
+      }
+
+      deal() {
+        if (this.stock.length < 10) return;
+        for (let i = 0; i < 10; i++) {
+          const card = this.stock.shift();
+          card.faceUp = true;
+          this.board[i].push(card);
+        }
+        this.moves++;
+        this.render();
+      }
+
+      startTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => this.updateScoreboard(), 1000);
+      }
+
+      updateScoreboard() {
+        document.getElementById("moves-counter").textContent = this.moves;
+        document.getElementById("stock-counter").textContent = this.stock.length;
+
+        if (this.startTime) {
+          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+          const minutes = Math.floor(elapsed / 60);
+          const seconds = elapsed % 60;
+          document.getElementById("time-counter").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+        }
+
+        this.loadBestScores();
+      }
+
+      checkWin() {
+        const totalCards = this.board.reduce((acc, pile) => acc + pile.length, 0) + this.stock.length;
+        if (totalCards === 0) {
+          this.saveBestScores();
+          launchFireworks();
+          clearInterval(this.timerInterval);
+        }
+      }
+
+      saveBestScores() {
+        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+        const bestMoves = localStorage.getItem("bestMoves");
+        const bestTime = localStorage.getItem("bestTime");
+
+        if (!bestMoves || this.moves < parseInt(bestMoves)) {
+          localStorage.setItem("bestMoves", this.moves);
+        }
+        if (!bestTime || elapsed < parseInt(bestTime)) {
+          localStorage.setItem("bestTime", elapsed);
+        }
+        this.loadBestScores();
+      }
+
+      loadBestScores() {
+        const bestMoves = localStorage.getItem("bestMoves");
+        const bestTime = localStorage.getItem("bestTime");
+
+        document.getElementById("best-moves").textContent = bestMoves || "—";
+        document.getElementById("best-time").textContent = bestTime ? this.formatTime(bestTime) : "—";
+      }
+
+      formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, "0")}`;
+      }
+
+      // 🆕 重置最佳成绩功能
+      resetBestScores() {
+        if (confirm("Are you sure you want to reset your best scores?")) {
+          localStorage.removeItem("bestMoves");
+          localStorage.removeItem("bestTime");
+          this.loadBestScores();
+        }
+      }
+    }
+
+    // 🎮 游戏运行
+    let game = new SpiderSolitaire();
+    document.getElementById("new-game").addEventListener("click", () => {
+      game = new SpiderSolitaire();
+    });
+    document.getElementById("deal-cards").addEventListener("click", () => {
+      game.deal();
     });
 
-    function toggleFullScreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
+    // 🆕 重置最佳成绩按钮事件
+    document.getElementById("reset-scores").addEventListener("click", () => {
+      game.resetBestScores();
+    });
+
+    // 🆕 暗黑模式开关
+    const toggleBtn = document.getElementById("dark-toggle");
+    toggleBtn.addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+      // 记住用户选择
+      if (document.documentElement.classList.contains("dark")) {
+        localStorage.setItem("theme", "dark");
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
+        localStorage.setItem("theme", "light");
       }
+    });
+    // 页面加载时应用用户偏好
+    if (localStorage.getItem("theme") === "dark") {
+      document.documentElement.classList.add("dark");
     }
 
-    // 🎆 Fireworks animation
-    const canvas = document.getElementById("fireworks-canvas");
-    const ctx = canvas.getContext("2d");
-    let fireworks = [];
-    let animationFrameId;
-
-    function resizeCanvas() {
+    // 🎆 烟花效果
+    function launchFireworks() {
+      const canvas = document.getElementById("fireworks");
+      const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
 
-    function triggerFireworks() {
-      let duration = 5000; // 5秒
-      let start = Date.now();
-      function animate() {
-        let time = Date.now() - start;
-        if (time > duration) {
-          fireworks = [];
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          cancelAnimationFrame(animationFrameId);
-          return;
-        }
-        ctx.fillStyle = "rgba(0,0,0,0.2)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        if (Math.random() < 0.1) {
-          fireworks.push(new Firework());
-        }
-        fireworks.forEach((fw, i) => {
-          fw.update();
-          fw.draw(ctx);
-          if (fw.done) fireworks.splice(i, 1);
+      let particles = [];
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          dx: (Math.random() - 0.5) * 7,
+          dy: (Math.random() - 0.5) * 7,
+          life: 100,
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`
         });
-        animationFrameId = requestAnimationFrame(animate);
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+          p.x += p.dx;
+          p.y += p.dy;
+          p.dy += 0.06;
+          p.life--;
+        });
+        particles = particles.filter(p => p.life > 0);
+        if (particles.length > 0) {
+          requestAnimationFrame(animate);
+        }
       }
       animate();
-    }
-
-    class Firework {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = canvas.height;
-        this.targetY = Math.random() * canvas.height * 0.5;
-        this.color = `hsl(${Math.random()*360},100%,50%)`;
-        this.particles = [];
-        this.exploded = false;
-        this.done = false;
-      }
-      update() {
-        if (!this.exploded) {
-          this.y -= 5;
-          if (this.y <= this.targetY) {
-            this.explode();
-          }
-        } else {
-          this.particles.forEach((p) => p.update());
-          this.particles = this.particles.filter((p) => !p.done);
-          if (this.particles.length === 0) this.done = true;
-        }
-      }
-      draw(ctx) {
-        if (!this.exploded) {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-          ctx.fillStyle = this.color;
-          ctx.fill();
-        } else {
-          this.particles.forEach((p) => p.draw(ctx));
-        }
-      }
-      explode() {
-        this.exploded = true;
-        for (let i = 0; i < 50; i++) {
-          this.particles.push(new Particle(this.x, this.y, this.color));
-        }
-      }
-    }
-
-    class Particle {
-      constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.vx = (Math.random() - 0.5) * 6;
-        this.vy = (Math.random() - 0.5) * 6;
-        this.alpha = 1;
-        this.done = false;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha -= 0.02;
-        if (this.alpha <= 0) this.done = true;
-      }
-      draw(ctx) {
-        ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-        ctx.globalAlpha = 1;
-      }
     }
   </script>
 </body>
