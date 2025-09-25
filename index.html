@@ -1,414 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Imp Beauty - Spider Solitaire</title>
-  <meta name="description" content="Play Spider Solitaire online for free at Imp Beauty. Classic card game with a modern Apple-style design." />
-  <link rel="canonical" href="https://imp.beauty" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    }
-  </script>
-  <style>
-    :root {
-      --card-bg-light: #f3f4f6;
-      --card-bg-dark: #374151;
-    }
-    body {
-      background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    .dark body {
-      background: linear-gradient(135deg, #1f2937, #374151);
-    }
-    .card {
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
-    .card-back {
-      background-color: var(--card-bg-dark);
-      transform: rotateY(180deg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: background-color 0.3s ease;
-    }
-    html:not(.dark) .card-back {
-      background-color: var(--card-bg-light);
-    }
-    canvas#fireworks {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imp Beauty - Spider Solitaire</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config = { darkMode: 'class' }</script>
+<style>
+:root {
+  --card-width: 90px;
+  --card-height: calc(var(--card-width) * 1.4);
+  --card-radius: 8px;
+  --card-bg-light: #F9FAFB;
+  --card-bg-dark: #2C2C2E;
+  --card-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  --red-suit: #FF3B30;
+  --black-suit: #1C1C1E;
+}
+body { background: linear-gradient(160deg,#e0f7fa,#e8f5e9); }
+html.dark body { background: linear-gradient(160deg,#1C1C1E,#2C2C2E); }
+.card-container { width: var(--card-width); height: var(--card-height); position: relative; transform-style: preserve-3d; transition: transform 0.6s; cursor: pointer; perspective:1000px; }
+.card-container.transitioning { transition: transform 0.6s, top 0.3s ease, left 0.3s ease; }
+.card-face { position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--card-radius);box-shadow:var(--card-shadow);display:flex;flex-direction:column;justify-content:space-between;align-items:center;}
+.card-front { background-color: var(--card-bg-light); border:1px solid rgba(0,0,0,0.1); color: var(--black-suit); transition: background-color 0.3s ease,color 0.3s ease; }
+.card-front.is-red{color: var(--red-suit);}
+.card-front .card-value{font-size:1.6rem;font-weight:bold;line-height:1;}
+.card-front .suit-symbol{font-size:2rem;}
+html.dark .card-front{background-color:#2C2C2E;color:#E5E7EB;}
+.card-back{background-color:var(--card-bg-dark);transform:rotateY(180deg);display:flex;justify-content:center;align-items:center;transition:background-color 0.3s ease;}
+html:not(.dark) .card-back{background-color:var(--card-bg-light);}
+.card-container.is-flipped{transform:rotateY(180deg);}
+.tableau-pile{position:relative;padding-top:20px;min-height:calc(var(--card-height)+120px);}
+.tableau-pile .card-container{position:absolute;top:0;left:0;transition:top 0.3s ease;}
+#stock-pile{width:var(--card-width);height:var(--card-height);position:relative;cursor:pointer;}
+#stock-pile .card-back{position:absolute;top:0;left:0;}
+#foundations{display:flex;gap:10px;}
+.foundation-pile{width:var(--card-width);height:var(--card-height);}
+.foundation-pile .card-container{position:relative;}
+#game-stats{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+</style>
 </head>
-<body class="text-gray-800 dark:text-gray-200 dark:bg-gray-900">
-  <canvas id="fireworks"></canvas>
-  <!-- 🆕 暗黑模式开关 -->
-  <div class="absolute top-4 right-4">
-    <button id="dark-toggle" 
-      class="p-2 rounded-full bg-white/70 dark:bg-gray-800 shadow hover:scale-105 transition">
-      <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" 
-           class="h-6 w-6 text-yellow-500 block dark:hidden" 
-           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 
-             1.414M6.05 17.95l-1.414 1.414M17.95 17.95l1.414-1.414M6.05 
-             6.05L4.636 4.636M12 7a5 5 0 100 10 5 5 0 000-10z"/>
-      </svg>
-      <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" 
-           class="h-6 w-6 text-gray-200 hidden dark:block" 
-           fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M20.354 15.354A9 9 0 118.646 3.646 
-             7 7 0 0020.354 15.354z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl md:text-4xl font-bold text-center mb-2 text-gray-900">
-      Imp Beauty - Spider Solitaire
-    </h1>
-    <p class="text-center text-gray-600 mb-4">
-      Play the classic Spider Solitaire with a fresh Apple-inspired design.
-    </p>
-    <!-- 🆕 最佳成绩区块（移动到标题下方） -->
-    <div id="best-scores" class="flex justify-center items-center gap-6 mb-6 text-lg flex-wrap">
-      <div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800">
-        Best Moves: <span id="best-moves">—</span>
-      </div>
-      <div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800">
-        Best Time: <span id="best-time">—</span>
-      </div>
-      <button id="reset-scores" class="p-2 rounded-full bg-white/80 hover:bg-red-100 shadow">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500 hover:text-red-600"
-             fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a2 
-                   2 0 01-2 2H9a2 2 0 01-2-2V6h10z" />
-        </svg>
-      </button>
-    </div>
-    <!-- 记分板（Moves/Stock/Time） -->
-    <div id="scoreboard" class="flex justify-center gap-6 mb-6 text-lg flex-wrap">
-      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
-        Moves: <span id="moves-counter">0</span>
-      </div>
-      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
-        Stock: <span id="stock-counter">50</span>
-      </div>
-      <div class="bg-white/70 px-4 py-2 rounded-xl shadow text-gray-800">
-        Time: <span id="time-counter">0:00</span>
-      </div>
-    </div>
+<body class="font-sans antialiased text-gray-800 dark:text-gray-200">
 
-    <!-- 控制按钮 -->
-    <div class="flex justify-center gap-4 mb-6">
-      <button id="new-game" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl shadow">New Game</button>
-      <button id="deal-cards" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl shadow">Deal</button>
-    </div>
+<!-- 🔘 暗黑模式开关 -->
+<div class="absolute top-4 right-4">
+<button id="dark-toggle" class="p-2 rounded-full bg-white/70 dark:bg-gray-800 shadow hover:scale-105 transition">
+<svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 block dark:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M6.05 17.95l-1.414 1.414M17.95 17.95l1.414-1.414M6.05 6.05L4.636 4.636M12 7a5 5 0 100 10 5 5 0 000-10z"/>
+</svg>
+<svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 118.646 3.646 7 7 0 0020.354 15.354z"/>
+</svg>
+</button>
+</div>
 
-    <!-- 游戏区域 -->
-    <div id="game-board" class="grid grid-cols-10 gap-2 md:gap-4 justify-center bg-white/70 rounded-2xl p-4 shadow-lg"></div>
-  </div>
+<div class="p-8">
+<h1 class="text-4xl font-bold text-center mb-4">Imp Beauty</h1>
+<p class="text-center text-gray-600 dark:text-gray-300 mb-6">Play the classic Spider Solitaire with a fresh Apple-inspired design.</p>
 
-  <!-- 游戏逻辑 -->
-  <script>
-    class Card {
-      constructor(suit, value) {
-        this.suit = suit;
-        this.value = value;
-        this.faceUp = false;
-      }
-      get name() {
-        const names = {1: "A", 11: "J", 12: "Q", 13: "K"};
-        return names[this.value] || this.value;
-      }
-      get symbol() {
-        const suits = { spades: "♠", hearts: "♥", clubs: "♣", diamonds: "♦" };
-        return suits[this.suit];
-      }
-    }
+<!-- 🏆 最佳成绩 -->
+<div id="best-scores" class="flex justify-center items-center gap-6 mb-6 text-lg flex-wrap">
+<div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800 dark:text-gray-900">Best Moves: <span id="best-moves">—</span></div>
+<div class="bg-yellow-200/70 px-4 py-2 rounded-xl shadow text-gray-800 dark:text-gray-900">Best Time: <span id="best-time">—</span></div>
+<button id="reset-scores" class="p-2 rounded-full bg-white/80 dark:bg-gray-700 hover:bg-red-100 shadow">
+<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500 hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2m2 0v14a2 2 0 01-2 2H9a2 2 0 01-2-2V6h10z" />
+</svg>
+</button>
+</div>
 
-    class SpiderSolitaire {
-      constructor() {
-        this.board = Array.from({ length: 10 }, () => []);
-        this.stock = [];
-        this.moves = 0;
-        this.startTime = null;
-        this.timerInterval = null;
-        this.init();
-      }
+<div id="game-stats">
+<span id="moves-counter" class="text-lg">Moves: 0</span>
+<span id="timer-counter" class="text-lg">Time: 00:00</span>
+</div>
 
-      createDeck() {
-        const suits = ["spades", "hearts", "clubs", "diamonds"];
-        let deck = [];
-        for (let i = 0; i < 2; i++) {
-          for (let suit of suits) {
-            for (let v = 1; v <= 13; v++) {
-              deck.push(new Card(suit, v));
-            }
-          }
-        }
-        return deck;
-      }
+<div class="flex justify-between items-start mb-8">
+<div id="stock-pile">
+<div class="card-face card-back"><span class="text-gray-800 dark:text-gray-100 text-lg font-bold">IMP</span></div>
+</div>
+<div id="foundations" class="flex flex-wrap justify-end gap-2"></div>
+</div>
 
-      shuffle(deck) {
-        for (let i = deck.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-        return deck;
-      }
+<div id="game-board" class="grid grid-cols-5 md:grid-cols-10 gap-2 md:gap-4 justify-center">
+<div id="pile-0" class="tableau-pile"></div>
+<div id="pile-1" class="tableau-pile"></div>
+<div id="pile-2" class="tableau-pile"></div>
+<div id="pile-3" class="tableau-pile"></div>
+<div id="pile-4" class="tableau-pile"></div>
+<div id="pile-5" class="tableau-pile"></div>
+<div id="pile-6" class="tableau-pile"></div>
+<div id="pile-7" class="tableau-pile"></div>
+<div id="pile-8" class="tableau-pile"></div>
+<div id="pile-9" class="tableau-pile"></div>
+</div>
+</div>
 
-      init() {
-        let deck = this.shuffle(this.createDeck());
-        const distribution = [6,6,6,6,5,5,5,5,5,5];
-        for (let i = 0; i < 10; i++) {
-          for (let j = 0; j < distribution[i]; j++) {
-            this.board[i].push(deck.shift());
-          }
-          this.board[i][this.board[i].length - 1].faceUp = true;
-        }
-        this.stock = deck;
-        this.moves = 0;
-        this.startTimer();
-        this.render();
-      }
+<!-- 烟花画布 -->
+<canvas id="fireworks-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></canvas>
 
-      render() {
-        const boardElement = document.getElementById("game-board");
-        boardElement.innerHTML = "";
+<script src="fSpider.js"></script>
+<script>
+// 暗黑模式切换
+const toggleBtn = document.getElementById("dark-toggle");
+toggleBtn.addEventListener("click", () => {
+  document.documentElement.classList.toggle("dark");
+  if(document.documentElement.classList.contains("dark")) localStorage.setItem("theme","dark");
+  else localStorage.setItem("theme","light");
+});
+if(localStorage.getItem("theme")==="dark") document.documentElement.classList.add("dark");
 
-        this.board.forEach((pile, pi) => {
-          const pileDiv = document.createElement("div");
-          pileDiv.className = "relative min-h-[220px]";
-          pileDiv.id = `pile-${pi}`;
+// 重置最佳成绩
+document.getElementById("reset-scores").addEventListener("click", () => {
+  localStorage.removeItem("bestMoves");
+  localStorage.removeItem("bestTime");
+  if(game && game.loadBestScores) game.loadBestScores();
+});
 
-          pile.forEach((card, ci) => {
-            const cardDiv = document.createElement("div");
-            cardDiv.className = `card absolute w-16 h-24 rounded-xl border flex flex-col justify-between items-center bg-white text-black ${
-              card.faceUp ? "" : "bg-gray-300 text-gray-200 border-gray-400"
-            }`;
-            cardDiv.style.top = `${ci * 22}px`;
-            cardDiv.draggable = card.faceUp;
+// 烟花效果
+const canvas = document.getElementById('fireworks-canvas');
+const ctx = canvas.getContext('2d');
+let fireworks = [], particles = [];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+class Firework{constructor(x,y){this.x=x;this.y=canvas.height;this.targetY=y;this.speed=5+Math.random()*3;this.particlesCreated=false;}update(){this.y-=this.speed;if(this.y<=this.targetY&&!this.particlesCreated){this.explode();this.particlesCreated=true;}}draw(){ctx.beginPath();ctx.arc(this.x,this.y,3,0,Math.PI*2);ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;ctx.fill();}explode(){for(let i=0;i<30;i++)particles.push(new Particle(this.x,this.y));}}
+class Particle{constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-0.5)*6;this.vy=(Math.random()-0.5)*6;this.alpha=1;this.color=`hsl(${Math.random()*360},100%,50%)`; }update(){this.x+=this.vx;this.y+=this.vy;this.alpha-=0.02;}draw(){ctx.globalAlpha=this.alpha;ctx.beginPath();ctx.arc(this.x,this.y,3,0,Math.PI*2);ctx.fillStyle=this.color;ctx.fill();ctx.globalAlpha=1;}}
+function animateFireworks(){ctx.clearRect(0,0,canvas.width,canvas.height);fireworks.forEach((fw,i)=>{fw.update();fw.draw();if(fw.particlesCreated)fireworks.splice(i,1);});particles.forEach((p,i)=>{p.update();if(p.alpha<=0)particles.splice(i,1);else p.draw();});requestAnimationFrame(animateFireworks);}
+animateFireworks();
+function launchFireworks(){for(let i=0;i<5;i++){fireworks.push(new Firework(Math.random()*canvas.width,Math.random()*canvas.height*0.5));}}
 
-            if (card.faceUp) {
-              const color = (card.suit === "hearts" || card.suit === "diamonds") ? "text-red-500" : "text-gray-800";
-              cardDiv.innerHTML = `
-                <span class="self-start p-1 text-sm font-semibold ${color}">${card.name}</span>
-                <span class="text-xl ${color}">${card.symbol}</span>
-                <span class="self-end p-1 text-sm rotate-180 font-semibold ${color}">${card.name}</span>
-              `;
-            } else {
-              cardDiv.innerHTML = `<span class="m-auto text-lg">🂠</span>`;
-            }
+// 🔔 hook 到原 checkWinState
+const originalCheckWinState = checkWinState;
+checkWinState = function(){originalCheckWinState();let totalFoundationCards=0;gameState.foundations.forEach(p=>totalFoundationCards+=p.length);if(totalFoundationCards===104){launchFireworks();}}
+// 折叠/展开 玩法说明
+document.getElementById("toggle-rules").addEventListener("click", () => {
+  const content = document.getElementById("rules-content");
+  const icon = document.getElementById("rules-icon");
+  if (content.classList.contains("hidden")) {
+    content.classList.remove("hidden");
+    icon.textContent = "－"; // 展开后显示减号
+  } else {
+    content.classList.add("hidden");
+    icon.textContent = "＋"; // 收起后显示加号
+  }
+});
 
-            cardDiv.dataset.pile = pi;
-            cardDiv.dataset.index = ci;
-            pileDiv.appendChild(cardDiv);
-          });
-
-          boardElement.appendChild(pileDiv);
-        });
-
-        this.enableDrag();
-        this.updateScoreboard();
-        this.checkWin();
-      }
-
-      enableDrag() {
-        document.querySelectorAll(".card").forEach(card => {
-          card.addEventListener("dragstart", e => {
-            e.dataTransfer.setData("text/plain", JSON.stringify({
-              pile: card.dataset.pile,
-              index: card.dataset.index
-            }));
-          });
-        });
-
-        document.querySelectorAll("#game-board > div").forEach(pile => {
-          pile.addEventListener("dragover", e => e.preventDefault());
-          pile.addEventListener("drop", e => {
-            e.preventDefault();
-            const data = JSON.parse(e.dataTransfer.getData("text/plain"));
-            this.moveCards(data.pile, data.index, pile.id.split("-")[1]);
-          });
-        });
-      }
-
-      moveCards(fromPile, fromIndex, toPile) {
-        fromPile = parseInt(fromPile);
-        fromIndex = parseInt(fromIndex);
-        toPile = parseInt(toPile);
-
-        let movingCards = this.board[fromPile].slice(fromIndex);
-        this.board[fromPile] = this.board[fromPile].slice(0, fromIndex);
-
-        if (this.board[fromPile].length > 0) {
-          this.board[fromPile][this.board[fromPile].length - 1].faceUp = true;
-        }
-
-        this.board[toPile].push(...movingCards);
-        this.moves++;
-        this.render();
-      }
-
-      deal() {
-        if (this.stock.length < 10) return;
-        for (let i = 0; i < 10; i++) {
-          const card = this.stock.shift();
-          card.faceUp = true;
-          this.board[i].push(card);
-        }
-        this.moves++;
-        this.render();
-      }
-
-      startTimer() {
-        if (this.timerInterval) clearInterval(this.timerInterval);
-        this.startTime = Date.now();
-        this.timerInterval = setInterval(() => this.updateScoreboard(), 1000);
-      }
-
-      updateScoreboard() {
-        document.getElementById("moves-counter").textContent = this.moves;
-        document.getElementById("stock-counter").textContent = this.stock.length;
-
-        if (this.startTime) {
-          const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-          const minutes = Math.floor(elapsed / 60);
-          const seconds = elapsed % 60;
-          document.getElementById("time-counter").textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-        }
-
-        this.loadBestScores();
-      }
-
-      checkWin() {
-        const totalCards = this.board.reduce((acc, pile) => acc + pile.length, 0) + this.stock.length;
-        if (totalCards === 0) {
-          this.saveBestScores();
-          launchFireworks();
-          clearInterval(this.timerInterval);
-        }
-      }
-
-      saveBestScores() {
-        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-        const bestMoves = localStorage.getItem("bestMoves");
-        const bestTime = localStorage.getItem("bestTime");
-
-        if (!bestMoves || this.moves < parseInt(bestMoves)) {
-          localStorage.setItem("bestMoves", this.moves);
-        }
-        if (!bestTime || elapsed < parseInt(bestTime)) {
-          localStorage.setItem("bestTime", elapsed);
-        }
-        this.loadBestScores();
-      }
-
-      loadBestScores() {
-        const bestMoves = localStorage.getItem("bestMoves");
-        const bestTime = localStorage.getItem("bestTime");
-
-        document.getElementById("best-moves").textContent = bestMoves || "—";
-        document.getElementById("best-time").textContent = bestTime ? this.formatTime(bestTime) : "—";
-      }
-
-      formatTime(seconds) {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m}:${s.toString().padStart(2, "0")}`;
-      }
-
-      // 🆕 重置最佳成绩功能
-      resetBestScores() {
-        if (confirm("Are you sure you want to reset your best scores?")) {
-          localStorage.removeItem("bestMoves");
-          localStorage.removeItem("bestTime");
-          this.loadBestScores();
-        }
-      }
-    }
-
-    // 🎮 游戏运行
-    let game = new SpiderSolitaire();
-    document.getElementById("new-game").addEventListener("click", () => {
-      game = new SpiderSolitaire();
-    });
-    document.getElementById("deal-cards").addEventListener("click", () => {
-      game.deal();
-    });
-
-    // 🆕 重置最佳成绩按钮事件
-    document.getElementById("reset-scores").addEventListener("click", () => {
-      game.resetBestScores();
-    });
-
-    // 🆕 暗黑模式开关
-    const toggleBtn = document.getElementById("dark-toggle");
-    toggleBtn.addEventListener("click", () => {
-      document.documentElement.classList.toggle("dark");
-      // 记住用户选择
-      if (document.documentElement.classList.contains("dark")) {
-        localStorage.setItem("theme", "dark");
-      } else {
-        localStorage.setItem("theme", "light");
-      }
-    });
-    // 页面加载时应用用户偏好
-    if (localStorage.getItem("theme") === "dark") {
-      document.documentElement.classList.add("dark");
-    }
-
-    // 🎆 烟花效果
-    function launchFireworks() {
-      const canvas = document.getElementById("fireworks");
-      const ctx = canvas.getContext("2d");
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      let particles = [];
-      for (let i = 0; i < 120; i++) {
-        particles.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          dx: (Math.random() - 0.5) * 7,
-          dy: (Math.random() - 0.5) * 7,
-          life: 100,
-          color: `hsl(${Math.random() * 360}, 100%, 60%)`
-        });
-      }
-
-      function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
-          ctx.fill();
-          p.x += p.dx;
-          p.y += p.dy;
-          p.dy += 0.06;
-          p.life--;
-        });
-        particles = particles.filter(p => p.life > 0);
-        if (particles.length > 0) {
-          requestAnimationFrame(animate);
-        }
-      }
-      animate();
-    }
-  </script>
+</script>
 </body>
 </html>
+<!-- 游戏玩法说明 -->
+<div class="max-w-2xl mx-auto mt-12">
+  <button id="toggle-rules" 
+          class="w-full flex justify-between items-center px-6 py-4 bg-blue-500 text-white font-semibold rounded-2xl shadow hover:bg-blue-600 transition">
+    <span>📖 How to Play</span>
+    <span id="rules-icon">＋</span>
+  </button>
+
+  <div id="rules-content" class="hidden mt-4 p-6 bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow">
+    <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-200">
+      <li><strong>Goal:</strong> Build complete sequences of cards in descending order from King to Ace.</li>
+      <li><strong>Move cards:</strong> Drag and drop cards (or valid sequences) onto another pile.</li>
+      <li><strong>Deal new row:</strong> Click the stock pile (top-left) to deal one card to each column.</li>
+      <li><strong>Auto-foundation:</strong> Completed sequences will automatically move to the foundation area.</li>
+      <li><strong>Win:</strong> Move all 104 cards into the foundation piles.</li>
+      <li><strong>Extras:</strong> Track your time and moves, toggle Dark Mode, and enjoy fireworks when you win!</li>
+    </ul>
+  </div>
+</div>
