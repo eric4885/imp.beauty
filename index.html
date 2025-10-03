@@ -1,1103 +1,604 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>你好，我的游戏网站！</h1>
-    <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+import React, { useState, useEffect, useRef } from 'react';
+import { Trophy, Clock, Award, RotateCcw, Sparkles, HelpCircle, X } from 'lucide-react';
+
+const SpiderSolitaire = () => {
+  const [columns, setColumns] = useState([]);
+  const [stock, setStock] = useState([]);
+  const [completed, setCompleted] = useState([]);
+  const [draggedCard, setDraggedCard] = useState(null);
+  const [moves, setMoves] = useState(0);
+  const [score, setScore] = useState(500);
+  const [time, setTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [gameMode, setGameMode] = useState('4suit');
+  const [bestScores, setBestScores] = useState({ '4suit': 0, '2suit': 0, '1suit': 0 });
+  const [achievements, setAchievements] = useState([]);
+  const [showAchievement, setShowAchievement] = useState(null);
+  const [gameWon, setGameWon] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  
+  const initRef = useRef(false);
+
+  const suits = ['♠', '♥', '♣', '♦'];
+  const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+  const achievementsList = [
+    { id: 'first_win', name: '首次胜利', desc: '完成第一局游戏', icon: '🎉' },
+    { id: 'speed_demon', name: '速度恶魔', desc: '5分钟内完成游戏', icon: '⚡' },
+    { id: 'perfectionist', name: '完美主义者', desc: '获得满分500分', icon: '💯' },
+    { id: 'master', name: '蜘蛛大师', desc: '完成所有难度', icon: '👑' }
+  ];
+
+  const initGame = () => {
+    const deck = [];
+    const suitCount = gameMode === '4suit' ? 4 : gameMode === '2suit' ? 2 : 1;
     
-    <title>Imp Beauty - 蜘蛛纸牌</title>
-    <meta name="description" content="一个现代、优雅的蜘蛛纸牌游戏。享受简约的设计和流畅的玩法，支持桌面和移动设备。">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom Apple-inspired colors */
-        :root {
-            --color-dark-bg: #1C1C1E;
-            --color-light-text: #F2F2F7;
-            --color-accent-blue: #0A84FF;
-            --color-accent-green: #30D158;
-            --color-card-bg: #2C2C2E;
-            --color-accent-purple: #AF52DE;
-            --color-accent-orange: #FF9500;
-            
-            /* Game-specific variables */
-            --card-width: 70px;
-            --card-height: calc(var(--card-width) * 1.4);
-            --card-radius: 8px;
-            --card-bg-light: #F9FAFB;
-            --card-bg-dark: var(--color-card-bg);
-            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --red-suit: #FF3B30;
-            --black-suit: #1C1C1E;
-        }
-
-        body {
-            background-color: var(--color-dark-bg);
-            color: var(--color-light-text);
-            touch-action: manipulation;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-        }
-
-        /* Game state transitions */
-        .landing-state {
-            display: block;
-        }
-        .game-state {
-            display: none;
-        }
-        
-        .game-active .landing-state {
-            display: none;
-        }
-        .game-active .game-state {
-            display: block;
-        }
-
-        /* Hero section animations */
-        .hero-title {
-            background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-blue));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { filter: brightness(1); }
-            to { filter: brightness(1.2); }
-        }
-
-        .play-button {
-            background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-blue));
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 25px rgba(48, 209, 88, 0.3);
-        }
-
-        .play-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px rgba(48, 209, 88, 0.4);
-        }
-
-        /* Card game styles */
-        .card-container {
-            width: var(--card-width);
-            height: var(--card-height);
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s, box-shadow 0.2s;
-            cursor: pointer;
-            perspective: 1000px;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        
-        .card-container.transitioning {
-            transition: transform 0.6s, top 0.3s ease, left 0.3s ease;
-        }
-
-        .card-container.dragging {
-            z-index: 1000 !important;
-            pointer-events: none;
-            opacity: 0.8;
-            transform: scale(1.02);
-        }
-
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: var(--card-radius);
-            box-shadow: var(--card-shadow);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-front {
-            background-color: var(--card-bg-light);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            color: var(--black-suit);
-        }
-        .card-front.is-red {
-            color: var(--red-suit);
-        }
-        .card-front .card-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            line-height: 1;
-        }
-        .card-front .suit-symbol {
-              font-size: 1.5rem;
-        }
-
-        .card-back {
-            background: linear-gradient(135deg, var(--color-card-bg), #3A3A3C);
-            transform: rotateY(180deg);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .card-container.is-flipped {
-            transform: rotateY(180deg);
-        }
-        
-        .card-container.is-hinted {
-            box-shadow: 0 0 15px 5px var(--color-accent-purple);
-            animation: hintGlow 1.5s ease-in-out infinite alternate;
-        }
-        
-        @keyframes hintGlow {
-            from { box-shadow: 0 0 15px 5px rgba(175, 82, 222, 0.5); }
-            to { box-shadow: 0 0 20px 8px rgba(175, 82, 222, 0.8); }
-        }
-
-        .tableau-pile {
-            position: relative;
-            padding-top: 15px;
-            min-height: calc(var(--card-height) + 80px);
-            border: 2px dashed transparent;
-            border-radius: var(--card-radius);
-            transition: border-color 0.2s;
-            /* 确保有足够的点击区域 */
-            padding-bottom: 60px;
-        }
-        
-        .tableau-pile.active-drop-target {
-            border-color: var(--color-accent-blue);
-            background-color: rgba(10, 132, 255, 0.1);
-        }
-
-        .tableau-pile .card-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: top 0.3s ease;
-        }
-
-        #stock-pile {
-            width: var(--card-width);
-            height: var(--card-height);
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        #stock-pile:hover {
-            transform: scale(1.05);
-        }
-
-        #stock-pile .card-back {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        #foundations {
-            display: flex;
-            gap: 8px;
-        }
-        .foundation-pile {
-              width: var(--card-width);
-              height: var(--card-height);
-              border: 2px solid rgba(255, 255, 255, 0.3);
-              border-radius: var(--card-radius);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-        }
-        .foundation-pile .card-container {
-            position: relative;
-        }
-
-        .foundation-pile.empty {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        #game-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            color: var(--color-light-text);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-        }
-
-        #fireworks {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: none;
-            z-index: 9999;
-        }
-        
-        #win-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            text-shadow: 0 0 10px black;
-            display: none;
-            text-align: center;
-            z-index: 10000;
-            background: linear-gradient(135deg, rgba(48, 209, 88, 0.9), rgba(10, 132, 255, 0.9));
-            padding: 2rem;
-            border-radius: 20px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn {
-            background: var(--color-accent-blue);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            color: white;
-            font-weight: 500;
-        }
-        .btn:hover { 
-            background: #0056CC;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
-        }
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            :root {
-                --card-width: 60px;
-            }
-            .card-front .card-value {
-                font-size: 1rem;
-            }
-            .card-front .suit-symbol {
-                font-size: 1.2rem;
-            }
-            .hero-title {
-                font-size: 3rem !important;
-            }
-        }
-
-        /* Animations */
-        @media (prefers-reduced-motion: reduce) {
-            .card-container {
-                transition: none;
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--color-dark-bg);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--color-accent-blue);
-            border-radius: 4px;
-        }
-    </style>
-</head>
-<body class="font-sans antialiased text-white">
-
-    <div class="landing-state">
-        <div class="min-h-screen flex flex-col items-center justify-center p-4">
-            <header class="text-center mb-8">
-                <h1 class="hero-title text-6xl md:text-8xl font-bold tracking-tight">Imp Beauty</h1>
-                <p class="mt-4 text-lg md:text-xl font-light text-gray-400">你玩过的最优雅的蜘蛛纸牌游戏。</p>
-            </header>
-
-            <main class="w-full max-w-2xl text-center">
-                <p class="text-xl md:text-2xl font-medium leading-relaxed mb-8">
-                    在 <span style="color: var(--color-accent-blue);" class="font-bold">Imp Beauty</span> 中放松身心，这是一个设计精美的蜘蛛纸牌体验。简约的界面和流畅的动画，是打发时间的完美方式。
-                </p>
-
-                <div class="mb-8">
-                    <button id="start-game-btn" class="play-button text-white text-xl font-bold py-4 px-8 rounded-2xl">
-                        🎴 开始游戏
-                    </button>
-                </div>
-
-                <div id="game-preview" class="w-full bg-gray-800 rounded-2xl shadow-xl border-4 mb-12" style="border-color: var(--color-card-bg);">
-                    <div class="h-96 md:h-[500px] flex items-center justify-center text-xl font-semibold text-gray-400 p-8">
-                        <div class="text-center">
-                            <div class="text-6xl mb-4">🎴</div>
-                            <div class="text-lg">点击“开始游戏”来开始你的冒险</div>
-                            <div class="text-sm text-gray-500 mt-2">无需注册 • 立即游玩</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-left space-y-6">
-                    <h2 class="text-3xl font-bold" style="color: var(--color-accent-blue);">游戏简介</h2>
-                    <p class="text-base leading-relaxed text-gray-400">
-                        <strong class="text-white">Imp Beauty</strong> 是经典蜘蛛纸牌游戏的现代版本。目标是通过移动纸牌，在桌面上创建从 K 到 A 的完整序列，这些序列会自动移除。游戏为任何设备（从大型桌面显示器到智能手机）都提供了无缝体验。
-                    </p>
-                    <ul class="list-disc list-inside space-y-2 text-base text-gray-400">
-                        <li><strong class="text-white">流畅玩法：</strong>通过流畅直观的控件拖放卡牌。</li>
-                        <li><strong class="text-white">极简设计：</strong>干净的界面让您专注于游戏，而不是杂乱的元素。</li>
-                        <li><strong class="text-white">自适应显示：</strong>自动调整以适应您的屏幕尺寸，提供最佳游戏体验。</li>
-                        <li><strong class="text-white">离线模式：</strong>无需互联网连接，随时随地都可以玩。</li>
-                        <li><strong class="text-white">得分系统：</strong>通过我们的智能得分系统挑战自己。</li>
-                        <li><strong class="text-white">提示系统：</strong>当您遇到困难时，获取有用的提示。</li>
-                    </ul>
-                </div>
-            </main>
-
-            <footer class="mt-12 text-center text-sm font-light text-gray-500">
-                <p>&copy; 2025 Imp.Beauty. All rights reserved.</p>
-            </footer>
-        </div>
-    </div>
-
-    <div class="game-state">
-        <div class="p-4 md:p-6 max-w-7xl mx-auto">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl md:text-3xl font-bold" style="color: var(--color-accent-green);">Imp Beauty</h1>
-                <button id="back-to-landing" class="mt-2 text-sm text-gray-400 hover:text-white transition-colors">← 返回首页</button>
-            </div>
-
-            <div id="game-stats" class="flex justify-between items-center mb-4 text-sm">
-                <div class="flex gap-4">
-                    <span id="moves-counter">步数: 0</span>
-                    <span id="timer-counter">时间: 00:00</span>
-                    <span id="score-counter">得分: 0</span>
-                </div>
-                <div class="flex gap-2">
-                    <button id="hint-btn" class="btn btn-secondary">💡 提示</button>
-                    <button id="restart-btn-top" class="btn">🔄 重新开始</button>
-                </div>
-            </div>
-            
-            <div class="flex justify-between items-start mb-4">
-                <div class="flex flex-col items-center">
-                    <div id="stock-pile">
-                        <div class="card-face card-back">
-                            <span class="text-white text-sm font-bold">IMP</span>
-                        </div>
-                    </div>
-                    <div class="text-center text-xs text-gray-400 mt-1">
-                        剩余: <span id="stock-count">50</span>
-                    </div>
-                </div>
-                
-                <div id="foundations" class="flex flex-wrap justify-end gap-1">
-                    </div>
-            </div>
-
-            <div id="game-board" class="grid grid-cols-5 md:grid-cols-10 gap-1 md:gap-2">
-                <div id="pile-0" class="tableau-pile"></div>
-                <div id="pile-1" class="tableau-pile"></div>
-                <div id="pile-2" class="tableau-pile"></div>
-                <div id="pile-3" class="tableau-pile"></div>
-                <div id="pile-4" class="tableau-pile"></div>
-                <div id="pile-5" class="tableau-pile"></div>
-                <div id="pile-6" class="tableau-pile"></div>
-                <div id="pile-7" class="tableau-pile"></div>
-                <div id="pile-8" class="tableau-pile"></div>
-                <div id="pile-9" class="tableau-pile"></div>
-            </div>
-        </div>
-    </div>
-    
-    <canvas id="fireworks"></canvas>
-    <div id="win-message">
-        🎉 恭喜获胜！ 🎉<br>
-        <div class="mt-4 text-base font-normal">
-            完成时间: <span id="final-time"></span><br>
-            总步数: <span id="final-moves"></span><br>
-            最终得分: <span id="final-score"></span>
-        </div>
-        <div class="mt-6 flex gap-3 justify-center">
-            <button id="restart-btn-win" class="btn">🎮 再玩一局</button>
-            <button id="back-to-home-win" class="btn btn-secondary">🏠 返回首页</button>
-        </div>
-    </div>
-
-    <script>
-        class Card {
-            constructor(suit, value, name) {
-                this.suit = suit;
-                this.value = value;
-                this.name = name;
-                this.isFaceUp = false;
-                this.id = `${suit}_${value}_${Math.random().toString(36).substr(2, 9)}`;
-            }
-        }
-
-        class SpiderSolitaire {
-            constructor() {
-                this.gameState = null;
-                this.timerInterval = null;
-                this.startTime = null;
-                this.draggedCards = null;
-                this.originalPileIndex = null;
-                this.originalCardIndex = null;
-                this.originalPositions = [];
-                this.isDragging = false;
-                this.animationFrameId = null;
-                this.hintedCards = [];
-                
-                this.initializeEventListeners();
-            }
-
-            createAndShuffleDeck() {
-                const suits = ['spades', 'hearts', 'clubs', 'diamonds'];
-                const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-                const cardNames = {
-                    1: 'A', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7',
-                    8: '8', 9: '9', 10: '10', 11: 'J', 12: 'Q', 13: 'K'
-                };
-
-                let deck = [];
-                for (let i = 0; i < 2; i++) {
-                    for (const suit of suits) {
-                        for (const value of values) {
-                            deck.push(new Card(suit, value, cardNames[value]));
-                        }
-                    }
-                }
-                
-                for (let i = deck.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [deck[i], deck[j]] = [deck[j], deck[i]];
-                }
-                
-                return deck;
-            }
-
-            initializeGame(shuffledDeck = null) {
-                if (!shuffledDeck) {
-                    shuffledDeck = this.createAndShuffleDeck();
-                }
-
-                this.gameState = {
-                    tableauPiles: Array.from({ length: 10 }, () => []),
-                    stockPiles: [],
-                    foundations: [],
-                    moves: 0,
-                    score: 500,
-                    completedSequences: 0
-                };
-                
-                clearInterval(this.timerInterval);
-                this.startTime = null;
-
-                let cardIndex = 0;
-                const cardsPerPile = [6, 6, 6, 6, 5, 5, 5, 5, 5, 5];
-
-                for (let pileIndex = 0; pileIndex < 10; pileIndex++) {
-                    for (let i = 0; i < cardsPerPile[pileIndex]; i++) {
-                        if (cardIndex < shuffledDeck.length) {
-                            let card = shuffledDeck[cardIndex];
-                            this.gameState.tableauPiles[pileIndex].push(card);
-                            cardIndex++;
-                        }
-                    }
-                    let topCard = this.gameState.tableauPiles[pileIndex][this.gameState.tableauPiles[pileIndex].length - 1];
-                    if (topCard) {
-                        topCard.isFaceUp = true;
-                    }
-                }
-                
-                this.gameState.stockPiles = shuffledDeck.slice(cardIndex);
-                
-                this.renderGame();
-                this.startTimer();
-            }
-
-            startTimer() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-                this.startTime = Date.now();
-                this.timerInterval = setInterval(() => this.updateTimer(), 1000);
-            }
-
-            updateTimer() {
-                if (!this.startTime) return;
-                
-                const elapsedTime = Date.now() - this.startTime;
-                const minutes = Math.floor(elapsedTime / 60000);
-                const seconds = Math.floor((elapsedTime % 60000) / 1000);
-                
-                const formattedMinutes = String(minutes).padStart(2, '0');
-                const formattedSeconds = String(seconds).padStart(2, '0');
-                
-                document.getElementById('timer-counter').textContent = `时间: ${formattedMinutes}:${formattedSeconds}`;
-            }
-
-            renderGame() {
-                this.updateGameStats();
-                this.renderStockPile();
-                this.renderFoundations();
-                this.renderTableauPiles();
-            }
-
-            updateGameStats() {
-                document.getElementById('moves-counter').textContent = `步数: ${this.gameState.moves}`;
-                document.getElementById('score-counter').textContent = `得分: ${this.gameState.score}`;
-                document.getElementById('stock-count').textContent = this.gameState.stockPiles.length;
-            }
-
-            renderStockPile() {
-                const stockPileElement = document.getElementById('stock-pile');
-                if (this.gameState.stockPiles.length >= 10) {
-                    stockPileElement.style.opacity = '1';
-                    stockPileElement.style.cursor = 'pointer';
-                } else {
-                    stockPileElement.style.opacity = '0.5';
-                    stockPileElement.style.cursor = 'not-allowed';
-                }
-            }
-
-            renderFoundations() {
-                const foundationsElement = document.getElementById('foundations');
-                foundationsElement.innerHTML = '';
-                
-                const suitSymbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
-
-                this.gameState.foundations.forEach((foundationPile, index) => {
-                    const foundationContainer = document.createElement('div');
-                    foundationContainer.className = 'foundation-pile';
-                    
-                    if (foundationPile.length > 0) {
-                        const topCard = foundationPile[foundationPile.length - 1];
-                        const cardElement = this._createCardElement(topCard, true);
-                        foundationContainer.appendChild(cardElement);
-                    } else {
-                        foundationContainer.classList.add('empty');
-                        foundationContainer.innerHTML = '<span class="text-gray-500 text-xs">完成桩</span>';
-                    }
-                    foundationsElement.appendChild(foundationContainer);
-                });
-            }
-
-            _createCardElement(card, isFlipped) {
-                const suitSymbols = { 'spades': '♠', 'hearts': '♥', 'clubs': '♣', 'diamonds': '♦' };
-                const isRed = card.suit === 'hearts' || card.suit === 'diamonds';
-                
-                const cardContainer = document.createElement('div');
-                cardContainer.className = `card-container ${isFlipped ? 'is-flipped' : ''}`;
-                cardContainer.dataset.cardId = card.id;
-
-                const cardBack = document.createElement('div');
-                cardBack.className = 'card-face card-back';
-                cardBack.innerHTML = '<span class="text-white text-xs font-bold">IMP</span>';
-
-                const cardFront = document.createElement('div');
-                cardFront.className = `card-face card-front ${isRed ? 'is-red' : ''}`;
-                cardFront.innerHTML = `
-                    <span class="card-value self-start p-1">${card.name}</span>
-                    <span class="suit-symbol">${suitSymbols[card.suit]}</span>
-                    <span class="card-value self-end p-1 rotate-180">${card.name}</span>
-                `;
-
-                cardContainer.appendChild(cardBack);
-                cardContainer.appendChild(cardFront);
-
-                return cardContainer;
-            }
-
-            renderTableauPiles() {
-                this.gameState.tableauPiles.forEach((pile, pileIndex) => {
-                    const pileElement = document.getElementById(`pile-${pileIndex}`);
-                    if (!pileElement) return;
-                    
-                    pileElement.innerHTML = '';
-                    pileElement.classList.remove('active-drop-target');
-
-                    pile.forEach((card, cardIndex) => {
-                        const isDraggable = this.isValidDragSequence(pile.slice(cardIndex));
-                        const cardContainer = this._createCardElement(card, card.isFaceUp);
-                        cardContainer.dataset.cardIndex = cardIndex.toString();
-                        cardContainer.dataset.pileIndex = pileIndex.toString();
-                        
-                        if (this.hintedCards.some(hint => hint.id === card.id)) {
-                             cardContainer.classList.add('is-hinted');
-                        }
-
-                        const topOffset = cardIndex * 20;
-                        cardContainer.style.top = `${topOffset}px`;
-                        
-                        if (card.isFaceUp && isDraggable) {
-                            cardContainer.style.cursor = 'grab';
-                            cardContainer.setAttribute('draggable', 'true');
-                        } else {
-                            cardContainer.style.cursor = 'default';
-                            cardContainer.setAttribute('draggable', 'false');
-                        }
-                        pileElement.appendChild(cardContainer);
-                    });
-                });
-            }
-            
-            checkForAutoFlips() {
-                let hasFlipped = false;
-                this.gameState.tableauPiles.forEach(pile => {
-                    if (pile.length > 0) {
-                        const topCard = pile[pile.length - 1];
-                        if (!topCard.isFaceUp) {
-                            topCard.isFaceUp = true;
-                            hasFlipped = true;
-                        }
-                    }
-                });
-                
-                if (hasFlipped) {
-                    setTimeout(() => this.renderGame(), 100);
-                }
-            }
-
-            checkCompleteSequence(pile) {
-                if (pile.length < 13) return false;
-                
-                const sequence = pile.slice(-13);
-                
-                for (let i = 0; i < 12; i++) {
-                    const currentCard = sequence[i];
-                    const nextCard = sequence[i + 1];
-                    if (currentCard.value !== nextCard.value + 1 || currentCard.suit !== nextCard.suit) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            }
-
-            checkWinState() {
-                if (this.gameState.completedSequences === 8) {
-                    this.winGame();
-                }
-            }
-
-            dealCards() {
-                if (this.gameState.stockPiles.length < 10) {
-                    alert("库存牌已用完或不足，请先完成一套牌或移动牌到空桩。");
-                    return;
-                }
-
-                for (let i = 0; i < 10; i++) {
-                    if (this.gameState.tableauPiles[i].length === 0) {
-                        alert("有空桩时无法发牌，请先移动牌到空桩。");
-                        return;
-                    }
-                }
-
-                for (let i = 0; i < 10; i++) {
-                    const cardToDeal = this.gameState.stockPiles.shift();
-                    cardToDeal.isFaceUp = true;
-                    this.gameState.tableauPiles[i].push(cardToDeal);
-                }
-                
-                this.gameState.moves++;
-                this.gameState.score -= 1;
-                this.renderGame();
-                this.checkForAutoFlips();
-            }
-
-            isValidDragSequence(cards) {
-                if (cards.length <= 1) return true;
-                
-                for (let i = 0; i < cards.length - 1; i++) {
-                    const currentCard = cards[i];
-                    const nextCard = cards[i + 1];
-                    if (currentCard.value !== nextCard.value + 1 || currentCard.suit !== nextCard.suit) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            isValidMove(draggedCardsData, targetPileIndex) {
-                if (!draggedCardsData || draggedCardsData.length === 0) return false;
-                
-                const targetPile = this.gameState.tableauPiles[targetPileIndex];
-                const firstDraggedCard = draggedCardsData[0];
-                
-                if (targetPile.length === 0) {
-                    return true;
-                }
-
-                const topCardOfTargetPile = targetPile[targetPile.length - 1];
-                return firstDraggedCard.value === topCardOfTargetPile.value - 1;
-            }
-            
-            findHint() {
-                // Remove existing hints
-                this.hintedCards = [];
-                this.renderGame();
-                
-                // Find potential moves
-                const allMoves = [];
-                for (let fromPileIndex = 0; fromPileIndex < 10; fromPileIndex++) {
-                    const fromPile = this.gameState.tableauPiles[fromPileIndex];
-                    if (fromPile.length === 0) continue;
-                    
-                    for (let cardIndex = 0; cardIndex < fromPile.length; cardIndex++) {
-                        const draggedCards = fromPile.slice(cardIndex);
-                        if (this.isValidDragSequence(draggedCards)) {
-                            for (let toPileIndex = 0; toPileIndex < 10; toPileIndex++) {
-                                if (fromPileIndex === toPileIndex) continue;
-                                
-                                if (this.isValidMove(draggedCards, toPileIndex)) {
-                                    allMoves.push({
-                                        fromPile: fromPileIndex,
-                                        fromCardIndex: cardIndex,
-                                        toPile: toPileIndex
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                if (allMoves.length > 0) {
-                    const hint = allMoves[Math.floor(Math.random() * allMoves.length)];
-                    const hintedCard = this.gameState.tableauPiles[hint.fromPile][hint.fromCardIndex];
-                    this.hintedCards.push(hintedCard);
-                    const targetCard = this.gameState.tableauPiles[hint.toPile][this.gameState.tableauPiles[hint.toPile].length - 1];
-                    if (targetCard) this.hintedCards.push(targetCard);
-                    this.renderGame();
-                } else {
-                    alert("目前没有可移动的牌，请尝试发牌！");
-                }
-            }
-
-            winGame() {
-                clearInterval(this.timerInterval);
-                document.body.classList.remove('game-active');
-                document.getElementById('final-time').textContent = document.getElementById('timer-counter').textContent.replace('时间: ', '');
-                document.getElementById('final-moves').textContent = this.gameState.moves;
-                document.getElementById('final-score').textContent = this.gameState.score;
-                document.getElementById('win-message').style.display = 'block';
-                document.getElementById('fireworks').style.display = 'block';
-                this.startFireworks();
-            }
-            
-            startFireworks() {
-                const canvas = document.getElementById('fireworks');
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-
-                const fireworks = [];
-
-                function createFirework(x, y) {
-                    const hue = Math.random() * 360;
-                    for (let i = 0; i < 50; i++) {
-                        fireworks.push({
-                            x: x,
-                            y: y,
-                            vx: (Math.random() - 0.5) * 10,
-                            vy: (Math.random() - 0.5) * 10,
-                            size: Math.random() * 3,
-                            life: 1,
-                            decay: 0.015,
-                            hue: hue,
-                            saturation: 100,
-                            lightness: 50
-                        });
-                    }
-                }
-
-                function animate() {
-                    ctx.fillStyle = 'rgba(28, 28, 30, 0.2)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    for (let i = fireworks.length - 1; i >= 0; i--) {
-                        const p = fireworks[i];
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.05;
-                        p.life -= p.decay;
-
-                        if (p.life <= 0) {
-                            fireworks.splice(i, 1);
-                            continue;
-                        }
-
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        ctx.fillStyle = `hsl(${p.hue}, ${p.saturation}%, ${p.lightness * p.life}%)`;
-                        ctx.fill();
-                    }
-                    if (fireworks.length > 0) {
-                         requestAnimationFrame(animate);
-                    }
-                }
-
-                const fireworkInterval = setInterval(() => {
-                    if (document.getElementById('win-message').style.display === 'none') {
-                        clearInterval(fireworkInterval);
-                        return;
-                    }
-                    createFirework(
-                        Math.random() * canvas.width,
-                        Math.random() * canvas.height
-                    );
-                }, 200);
-
-                animate();
-            }
-
-            initializeEventListeners() {
-                document.getElementById('start-game-btn').addEventListener('click', () => {
-                    document.body.classList.add('game-active');
-                    this.initializeGame();
-                });
-
-                document.getElementById('back-to-landing').addEventListener('click', () => {
-                    document.body.classList.remove('game-active');
-                    clearInterval(this.timerInterval);
-                });
-                
-                document.getElementById('restart-btn-top').addEventListener('click', () => this.initializeGame());
-                document.getElementById('hint-btn').addEventListener('click', () => this.findHint());
-                document.getElementById('restart-btn-win').addEventListener('click', () => {
-                    document.getElementById('win-message').style.display = 'none';
-                    document.getElementById('fireworks').style.display = 'none';
-                    document.body.classList.add('game-active');
-                    this.initializeGame();
-                });
-                document.getElementById('back-to-home-win').addEventListener('click', () => {
-                     document.getElementById('win-message').style.display = 'none';
-                     document.getElementById('fireworks').style.display = 'none';
-                     document.body.classList.remove('game-active');
-                });
-                
-                document.getElementById('stock-pile').addEventListener('click', () => this.dealCards());
-
-                document.getElementById('game-board').addEventListener('mousedown', this._handleDragStart.bind(this));
-                document.getElementById('game-board').addEventListener('touchstart', this._handleDragStart.bind(this));
-                document.addEventListener('mouseup', this._handleDrop.bind(this));
-                document.addEventListener('touchend', this._handleDrop.bind(this));
-                document.addEventListener('mousemove', this._handleDrag.bind(this));
-                document.addEventListener('touchmove', this._handleDrag.bind(this), { passive: false });
-                document.getElementById('game-board').addEventListener('dblclick', this._handleCardClick.bind(this));
-            }
-            
-            _getCardDataFromElement(el) {
-                while (el && !el.classList.contains('card-container')) {
-                    el = el.parentElement;
-                }
-                if (!el) return null;
-                const pileIndex = parseInt(el.dataset.pileIndex);
-                const cardIndex = parseInt(el.dataset.cardIndex);
-                if (isNaN(pileIndex) || isNaN(cardIndex)) return null;
-                
-                const card = this.gameState.tableauPiles[pileIndex][cardIndex];
-                if (!card || !card.isFaceUp) return null;
-                
-                const draggedCards = this.gameState.tableauPiles[pileIndex].slice(cardIndex);
-                if (!this.isValidDragSequence(draggedCards)) return null;
-                
-                return { pileIndex, cardIndex, draggedCards, element: el };
-            }
-
-            _handleCardClick(e) {
-                const cardData = this._getCardDataFromElement(e.target);
-                if (!cardData) return;
-                
-                const { pileIndex, cardIndex, draggedCards } = cardData;
-                if (draggedCards.length > 1) return; // Only single-card auto-moves for simplicity
-
-                for (let i = 0; i < 10; i++) {
-                    if (i === pileIndex) continue;
-                    
-                    const targetPile = this.gameState.tableauPiles[i];
-                    if (this.isValidMove(draggedCards, i)) {
-                        this._moveCards(pileIndex, cardIndex, i);
-                        return;
-                    }
-                }
-            }
-
-            _handleDragStart(e) {
-                e.stopPropagation();
-                if (e.target.closest('#stock-pile')) return;
-
-                const cardData = this._getCardDataFromElement(e.target);
-                if (!cardData) return;
-                
-                this.isDragging = true;
-                const { pileIndex, cardIndex, draggedCards, element } = cardData;
-                this.draggedCards = draggedCards;
-                this.originalPileIndex = pileIndex;
-                this.originalCardIndex = cardIndex;
-                
-                const rect = element.getBoundingClientRect();
-                this.offsetX = (e.clientX || e.touches[0].clientX) - rect.left;
-                this.offsetY = (e.clientY || e.touches[0].clientY) - rect.top;
-                
-                const gameBoard = document.getElementById('game-board');
-                
-                this.originalPositions = [];
-                for (let i = cardIndex; i < this.gameState.tableauPiles[pileIndex].length; i++) {
-                    const cardEl = gameBoard.querySelector(`[data-card-id="${this.gameState.tableauPiles[pileIndex][i].id}"]`);
-                    this.originalPositions.push({
-                        left: cardEl.offsetLeft,
-                        top: cardEl.offsetTop
-                    });
-                    cardEl.classList.add('dragging');
-                    cardEl.style.zIndex = 1000 + i;
-                    cardEl.style.position = 'absolute';
-                }
-            }
-
-            _handleDrag(e) {
-                if (!this.isDragging) return;
-                e.preventDefault();
-                
-                const clientX = e.clientX || e.touches[0].clientX;
-                const clientY = e.clientY || e.touches[0].clientY;
-                
-                const gameBoard = document.getElementById('game-board');
-                const boardRect = gameBoard.getBoundingClientRect();
-                
-                let dropTarget = null;
-                
-                for (let i = this.originalCardIndex; i < this.gameState.tableauPiles[this.originalPileIndex].length; i++) {
-                    const cardEl = gameBoard.querySelector(`[data-card-id="${this.gameState.tableauPiles[this.originalPileIndex][i].id}"]`);
-                    cardEl.style.left = `${clientX - this.offsetX - boardRect.left}px`;
-                    cardEl.style.top = `${clientY - this.offsetY + ((i - this.originalCardIndex) * 20) - boardRect.top}px`;
-                }
-
-                // Highlight drop targets
-                document.querySelectorAll('.tableau-pile').forEach(pileEl => {
-                     pileEl.classList.remove('active-drop-target');
-                });
-
-                const targetEl = document.elementFromPoint(clientX, clientY);
-                if (targetEl) {
-                    const targetPileEl = targetEl.closest('.tableau-pile');
-                    if (targetPileEl) {
-                        const targetPileIndex = parseInt(targetPileEl.id.replace('pile-', ''));
-                        if (this.isValidMove(this.draggedCards, targetPileIndex)) {
-                            targetPileEl.classList.add('active-drop-target');
-                            dropTarget = targetPileIndex;
-                        }
-                    }
-                }
-            }
-
-            _handleDrop(e) {
-                if (!this.isDragging) return;
-                
-                this.isDragging = false;
-                const clientX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : null);
-                const clientY = e.clientY || (e.changedTouches ? e.changedTouches[0].clientY : null);
-                
-                if (clientX === null) return;
-                
-                const targetEl = document.elementFromPoint(clientX, clientY);
-                const targetPileEl = targetEl ? targetEl.closest('.tableau-pile') : null;
-                const targetPileIndex = targetPileEl ? parseInt(targetPileEl.id.replace('pile-', '')) : null;
-
-                document.querySelectorAll('.tableau-pile').forEach(pileEl => {
-                    pileEl.classList.remove('active-drop-target');
-                });
-                
-                const movedSuccessfully = (targetPileIndex !== null && targetPileIndex !== this.originalPileIndex) && this.isValidMove(this.draggedCards, targetPileIndex);
-
-                if (movedSuccessfully) {
-                    this._moveCards(this.originalPileIndex, this.originalCardIndex, targetPileIndex);
-                } else {
-                    // Return cards to original position
-                    const gameBoard = document.getElementById('game-board');
-                    for (let i = this.originalCardIndex; i < this.gameState.tableauPiles[this.originalPileIndex].length; i++) {
-                        const cardEl = gameBoard.querySelector(`[data-card-id="${this.gameState.tableauPiles[this.originalPileIndex][i].id}"]`);
-                        if (cardEl) {
-                            cardEl.classList.remove('dragging');
-                            cardEl.style.position = 'absolute';
-                            cardEl.style.transition = 'top 0.3s ease, left 0.3s ease';
-                            cardEl.style.left = '0px';
-                            cardEl.style.top = `${i * 20}px`;
-                        }
-                    }
-                }
-                
-                this.draggedCards = null;
-                this.originalPileIndex = null;
-                this.originalCardIndex = null;
-            }
-
-            _moveCards(fromPileIndex, fromCardIndex, toPileIndex) {
-                const movedCards = this.gameState.tableauPiles[fromPileIndex].splice(fromCardIndex);
-                this.gameState.tableauPiles[toPileIndex].push(...movedCards);
-                
-                this.gameState.moves++;
-                this.gameState.score -= 1;
-                
-                this.checkForAutoFlips();
-                this.renderGame();
-                
-                this.checkForCompletedSequence(toPileIndex);
-            }
-            
-            checkForCompletedSequence(pileIndex) {
-                const pile = this.gameState.tableauPiles[pileIndex];
-                if (this.checkCompleteSequence(pile)) {
-                    const completedSequence = pile.splice(pile.length - 13, 13);
-                    this.gameState.foundations.push(completedSequence);
-                    this.gameState.completedSequences++;
-                    this.gameState.score += 100;
-                    this.renderGame();
-                    this.checkForAutoFlips();
-                    this.checkWinState();
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            new SpiderSolitaire();
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 13; j++) {
+        deck.push({
+          id: `${i}-${j}-${Date.now()}`,
+          value: values[j],
+          suit: suits[i % suitCount],
+          faceUp: false
         });
-    </script>
-</body>
-</html>
-</body>
-</html>
+      }
+    }
+
+    const shuffled = deck.sort(() => Math.random() - 0.5);
+    const newColumns = Array(10).fill(null).map(() => []);
+    
+    let cardIndex = 0;
+    for (let i = 0; i < 10; i++) {
+      const count = i < 4 ? 6 : 5;
+      for (let j = 0; j < count; j++) {
+        const card = { ...shuffled[cardIndex], faceUp: j === count - 1 };
+        newColumns[i].push(card);
+        cardIndex++;
+      }
+    }
+
+    const remainingStock = [];
+    while (cardIndex < shuffled.length) {
+      remainingStock.push(shuffled[cardIndex]);
+      cardIndex++;
+    }
+
+    setColumns(newColumns);
+    setStock(remainingStock);
+    setCompleted([]);
+    setMoves(0);
+    setScore(500);
+    setTime(0);
+    setIsPlaying(true);
+    setGameWon(false);
+    initRef.current = true;
+  };
+
+  useEffect(() => {
+    if (!initRef.current) {
+      initGame();
+    }
+  }, []);
+
+  useEffect(() => {
+    let interval;
+    if (isPlaying && !gameWon) {
+      interval = setInterval(() => {
+        setTime(t => t + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, gameWon]);
+
+  useEffect(() => {
+    if (completed.length === 8 && isPlaying && !gameWon) {
+      setIsPlaying(false);
+      setGameWon(true);
+      
+      const newBestScore = Math.max(bestScores[gameMode], score);
+      setBestScores(prev => ({ ...prev, [gameMode]: newBestScore }));
+      
+      const newAchievements = [];
+      if (!achievements.includes('first_win')) {
+        newAchievements.push('first_win');
+      }
+      if (time < 300 && !achievements.includes('speed_demon')) {
+        newAchievements.push('speed_demon');
+      }
+      if (score === 500 && !achievements.includes('perfectionist')) {
+        newAchievements.push('perfectionist');
+      }
+      
+      if (newAchievements.length > 0) {
+        setAchievements(prev => [...prev, ...newAchievements]);
+        setShowAchievement(newAchievements[0]);
+        setTimeout(() => setShowAchievement(null), 3000);
+      }
+    }
+  }, [completed.length, isPlaying, gameWon]);
+
+  const canPlaceCard = (cardToPlace, targetCard) => {
+    if (!targetCard) return true;
+    const valueIndex1 = values.indexOf(cardToPlace.value);
+    const valueIndex2 = values.indexOf(targetCard.value);
+    return valueIndex1 === valueIndex2 - 1;
+  };
+
+  const checkForCompleteSequence = (colIndex, cols) => {
+    const col = cols[colIndex];
+    if (col.length < 13) return cols;
+
+    const lastCards = col.slice(-13);
+    const firstSuit = lastCards[0].suit;
+    
+    for (let i = 0; i < 13; i++) {
+      if (lastCards[i].value !== values[12 - i] || lastCards[i].suit !== firstSuit) {
+        return cols;
+      }
+    }
+
+    const newColumns = [...cols];
+    newColumns[colIndex] = col.slice(0, -13);
+    
+    if (newColumns[colIndex].length > 0) {
+      newColumns[colIndex][newColumns[colIndex].length - 1].faceUp = true;
+    }
+    
+    setCompleted(prev => [...prev, lastCards]);
+    setScore(prev => prev + 100);
+    return newColumns;
+  };
+
+  const handleDragStart = (colIndex, cardIndex) => {
+    const col = columns[colIndex];
+    const card = col[cardIndex];
+    
+    if (!card.faceUp) return;
+
+    const cardsToMove = col.slice(cardIndex);
+    let isValidSequence = true;
+    const suit = cardsToMove[0].suit;
+
+    for (let i = 0; i < cardsToMove.length - 1; i++) {
+      const currentValue = values.indexOf(cardsToMove[i].value);
+      const nextValue = values.indexOf(cardsToMove[i + 1].value);
+      if (currentValue !== nextValue + 1 || cardsToMove[i].suit !== suit) {
+        isValidSequence = false;
+        break;
+      }
+    }
+
+    if (isValidSequence) {
+      setDraggedCard({ colIndex, cardIndex, cards: cardsToMove });
+    }
+  };
+
+  const handleDrop = (targetColIndex) => {
+    if (!draggedCard) return;
+
+    const sourceCol = [...columns[draggedCard.colIndex]];
+    const targetCol = [...columns[targetColIndex]];
+    
+    const topCard = draggedCard.cards[0];
+    const targetCard = targetCol[targetCol.length - 1];
+
+    if (canPlaceCard(topCard, targetCard)) {
+      const newColumns = [...columns];
+      newColumns[draggedCard.colIndex] = sourceCol.slice(0, draggedCard.cardIndex);
+      newColumns[targetColIndex] = [...targetCol, ...draggedCard.cards];
+
+      if (newColumns[draggedCard.colIndex].length > 0) {
+        newColumns[draggedCard.colIndex][newColumns[draggedCard.colIndex].length - 1].faceUp = true;
+      }
+
+      const updatedColumns = checkForCompleteSequence(targetColIndex, newColumns);
+      setColumns(updatedColumns);
+      setMoves(prev => prev + 1);
+      setScore(prev => Math.max(0, prev - 1));
+      setDraggedCard(null);
+    } else {
+      setDraggedCard(null);
+    }
+  };
+
+  const dealCards = () => {
+    if (stock.length === 0) return;
+
+    const newColumns = columns.map(col => [...col]);
+    const cardsToAdd = stock.slice(0, 10);
+    
+    for (let i = 0; i < 10 && i < cardsToAdd.length; i++) {
+      newColumns[i].push({ ...cardsToAdd[i], faceUp: true });
+    }
+
+    setColumns(newColumns);
+    setStock(stock.slice(10));
+    setMoves(prev => prev + 1);
+    setScore(prev => Math.max(0, prev - 5));
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const getSuitColor = (suit) => {
+    return suit === '♥' || suit === '♦' ? 'text-red-500' : 'text-gray-700';
+  };
+
+  const getCardPattern = (value, suit, color) => {
+    // 根据不同点数返回中间的花色排列
+    const suitDisplay = <span className={color}>{suit}</span>;
+    
+    switch(value) {
+      case 'A':
+        return <div className="flex items-center justify-center h-full text-5xl">{suitDisplay}</div>;
+      case '2':
+        return <div className="flex flex-col justify-between h-full py-1 text-3xl"><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div>;
+      case '3':
+        return <div className="flex flex-col justify-between h-full py-1 text-3xl"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div>;
+      case '4':
+        return <div className="grid grid-cols-2 gap-x-3 h-full content-between py-1 text-2xl"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div>;
+      case '5':
+        return <div className="relative h-full text-2xl"><div className="grid grid-cols-2 gap-x-3 h-full content-between py-1"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div><div className="absolute inset-0 flex items-center justify-center">{suitDisplay}</div></div>;
+      case '6':
+        return <div className="grid grid-cols-2 gap-x-3 h-full content-between py-1 text-2xl"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div>;
+      case '7':
+        return <div className="relative h-full text-xl"><div className="grid grid-cols-2 gap-x-2 h-full content-between py-1"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div><div className="absolute" style={{top: '28%', left: 0, right: 0}}><div className="text-center">{suitDisplay}</div></div></div>;
+      case '8':
+        return <div className="relative h-full text-xl"><div className="grid grid-cols-2 gap-x-2 h-full content-between py-1"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div><div className="absolute" style={{top: '28%', left: 0, right: 0}}><div className="text-center">{suitDisplay}</div></div><div className="absolute rotate-180" style={{bottom: '28%', left: 0, right: 0}}><div className="text-center">{suitDisplay}</div></div></div>;
+      case '9':
+        return <div className="relative h-full text-lg"><div className="grid grid-cols-2 gap-x-2 gap-y-0 h-full content-between py-1"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div><div className="absolute inset-0 flex items-center justify-center">{suitDisplay}</div></div>;
+      case '10':
+        return <div className="relative h-full text-base"><div className="grid grid-cols-2 gap-x-2 gap-y-0 h-full content-between py-1"><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div><div className="text-center rotate-180">{suitDisplay}</div></div><div className="absolute" style={{top: '28%', left: 0, right: 0}}><div className="text-center">{suitDisplay}</div></div><div className="absolute rotate-180" style={{bottom: '28%', left: 0, right: 0}}><div className="text-center">{suitDisplay}</div></div></div>;
+      case 'J':
+      case 'Q':
+      case 'K':
+        return <div className="flex items-center justify-center h-full"><div className={`text-5xl font-bold ${color}`}>{value}</div></div>;
+      default:
+        return suitDisplay;
+    }
+  };
+
+  const handleNewGame = () => {
+    initRef.current = false;
+    initGame();
+  };
+
+  const handleModeChange = (e) => {
+    setGameMode(e.target.value);
+    initRef.current = false;
+    setTimeout(() => {
+      initGame();
+    }, 0);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-pink-50 to-yellow-50 p-4">
+      {showAchievement && (
+        <div className="fixed top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-white px-6 py-4 rounded-2xl shadow-2xl animate-bounce z-50">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">{achievementsList.find(a => a.id === showAchievement)?.icon}</span>
+            <div>
+              <div className="font-bold text-lg">成就解锁！</div>
+              <div className="text-sm opacity-90">{achievementsList.find(a => a.id === showAchievement)?.name}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHelp && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowHelp(false)}>
+          <div className="bg-white rounded-3xl p-8 max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500">
+                🕷️ 蜘蛛纸牌游戏说明
+              </h2>
+              <button
+                onClick={() => setShowHelp(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6 text-gray-700">
+              <div className="bg-orange-50 rounded-2xl p-5">
+                <h3 className="text-xl font-bold text-orange-600 mb-3 flex items-center gap-2">
+                  🎯 游戏目标
+                </h3>
+                <p className="leading-relaxed">
+                  将所有的牌按照<span className="font-bold text-orange-600">从K到A的顺序</span>，并且<span className="font-bold text-orange-600">同花色</span>排列。当一列中出现完整的K-A同花色序列时，这13张牌会自动移除。移除全部8组牌即可获胜！
+                </p>
+              </div>
+
+              <div className="bg-pink-50 rounded-2xl p-5">
+                <h3 className="text-xl font-bold text-pink-600 mb-3 flex items-center gap-2">
+                  🎮 操作方法
+                </h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <span className="text-2xl">👆</span>
+                    <div>
+                      <span className="font-bold text-pink-600">拖拽移牌：</span>点击并拖动正面朝上的牌到其他列。只能将较小的牌放在较大的牌上（例如：6可以放在7上面）
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-2xl">🃏</span>
+                    <div>
+                      <span className="font-bold text-pink-600">同花色序列：</span>只有同花色且连续的牌组才能一起移动（例如：♠7-♠6-♠5可以一起拖动）
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-2xl">📚</span>
+                    <div>
+                      <span className="font-bold text-pink-600">发牌：</span>点击右上角的"发牌"按钮，会给每一列发一张新牌
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-2xl">✨</span>
+                    <div>
+                      <span className="font-bold text-pink-600">自动移除：</span>当完成K到A的同花色完整序列时，会自动移除并加100分
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-yellow-50 rounded-2xl p-5">
+                <h3 className="text-xl font-bold text-yellow-600 mb-3 flex items-center gap-2">
+                  💯 计分规则
+                </h3>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">🎊</span>
+                    <span>初始分数：<span className="font-bold text-yellow-600">500分</span></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">➖</span>
+                    <span>每移动一次：<span className="font-bold text-yellow-600">-1分</span></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">📉</span>
+                    <span>每发牌一次：<span className="font-bold text-yellow-600">-5分</span></span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">➕</span>
+                    <span>完成一组序列：<span className="font-bold text-yellow-600">+100分</span></span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-purple-50 rounded-2xl p-5">
+                <h3 className="text-xl font-bold text-purple-600 mb-3 flex items-center gap-2">
+                  🎪 难度选择
+                </h3>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">😊</span>
+                    <span><span className="font-bold text-purple-600">简单模式：</span>只有一种花色，容易组成序列</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">😐</span>
+                    <span><span className="font-bold text-purple-600">中等模式：</span>有两种花色，需要策略</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-lg">😤</span>
+                    <span><span className="font-bold text-purple-600">困难模式：</span>四种花色，极具挑战</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-green-50 rounded-2xl p-5">
+                <h3 className="text-xl font-bold text-green-600 mb-3 flex items-center gap-2">
+                  💡 游戏技巧
+                </h3>
+                <ul className="space-y-2 text-sm">
+                  <li>• 优先翻开背面的牌，增加可操作空间</li>
+                  <li>• 尽量保持一列空位，方便移动牌组</li>
+                  <li>• 先构建同花色序列，提高移除效率</li>
+                  <li>• 谨慎发牌，发牌会减少分数</li>
+                </ul>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowHelp(false)}
+              className="w-full mt-6 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg"
+            >
+              开始游戏 🎮
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white bg-opacity-90 rounded-3xl shadow-lg p-6 mb-4 backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 text-orange-600">
+                <Trophy className="w-6 h-6" />
+                <span className="font-bold text-xl">{score}</span>
+              </div>
+              <div className="flex items-center gap-2 text-pink-600">
+                <Clock className="w-6 h-6" />
+                <span className="font-bold text-xl">{formatTime(time)}</span>
+              </div>
+              <div className="text-purple-600">
+                <span className="font-bold text-lg">移动: {moves}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowHelp(true)}
+                className="bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white px-4 py-2 rounded-xl flex items-center gap-2 font-bold shadow-md"
+              >
+                <HelpCircle className="w-5 h-5" />
+                帮助
+              </button>
+
+              <select 
+                value={gameMode} 
+                onChange={handleModeChange}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-400 to-purple-500 text-white font-bold shadow-md cursor-pointer"
+              >
+                <option value="1suit">😊 简单</option>
+                <option value="2suit">😐 中等</option>
+                <option value="4suit">😤 困难</option>
+              </select>
+
+              <button
+                onClick={handleNewGame}
+                className="bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 text-white px-5 py-2 rounded-xl flex items-center gap-2 font-bold shadow-md"
+              >
+                <RotateCcw className="w-5 h-5" />
+                新游戏
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white bg-opacity-90 rounded-3xl shadow-lg p-6 mb-4 backdrop-blur">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2 text-yellow-600">
+              <Award className="w-6 h-6" />
+              <span className="font-bold text-lg">成就系统</span>
+            </div>
+            <div className="text-gray-600 text-sm font-bold">
+              已解锁: {achievements.length}/{achievementsList.length}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {achievementsList.map(ach => (
+              <div
+                key={ach.id}
+                className={`p-4 rounded-2xl transition-all ${
+                  achievements.includes(ach.id)
+                    ? 'bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg scale-105'
+                    : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                <div className="text-3xl mb-2">{ach.icon}</div>
+                <div className="text-xs font-bold">{ach.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          {Array(8).fill(null).map((_, i) => (
+            <div
+              key={i}
+              className="w-20 h-28 bg-white bg-opacity-50 rounded-2xl flex items-center justify-center shadow-inner backdrop-blur"
+            >
+              {i < completed.length && (
+                <Sparkles className="w-10 h-10 text-yellow-500" />
+              )}
+            </div>
+          ))}
+          <div className="flex-1"></div>
+          <button
+            onClick={dealCards}
+            disabled={stock.length === 0}
+            className={`w-24 h-28 rounded-2xl font-bold text-white shadow-lg transition-all ${
+              stock.length > 0
+                ? 'bg-gradient-to-br from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 cursor-pointer hover:scale-105'
+                : 'bg-gray-400 cursor-not-allowed'
+            }`}
+          >
+            发牌<br />
+            <span className="text-2xl">({Math.floor(stock.length / 10)})</span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-10 gap-2">
+          {columns.map((col, colIndex) => (
+            <div
+              key={colIndex}
+              className="min-h-96 bg-white bg-opacity-40 rounded-2xl p-2 shadow-inner backdrop-blur"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => handleDrop(colIndex)}
+            >
+              {col.map((card, cardIndex) => (
+                <div
+                  key={card.id}
+                  draggable={card.faceUp}
+                  onDragStart={() => handleDragStart(colIndex, cardIndex)}
+                  className={`w-full h-24 rounded-xl flex items-center justify-center transition-all ${
+                    card.faceUp ? 'cursor-move' : 'cursor-default'
+                  } ${
+                    card.faceUp
+                      ? 'bg-white shadow-lg hover:shadow-xl hover:scale-105'
+                      : 'bg-gradient-to-br from-orange-400 to-pink-400 border-2 border-white'
+                  }`}
+                  style={{ 
+                    marginTop: cardIndex > 0 ? '-56px' : '0',
+                    position: 'relative',
+                    zIndex: cardIndex
+                  }}
+                >
+                  {card.faceUp ? (
+                    <div className="w-full h-full relative">
+                      {/* 左上角 */}
+                      <div className={`absolute top-1 left-1.5 text-center ${getSuitColor(card.suit)}`}>
+                        <div className="text-lg font-bold leading-none">{card.value}</div>
+                        <div className="text-xl leading-none mt-0.5">{card.suit}</div>
+                      </div>
+                      
+                      {/* 右下角（倒置） */}
+                      <div className={`absolute bottom-1 right-1.5 text-center transform rotate-180 ${getSuitColor(card.suit)}`}>
+                        <div className="text-lg font-bold leading-none">{card.value}</div>
+                        <div className="text-xl leading-none mt-0.5">{card.suit}</div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center relative overflow-hidden border-4 border-blue-900">
+                      {/* 经典扑克牌背面花纹 */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="grid grid-cols-3 gap-1 p-2">
+                          {Array(9).fill(null).map((_, i) => (
+                            <div key={i} className="w-3 h-3 bg-white opacity-30 rounded-full"></div>
+                          ))}
+                        </div>
+                      </div>
+                      {/* 中心装饰 */}
+                      <div className="relative z-10 w-8 h-8 border-4 border-white rounded-lg transform rotate-45 opacity-40"></div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {gameWon && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-3xl p-10 text-center max-w-md shadow-2xl">
+              <div className="text-7xl mb-6">🎉</div>
+              <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-pink-500 mb-6">
+                恭喜获胜！
+              </h2>
+              <div className="space-y-3 text-gray-700">
+                <p className="text-2xl">
+                  最终得分: <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-500">{score}</span>
+                </p>
+                <p className="text-lg">⏱️ 用时: {formatTime(time)}</p>
+                <p className="text-lg">🎯 移动次数: {moves}</p>
+                <p className="text-sm text-gray-500 mt-4 font-bold">🏆 最高分: {bestScores[gameMode]}</p>
+              </div>
+              <button
+                onClick={handleNewGame}
+                className="mt-8 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white px-10 py-4 rounded-2xl font-bold text-xl shadow-lg"
+              >
+                再来一局 🎮
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SpiderSolitaire;
