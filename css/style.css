@@ -333,12 +333,14 @@ input[type=radio] {
 
 /*Cards style*/
 .card {
-	display: block;
-	width: 82px;
-	height: 119px;
-	margin: 0 auto;
-	border: 1px solid #000;
-	border-radius: 5px;
+  width:var(--card-w);
+  height:var(--card-h);
+  touch-action:none;
+  font-size:clamp(8px,1.2vw,14px);
+  display:block;
+  margin:0 auto;
+  border:1px solid #000;
+  border-radius:5px;
 }
 
 .card:first-child {
@@ -595,7 +597,17 @@ ol li:after {
 	
 }
 
-
+/* ===== 手机一屏完整显示 ===== */
+:root{
+  --card-w:6.5vw;   /* 1/15 屏宽，留间隙 */
+  --card-h:12vh;    /* 1/8  屏高，留间隙 */
+}
+@media (max-width:600px){  /* 手机竖屏 */
+  :root{--card-w:7.2vw;--card-h:11vh;}
+}
+@media (orientation:landscape){  /* 手机横屏 */
+  :root{--card-w:5.2vw;--card-h:14vh;}
+}
 
 
 
