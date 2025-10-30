@@ -1,6 +1,6 @@
 body {
 	overflow: hidden;
-	background: url(../images/background.png) #065B23;
+	background: url(../images/background.png) #468a5d;
 }
 
 .home-screen {
@@ -63,6 +63,29 @@ body {
 	padding-top: 40px;
 	float: left;
 	/*	border: 1px solid #000;*/
+	position: relative; /* 添加：使伪元素定位基于列 */
+}
+
+/* 在每列下方显示一个浅色背景框，帮助区分 10 个牌位 */
+.column::before {
+	content: "";
+	position: absolute;
+	left: 6px;
+	right: 6px;
+	top: 36px;    /* 与 padding-top 协调 */
+	bottom: 6px;
+	background: rgba(255, 255, 255, 0.2); /* 调整为更明显的浅色背景 */
+	border: 1px solid rgba(255, 255, 255, 0.5); /* 更明显的边框颜色 */
+	border-radius: 8px;
+	pointer-events: none;
+	z-index: 0;
+}
+
+/* 确保牌在浅色框之上渲染 */
+.column .card,
+.column .card:first-child {
+	position: relative;
+	z-index: 1;
 }
 
 .start-form {
@@ -308,7 +331,7 @@ input[type=radio] {
 
 .faq p {
 	margin-top: 0;
-	text-indent: 1.5em;
+	text-align: left; /* 添加左对齐 */
 }
 
 .faq ol {
@@ -333,12 +356,12 @@ input[type=radio] {
 
 /*Cards style*/
 .card {
-  display:block;
-  width:82px;
-  height:119px;
-  margin:0 auto;
-  border:1px solid #000;
-  border-radius:5px;
+	display: block;
+	width: 82px;
+	height: 119px;
+	margin: 0 auto;
+	border: 1px solid #000;
+	border-radius: 5px;
 }
 
 .card:first-child {
@@ -347,7 +370,7 @@ input[type=radio] {
 
 .column .card,
 .drag-el .card {
-	margin-top: -86px;
+	margin-top: -80px;
 }
 
 .drag-el {
@@ -357,29 +380,29 @@ input[type=radio] {
 
 
 .column[data-height="1"] .open {
-	margin-top: -90px;
+	margin-top: -76px;
 }
 
 
 .column[data-height="2"] .open {
-	margin-top: -94px;
+	margin-top: -80px;
 }
 
 .column[data-height="3"] .open {
-	margin-top: -98px;
+	margin-top: -84px;
 }
 
 .column[data-height="4"] .open {
-	margin-top: -102px;
+	margin-top: -88px;
 }
 
 .column[data-height="5"] .open {
-	margin-top: -106px;
+	margin-top: -92px;
 }
 
 .column .closed,
 .column .closed + .open {
-	margin-top: -116px;
+	margin-top: -110px;
 }
 
 .card.closed {
@@ -401,6 +424,8 @@ input[type=radio] {
 	width: inherit;
 	position: absolute;
 	bottom: 120px;
+	right: 40px; /* 将发牌器向右移动；根据需要改为 20/60/80px 等 */
+	left: auto;
 }
 
 .source .card,
@@ -594,6 +619,7 @@ ol li:after {
 	
 	
 }
+
 
 
 
